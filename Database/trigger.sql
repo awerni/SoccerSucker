@@ -46,7 +46,7 @@ CREATE TRIGGER checkTip
 DROP TRIGGER addPoints ON game;
 CREATE OR REPLACE FUNCTION addPoints() RETURNS "trigger" AS $$
 BEGIN
-  --PERFORM updateMrAverage(NEW.gameid);
+  PERFORM updateMrAverage(NEW.gameid);
   UPDATE tip SET points = getTipPoints(gameid, username) WHERE gameid = NEW.gameid;
   RETURN NEW;
 END;
