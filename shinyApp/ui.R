@@ -18,7 +18,7 @@ shinyUI(fluidPage(
              tabPanel("Place Bets", uiOutput("placebets")),
              tabPanel("Check your results", uiOutput("yourresults")),
              tabPanel("Graphs", tabsetPanel(
-               tabPanel("Heatmap", plotOutput("heatmap")),
+               tabPanel("Heatmap", plotOutput("heatmap", width = "100%", height = "600px")),
                tabPanel("Line Ranking", uiOutput("rankingTab")),
                tabPanel("PCA", uiOutput("pca"))
              )),

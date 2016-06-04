@@ -115,7 +115,7 @@ shinyServer(function(input, output, session) {
   output$yourresults <- renderUI({
     if (user$name != "") {
       list(
-        sliderInput("lastgame", "Number of games to display:", min=1, max=getNumberOfGames(), value=10),
+        sliderInput("lastgame", "Number of games to display:", min = 1, max = getNumberOfGames(), value = 10),
         plotOutput("yourbarplot", width = "80%", height = "600px")
       )
     } else {
@@ -141,8 +141,8 @@ shinyServer(function(input, output, session) {
   
   output$rankingTab <- renderUI({
     list(
-      sliderInput("numberOfTopPlayer", "Number of players to display:", min=1, max=getNumberOfPlayers(), value=10),
-      plotOutput("topPlayer", width = "80%", height = "500px")
+      sliderInput("numberOfTopPlayer", "Number of players to display:", min = 1, max = getNumberOfPlayers(), value = 10),
+      plotOutput("topPlayer", width = "100%", height = "500px")
     )
   })
   
@@ -155,7 +155,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$pca <- renderUI({
-    plotOutput("topPCA", width = "80%", height = "500px")
+    plotOutput("topPCA", width = "100%", height = "600px")
   })
   
   output$topPCA <- renderPlot({

@@ -5,13 +5,13 @@ library(ggplot2)
 connectPostgresql <- function() {
   drv <- dbDriver("PostgreSQL")
   dbConnect(drv, dbname = "EuroCup2016", host = "charlotte", user = "postgres", password = "")
-  #dbConnect(drv, dbname = "EuroCup2016", host = "vie-bio-postgres", user = "writer", password = "writer")
-  #dbConnect(drv,
-  #          dbname   = 'dbname=hgkvdmno sslmode=require',
-  #          host     = 'pellefant-02.db.elephantsql.com',
-  #          port     = 5432,
-  #          user     = 'hgkvdmno',
-  #          password = 'ueeCqHhd5OH23ikLafFa3YRdiPA9bMgX')
+#  dbConnect(drv, dbname = "EuroCup2016", host = "vie-bio-postgres", user = "writer", password = "writer")
+#  dbConnect(drv,
+#            dbname   = 'dbname=hgkvdmno sslmode=require',
+#            host     = 'pellefant-02.db.elephantsql.com',
+#            port     = 5432,
+#            user     = 'hgkvdmno',
+#            password = 'ueeCqHhd5OH23ikLafFa3YRdiPA9bMgX')
 }
 
 disconnectPostgresql <- function(con) {
@@ -26,19 +26,19 @@ getPostgresql <- function(sql) {
 }
 
 getGames <- function() {
-  getPostgresql("SELECT gameid, team1, team2, city, starttime FROM game order by gameid")
+  getPostgresql("SELECT gameid, team1, team2, city, starttime FROM game ORDER BY gameid")
 }
 
 getNumberOfGames <- function() {
-  getPostgresql("SELECT count(*) as num from game")$num
+  getPostgresql("SELECT count(*) AS num FROM game")$num
 }
 
 getNumberOfPlayers <- function() {
-  getPostgresql("SELECT count(*) as num from player")$num
+  getPostgresql("SELECT count(*) AS num FROM player")$num
 }
 
 getRanking <- function() {
-  sql <- paste("SELECT rank() over (order by grouppoints desc), firstname, name, ",
+  sql <- paste("SELECT rank() over (ORDER BY grouppoints desc), firstname, name, ",
                "nationality, grouppoints + kopoints AS points, grouppoints, kopoints, ",
                "evalgroupgames + evalkogames AS games, ",
                "CASE WHEN evalgroupgames + evalkogames = 0 THEN 0 ",
@@ -85,7 +85,7 @@ upsertTip <- function(user, tiptable) {
       return(1)
     } else {
       if ((tipgoals1 != tip$regulartimegoals1) | (tipgoals2 != tip$regulartimegoals2)) {
-        sql <- paste0("UPDATE tip set regulartimegoals1 = ", tipgoals1, ", regulartimegoals2 = ", tipgoals2, 
+        sql <- paste0("UPDATE tip SET regulartimegoals1 = ", tipgoals1, ", regulartimegoals2 = ", tipgoals2, 
                       ", kowinner = ", kowinner, ", tiptime = now() ",
                       " WHERE username = '", user, "' AND gameid = ", gameid)
         dbGetQuery(con, sql)
@@ -116,7 +116,7 @@ getAllTips <- function(username) {
 }
 
 getFutureGames <- function() {
-  getPostgresql("SELECT gameid, kogame from game WHERE starttime > now()")
+  getPostgresql("SELECT gameid, kogame FROM game WHERE starttime > now()")
 }
 
 formatInput <- function(gameid, team, goals) {
@@ -131,7 +131,7 @@ getResultCross <- function() {
                 "points FROM tipview tv JOIN game g ON g.gameid = tv.gameid ",
                 "JOIN player p on p.username = tv.username WHERE points IS NOT NULL")
   data <- getPostgresql(sql)
-  if (nrow(data) < 2) return()
+  if (nrow(data) < 2) return(list(data = NULL, n = NULL))
   dn <- unique(data[, c("name", "nationality")])
   n <- dn$nationality
   names(n) <- dn$name
@@ -143,11 +143,12 @@ getHeatmap <- function(data) {
 }
 
 getPCA <- function(data) {
+  data$data <- apply(data$data, 2, function(x) ifelse(is.na(x), 0, x))
   pca <- prcomp(data$data)
   Nationality <- data$n[rownames(pca$x)]
   p <- qplot(pca$x[,1], pca$x[,2], main = "Principle Component Analysis based on bet game points", 
              xlab = "PCA1", ylab = "PCA2", label = rownames(pca$x)) 
-  p + geom_point(aes(colour = Nationality), size = 6, alpha = 3/4) + geom_text(size = 4)
+  p + geom_point(aes(colour = Nationality), size = 6, alpha = 1) + geom_text(size = 4)
 }
 
 getPlayerResult <- function(username) {
@@ -166,7 +167,7 @@ getPlayerBarplot <- function(data, limit) {
   if (nrow(data) > limit) data <- data[1:limit, ]
   data$info <- paste0(data$teams, " (tip:", data$tip, " result:", data$result, ")")
   data$info <- factor(data$info, data[order(data$game), "info"])
-  p <- ggplot(data, aes(info, y = points, fill = points)) + geom_bar(colour="black", stat = "identity") 
+  p <- ggplot(data, aes(info, y = points, fill = points)) + geom_bar(colour = "black", stat = "identity") 
   p + coord_flip() + theme(text = element_text(size = 20), axis.title.y = element_blank())
   #p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 }
@@ -195,10 +196,10 @@ getCumulativePlot <- function(data, numPlayer) {
 # -------------------------------
 
 insertRandomTips <- function() {
-   user <- getPostgresql("SELECT username from player")$username
+   user <- getPostgresql("SELECT username FROM player")$username
    sapply(user, function(u) {
      tiptable <- lapply(1:36, function(g) {
-       c(g = g, g1 = sample(0:5,1), g2 = sample(0:5,1), kowinner = NA)
+       c(g = g, g1 = sample(0:5,1), g2 = sample(0:5, 1), kowinner = NA)
      })
      upsertTip(u, tiptable)
    })
@@ -208,7 +209,7 @@ insertRandomTips <- function() {
 insertRandomGameResults <- function() {
   con <- connectPostgresql()
   sapply(1:36, function(g) {
-    sql <- paste0("update game set regulartimegoals1 =", sample(0:5,1), ",regulartimegoals2 = ",sample(0:5,1), " WHERE gameid = ", g)
+    sql <- paste0("UPDATE game SET regulartimegoals1 =", sample(0:5, 1), ",regulartimegoals2 = ", sample(0:5, 1), " WHERE gameid = ", g)
     ret <- dbGetQuery(con, sql)
   })
   disconnectPostgresql(con)
