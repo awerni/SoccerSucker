@@ -243,7 +243,7 @@ BEGIN
   SELECT INTO rsWinner kowinner, rank() OVER (order by freq DESC) AS rank 
     FROM (SELECT count(*) AS freq, kowinner FROM tip GROUP BY kowinner) t ORDER BY rank LIMIT 1;
 
-  --DELETE FROM TIP WHERE gameid = theGameID AND username = 'average';
+  DELETE FROM TIP WHERE gameid = theGameID AND username = 'average';
   INSERT INTO tip (regulartimegoals1, regulartimegoals2, kowinner, gameid, username, tiptime) 
     VALUES (rsAvg.regulartimegoals1, rsAvg.regulartimegoals2, rsWinner.kowinner, theGameID, 'average', now());
   RETURN(TRUE);

@@ -33,6 +33,7 @@ USERNAME             TEXT                 not null,
 NAME                 TEXT                 null,
 FIRSTNAME            TEXT                 null,
 NATIONALITY          TEXT                 null,
+PASS                 TEXT                 null,
 constraint PK_PLAYER primary key (USERNAME)
 );
 
