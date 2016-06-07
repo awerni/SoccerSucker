@@ -138,15 +138,30 @@ getResultCross <- function() {
   list(data = tapply(data$points, list(data$name, data$gamename), sum), n = n)
 }
 
+getTipCross <- function() {
+  sql <- paste0("SELECT firstname || ' ' || name as name, nationality, ",
+                "to_char(tv.gameid, '00') || ' ' || team1 || '-' || team2 as gamename, ",
+                "tv.regulartimegoals1 - tv.regulartimegoals2 as diff FROM tipview tv JOIN game g ON g.gameid = tv.gameid ",
+                "JOIN player p on p.username = tv.username WHERE tv.regulartimegoals1 IS NOT NULL AND tv.regulartimegoals2 IS NOT NULL")
+  data <- getPostgresql(sql)
+  if (nrow(data) < 2) return(list(data = NULL, n = NULL))
+  dn <- unique(data[, c("name", "nationality")])
+  n <- dn$nationality
+  names(n) <- dn$name
+  list(data = tapply(data$diff, list(data$name, data$gamename), sum), n = n)
+}
+
 getHeatmap <- function(data) {
+  if (is.null(data$data)) return()
   pheatmap(data$data, cluster_cols = FALSE)
 }
 
-getPCA <- function(data) {
+getPCA <- function(data, mainTitle) {
+  if (is.null(data$data)) return()
   data$data <- apply(data$data, 2, function(x) ifelse(is.na(x), 0, x))
   pca <- prcomp(data$data)
   Nationality <- data$n[rownames(pca$x)]
-  p <- qplot(pca$x[,1], pca$x[,2], main = "Principle Component Analysis based on bet game points", 
+  p <- qplot(pca$x[,1], pca$x[,2], main = mainTitle, 
              xlab = "PCA1", ylab = "PCA2", label = rownames(pca$x)) 
   p + geom_point(aes(colour = Nationality), size = 6, alpha = 1) + geom_text(size = 4)
 }
