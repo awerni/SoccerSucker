@@ -41,8 +41,22 @@ CREATE TRIGGER checkTip
   ON tip
   FOR EACH ROW
     EXECUTE PROCEDURE checkTip();
+------------------------
+--DROP TRIGGER setAverage ON tip;
+--CREATE OR REPLACE FUNCTION setAverage() RETURNS "trigger" AS $$
+--BEGIN
+--  PERFORM updateMrAverage(NEW.gameid);
+--  RETURN NEW;
+--END;
+--$$ LANGUAGE 'plpgsql';
 
+--CREATE TRIGGER setAverage
+--  AFTER INSERT OR UPDATE
+--  ON tip
+--  FOR EACH ROW
+--    EXECUTE PROCEDURE setAverage();
 
+----------------------
 DROP TRIGGER addPoints ON game;
 CREATE OR REPLACE FUNCTION addPoints() RETURNS "trigger" AS $$
 BEGIN
