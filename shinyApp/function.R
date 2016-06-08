@@ -2,16 +2,12 @@ library(RPostgreSQL)
 library(pheatmap)
 library(ggplot2)
 
+source("settings.R")
+
 connectPostgresql <- function() {
   drv <- dbDriver("PostgreSQL")
-  dbConnect(drv, dbname = "EuroCup2016", host = "charlotte", user = "postgres", password = "")
-#  dbConnect(drv, dbname = "EuroCup2016", host = "vie-bio-postgres", user = "writer", password = "writer")
-#  dbConnect(drv,
-#            dbname   = 'dbname=hgkvdmno sslmode=require',
-#            host     = 'pellefant-02.db.elephantsql.com',
-#            port     = 5432,
-#            user     = 'hgkvdmno',
-#            password = 'ueeCqHhd5OH23ikLafFa3YRdiPA9bMgX')
+  dbConnect(drv, dbname = db$dbname, host = db$host, port = db$port, 
+                 user = db$user, password = db$password)
 }
 
 disconnectPostgresql <- function(con) {
