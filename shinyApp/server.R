@@ -135,6 +135,10 @@ shinyServer(function(input, output, session) {
     getResultCross()
   })
   
+  tipCross <- reactive({
+    getTipCross()
+  })
+    
   output$heatmap <- renderPlot({
     getHeatmap(resultCross())
   })
@@ -154,12 +158,20 @@ shinyServer(function(input, output, session) {
     getCumulativePlot(cumulativeResult(), input$numberOfTopPlayer)
   })
   
-  output$pca <- renderUI({
+  output$pcaPoints <- renderUI({
     plotOutput("topPCA", width = "100%", height = "600px")
   })
   
   output$topPCA <- renderPlot({
-    getPCA(resultCross())
+    getPCA(resultCross(), "Principle Component Analysis based on bet game points")
+  })
+  
+  output$pcaTips <- renderUI({
+    plotOutput("tipPCA", width = "100%", height = "600px")
+  })
+  
+  output$tipPCA <- renderPlot({
+    getPCA(tipCross(), "Principle Component Analysis based on tip similarity")
   })
   
 })
