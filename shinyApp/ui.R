@@ -20,7 +20,8 @@ shinyUI(fluidPage(
              tabPanel("Graphs", tabsetPanel(
                tabPanel("Heatmap", plotOutput("heatmap", width = "100%", height = "600px")),
                tabPanel("Line Ranking", uiOutput("rankingTab")),
-               tabPanel("PCA", uiOutput("pca"))
+               tabPanel("PCA Points", uiOutput("pcaPoints")),
+               tabPanel("PCA Tips", uiOutput("pcaTips"))
              )),
              tabPanel("Help", br(), helpText(helpGer), hr(), helpText(helpEng))
            )
