@@ -1,6 +1,7 @@
 library(shiny)
 library(shinyBS)
 library(RPostgreSQL)
+#library(DT)
 
 source("function.R")
 source("settings.R")
@@ -13,8 +14,23 @@ shinyServer(function(input, output, session) {
     getRanking()
   })
   
-  output$ranking = renderDataTable({ranking()}, options = list(pageLength = 10))
+  output$ranking <- renderDataTable({ranking()}, options = list(pageLength = 10))
 
+  teamranking <- reactive({
+    getTeamRanking()
+  })
+  
+  output$teamranking <- DT::renderDataTable({
+      datatable(teamranking(), rownames = FALSE, selection = "none", 
+                options = list(pageLength = 25)) %>% 
+      formatStyle('Group', backgroundColor = styleEqual(LETTERS[1:6], c('#f5fffa', '#fffacd', '#e6e6fa', 
+                                                                        '#faebd7', '#F0F8FF', '#cdc0b0'))
+      )
+    }
+  )
+  
+  output$missingbets <- renderDataTable({getMissingTips()}, options = list(pageLength = 10))
+  
   # ---- user handling -------
   #user <- reactiveValues(name = "qwe", registered = TRUE, knownuser = TRUE, fullname = getName("qwe"))
   user <- reactiveValues(name = "", registered = TRUE, knownuser = TRUE, fullname = "")
