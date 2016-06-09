@@ -47,6 +47,23 @@ getRanking <- function() {
   return(rank)
 }
 
+getTeamRanking <- function() {
+  sql <- paste0("SELECT rank() OVER (partition BY initialgroup ORDER BY ",
+                "points desc, goalsfor-goalsagainst desc, goalsfor desc, goalsagainst), ",
+                "team, uefaranking, initialgroup, played, won, draw, loss, ",
+                "goalsfor, goalsagainst, goalsfor - goalsagainst as goaldiff, points from groupphasetable")
+  teamrank <- getPostgresql(sql)
+  colnames(teamrank) <- c("Rank", "Team", "UEFA-Rank", "Group", "Games", "Won", "Draw", "Loss", "GF", "GA", "GD", "PTS")
+  return(teamrank)
+}
+
+getMissingTips <- function() {
+  sql <- paste0("select firstname, name, gameid, team1, team2, starttime FROM player p, game g WHERE ", 
+                "(select count(*) FROM tipview t WHERE t.username = p.username AND t.gameid = g.gameid) = 0 ",
+                "AND gametime(starttime) = 'soon' order by starttime")
+  getPostgresql(sql)
+}
+
 checkLogin <- function(user, pass) {
   if (is.null(user) | user == "") return(list(name = "", registered = TRUE, knownuser = TRUE))
   sql <- paste0("SELECT count(*) AS e FROM player WHERE username = '", user, "'")
