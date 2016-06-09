@@ -23,6 +23,10 @@ shinyUI(fluidPage(
                tabPanel("PCA Points", uiOutput("pcaPoints")),
                tabPanel("PCA Tips", uiOutput("pcaTips"))
              )),
+             tabPanel("Tables", tabsetPanel(
+               tabPanel("Missing Bets", dataTableOutput("missingbets")),
+               tabPanel("Team ranking", dataTableOutput("teamranking"))
+             )),
              tabPanel("Help", br(), helpText(helpGer), hr(), helpText(helpEng))
            )
     )
