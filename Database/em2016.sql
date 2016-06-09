@@ -42,7 +42,7 @@ constraint PK_PLAYER primary key (USERNAME)
 /*==============================================================*/
 create table TEAM (
 TEAM                 TEXT                 not null,
-FIFARANKING          INT2                 null,
+UEFARANKING          INT2                 null,
 INITIALGROUP         TEXT                 null,
 constraint PK_TEAM primary key (TEAM)
 );
