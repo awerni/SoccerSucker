@@ -1,4 +1,6 @@
 library(shiny)
+library(DT)
+
 source("settings.R")
 
 shinyUI(fluidPage(
@@ -9,12 +11,14 @@ shinyUI(fluidPage(
     column(2,
            img(src='GoStrong.png', width="200", align = "center"),
            hr(),
+           actionButton("refresh", label = "Refresh"),
+           hr(),
            h3(textOutput("user")),
            uiOutput("status")
     ),
     column(10,
            tabsetPanel(
-             tabPanel("Overall Ranking", dataTableOutput("ranking")),
+             tabPanel("Overall Ranking", DT::dataTableOutput("ranking")),
              tabPanel("Place Bets", uiOutput("placebets")),
              tabPanel("Check your results", uiOutput("yourresults")),
              tabPanel("Graphs", tabsetPanel(
@@ -24,8 +28,8 @@ shinyUI(fluidPage(
                tabPanel("PCA Tips", uiOutput("pcaTips"))
              )),
              tabPanel("Tables", tabsetPanel(
-               tabPanel("Missing Bets", dataTableOutput("missingbets")),
-               tabPanel("Team ranking", dataTableOutput("teamranking"))
+               tabPanel("Missing Bets", DT::dataTableOutput("missingbets")),
+               tabPanel("Team ranking", DT::dataTableOutput("teamranking"))
              )),
              tabPanel("Help", br(), helpText(helpGer), hr(), helpText(helpEng))
            )
