@@ -1,5 +1,7 @@
 loginText <- "Please log in with our office account."
 
+db <- list(dbname = "EuroCup2016", host = "myserver", port = 5432, user = "user", password = "pass")
+
 helpGer <- paste("Für den richtigen Sieger (1, 2 oder X) gibt es 3 Punkte, die richtige Tordifferenz", 
                  "einen Zusatzpunkt und für das exakt richtige Ergebnis einen weiteren Punkt.",
                  "Gewertet wird das Ergebnis nach der regulären Spielzeit (90 Minuten + Nachspielzeit).",

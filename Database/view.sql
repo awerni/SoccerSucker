@@ -17,7 +17,7 @@ SELECT p.username, name, firstname, nationality,
        LEFT OUTER JOIN (SELECT username, sum(points) AS kopoints, count(*) AS kogames, count(points) AS evalkogames FROM tipgame WHERE kogame GROUP BY username) AS t2 ON p.username = t2.username;
 
 CREATE OR REPLACE VIEW groupphasetable AS
-SELECT t.team, fifaranking, initialgroup, played, won, draw, loss, goalsfor, goalsagainst, points FROM team t JOIN getGamePoints(t.team) p ON t.team = p.team;
+SELECT t.team, uefaranking, initialgroup, played, won, draw, loss, goalsfor, goalsagainst, points FROM team t JOIN getGamePoints(t.team) p ON t.team = p.team;
 
 CREATE OR REPLACE VIEW nationstat AS
 SELECT avg(points) AS avgpoints, sum(points) AS sumpoints, count(points) AS tipgames,
