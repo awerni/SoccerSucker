@@ -60,7 +60,7 @@ getTeamRanking <- function() {
 getMissingTips <- function() {
   sql <- paste0("select firstname, name, gameid, team1, team2, starttime FROM player p, game g WHERE ", 
                 "(select count(*) FROM tipview t WHERE t.username = p.username AND t.gameid = g.gameid) = 0 ",
-                "AND gametime(starttime) = 'soon' order by starttime")
+                "AND username <> 'average' AND gametime(starttime) = 'soon' order by starttime")
   getPostgresql(sql)
 }
 
@@ -93,13 +93,13 @@ upsertTip <- function(user, tiptable) {
     tip <- dbGetQuery(con, sql)
     if (nrow(tip) == 0) {
       sql <- paste0("INSERT INTO tip (gameid, username, tiptime, regulartimegoals1, regulartimegoals2, kowinner) ",
-                    "VALUES (", gameid, ",'", user, "', now(), ", tipgoals1, ",", tipgoals2, ",", kowinner, ")")
+                    "VALUES (", gameid, ",'", user, "', now() AT TIME ZONE 'Europe/Paris', ", tipgoals1, ",", tipgoals2, ",", kowinner, ")")
       dbGetQuery(con, sql)
       return(1)
     } else {
       if ((tipgoals1 != tip$regulartimegoals1) | (tipgoals2 != tip$regulartimegoals2)) {
         sql <- paste0("UPDATE tip SET regulartimegoals1 = ", tipgoals1, ", regulartimegoals2 = ", tipgoals2, 
-                      ", kowinner = ", kowinner, ", tiptime = now() ",
+                      ", kowinner = ", kowinner, ", tiptime = now() AT TIME ZONE 'Europe/Paris'",
                       " WHERE username = '", user, "' AND gameid = ", gameid)
         dbGetQuery(con, sql)
         return(1)
@@ -120,7 +120,7 @@ getAllTips <- function(username) {
                "t.regulartimegoals1 as tipgoals1, t.regulartimegoals2 as tipgoals2, ",
                "city, starttime ",
                "FROM gameview g LEFT OUTER JOIN (SELECT * FROM tipview WHERE username = '",
-               username, "') t ON t.gameid = g.gameid WHERE starttime > now() ORDER BY gameid", sep ="")
+               username, "') t ON t.gameid = g.gameid WHERE starttime > now() AT TIME ZONE 'Europe/Paris' ORDER BY gameid", sep ="")
   tips <- getPostgresql(sql)
   tips$starttime <- format(tips$starttime,'%Y-%m-%d %H:%M')
   tips$tipgoals1 <- formatInput(tips$gameid, "1", tips$tipgoals1)
@@ -129,7 +129,7 @@ getAllTips <- function(username) {
 }
 
 getFutureGames <- function() {
-  getPostgresql("SELECT gameid, kogame FROM game WHERE starttime > now()")
+  getPostgresql("SELECT gameid, kogame FROM game WHERE starttime > now() AT TIME ZONE 'Europe/Paris'")
 }
 
 formatInput <- function(gameid, team, goals) {
