@@ -4,11 +4,13 @@ DECLARE
   rsGame record;
   isKogame BOOL;
 BEGIN
-  SELECT INTO rsGame kogame, starttime < now() as started FROM game WHERE gameid = NEW.gameid;
+  SELECT INTO rsGame kogame, starttime < now() AT TIME ZONE 'Europe/Paris' as started FROM game WHERE gameid = NEW.gameid;
 
   IF rsGame.started THEN
     RETURN OLD;
   END IF;
+
+  SELECT INTO NEW.tiptime now() AT TIME ZONE 'Europe/Paris'; 
 
   IF rsGame.kogame THEN
     IF (NEW.regulartimegoals1 > NEW.regulartimegoals2) THEN
