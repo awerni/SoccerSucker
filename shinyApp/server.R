@@ -177,6 +177,14 @@ shinyServer(function(input, output, session) {
     getCumulativePlot(cumulativeResult(), input$numberOfTopPlayer)
   })
   
+  output$nationplot <- renderUI({
+    plotOutput("nationboxplot", width = "100%", height = "600px")
+  })
+  
+  output$nationboxplot <- renderPlot({
+    getNationPlot(ranking())
+  })
+  
   output$pcaPoints <- renderUI({
     plotOutput("topPCA", width = "100%", height = "600px")
   })
