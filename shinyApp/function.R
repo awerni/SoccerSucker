@@ -166,6 +166,7 @@ getTipCross <- function() {
 
 getHeatmap <- function(data) {
   if (is.null(data$data)) return()
+  data$data <- data$data[apply(data$data, 1, function(x) sum(ifelse(is.na(x), 1, 0))) <= 3,]
   pheatmap(data$data, cluster_cols = FALSE)
 }
 
@@ -177,6 +178,15 @@ getPCA <- function(data, mainTitle) {
   p <- qplot(pca$x[,1], pca$x[,2], main = mainTitle, 
              xlab = "PCA1", ylab = "PCA2", label = rownames(pca$x)) 
   p + geom_point(aes(colour = Nationality), size = 6, alpha = 1) + geom_text(size = 4)
+}
+
+getNationPlot <- function(data) {
+  data$totalpoints <- data$'Total Points'
+  #p <- qplot(factor(Nationality), total, data = data, fill = Nationality, geom = "boxplot")
+  #p <- p + geom_point(aes(colour = Nationality), size = 6, alpha = 1) 
+  #p + geom_text(size = 8, label = "hello")
+  p <- ggplot(data, aes(factor(Nationality), totalpoints)) + geom_boxplot(aes(fill = Nationality))
+  p + coord_flip()
 }
 
 getPlayerResult <- function(username) {
