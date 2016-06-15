@@ -24,6 +24,7 @@ shinyUI(fluidPage(
              tabPanel("Graphs", tabsetPanel(
                tabPanel("Heatmap", plotOutput("heatmap", width = "100%", height = "600px")),
                tabPanel("Line Ranking", uiOutput("rankingTab")),
+               tabPanel("Nationality", uiOutput("nationplot")),
                tabPanel("PCA Points", uiOutput("pcaPoints")),
                tabPanel("PCA Tips", uiOutput("pcaTips"))
              )),
