@@ -30,6 +30,7 @@ shinyUI(fluidPage(
              )),
              tabPanel("Tables", tabsetPanel(
                tabPanel("Missing Bets", DT::dataTableOutput("missingbets")),
+               tabPanel("Latest games", uiOutput("latestGames")),
                tabPanel("Team ranking", DT::dataTableOutput("teamranking"))
              )),
              tabPanel("Help", br(), helpText(helpGer), hr(), helpText(helpEng))
