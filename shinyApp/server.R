@@ -27,11 +27,15 @@ shinyServer(function(input, output, session) {
       )
     }
   )
+  missingTips <- reactive({
+    input$refresh
+    getMissingTips()
+  })
   
-  output$missingbets <- DT::renderDataTable({getMissingTips()}, rownames = FALSE, options = list(pageLength = 10))
+  output$missingbets <- DT::renderDataTable({missingTips()}, rownames = FALSE, options = list(pageLength = 10))
   
   # ---- user handling -------
-  #user <- reactiveValues(name = "qwe", registered = TRUE, knownuser = TRUE, fullname = getName("qwe"))
+  #user <- reactiveValues(name = "wernitzn", registered = TRUE, knownuser = TRUE, fullname = getName("qwe"))
   user <- reactiveValues(name = "", registered = TRUE, knownuser = TRUE, fullname = "")
 
   observeEvent(input$login, {
@@ -200,5 +204,16 @@ shinyServer(function(input, output, session) {
   output$tipPCA <- renderPlot({
     getPCA(tipCross(), "Principle Component Analysis based on tip similarity")
   })
+
+  output$latestGames <- renderUI({
+    list(
+      sliderInput("numberOfGames", "Show only latest n games:", min = 1, max = getReadyGames(), step = 1, value = 1),
+      DT::dataTableOutput("lastGames", width = "100%", height = "500px")
+    )
+  })
   
+  output$lastGames <- DT::renderDataTable({
+    getRankingLastGames(input$numberOfGames)
+    }, rownames = FALSE, options = list(pageLength = 10)
+  )
 })
