@@ -34,7 +34,7 @@ getNumberOfPlayers <- function() {
 }
 
 getRanking <- function() {
-  sql <- paste("SELECT rank() over (ORDER BY grouppoints desc), firstname, name, ",
+  sql <- paste("SELECT rank() over (ORDER BY grouppoints + kopoints desc), firstname, name, ",
                "nationality, grouppoints + kopoints AS points, grouppoints, kopoints, ",
                "evalgroupgames + evalkogames AS games, ",
                "CASE WHEN evalgroupgames + evalkogames = 0 THEN 0 ",
@@ -44,6 +44,17 @@ getRanking <- function() {
   rank$pointspergame <- signif(rank$pointspergame, digits = 2)
   colnames(rank) <- c("Rank", "Firstname", "Name", "Nationality", "Total Points", "Group-Points", 
                       "KO-Points", "Games", "Points/Game")
+  return(rank)
+}
+
+getRankingLastGames <- function(nGames) {
+  sql <- paste("SELECT rank() OVER (order by sum(points) desc), firstname, name, nationality, sum(points) as points ",
+               "FROM tipview NATURAL JOIN player WHERE gameid > ",
+               "(SELECT max(gameid) as g FROM game ",
+               "WHERE regulartimegoals1 IS NOT NULL AND regulartimegoals2 IS NOT NULL) -", nGames, 
+               "GROUP BY name, firstname, nationality;")
+  rank <- getPostgresql(sql)
+  colnames(rank) <- c("Rank", "Firstname", "Name", "Nationality", "Points")
   return(rank)
 }
 
@@ -120,7 +131,8 @@ getAllTips <- function(username) {
                "t.regulartimegoals1 as tipgoals1, t.regulartimegoals2 as tipgoals2, ",
                "city, starttime ",
                "FROM gameview g LEFT OUTER JOIN (SELECT * FROM tipview WHERE username = '",
-               username, "') t ON t.gameid = g.gameid WHERE starttime > now() AT TIME ZONE 'Europe/Paris' ORDER BY gameid", sep ="")
+               username, "') t ON t.gameid = g.gameid ",
+               "WHERE starttime > now() AT TIME ZONE 'Europe/Paris' ORDER BY gameid", sep ="")
   tips <- getPostgresql(sql)
   tips$starttime <- format(tips$starttime,'%Y-%m-%d %H:%M')
   tips$tipgoals1 <- formatInput(tips$gameid, "1", tips$tipgoals1)
@@ -231,6 +243,11 @@ getCumulativePlot <- function(data, numPlayer) {
   p + geom_point() + theme(text = element_text(size = 20))
 }
 
+getReadyGames <- function() {
+  sql <- paste0("SELECT max(gameid) as g FROM game ",
+                "WHERE regulartimegoals1 IS NOT NULL AND regulartimegoals2 IS NOT NULL")
+  getPostgresql(sql)$g
+}
 # -------------------------------
 
 insertRandomTips <- function() {
