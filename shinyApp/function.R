@@ -194,11 +194,9 @@ getPCA <- function(data, mainTitle) {
 
 getNationPlot <- function(data) {
   data$totalpoints <- data$'Total Points'
-  #p <- qplot(factor(Nationality), total, data = data, fill = Nationality, geom = "boxplot")
-  #p <- p + geom_point(aes(colour = Nationality), size = 6, alpha = 1) 
-  #p + geom_text(size = 8, label = "hello")
   p <- ggplot(data, aes(factor(Nationality), totalpoints)) + geom_boxplot(aes(fill = Nationality))
-  p + coord_flip()
+  p <- p + scale_x_discrete(name = "") + scale_y_continuous(name = "Total Points")
+  p + coord_flip() + theme(text = element_text(size = 20))
 }
 
 getPlayerResult <- function(username) {
