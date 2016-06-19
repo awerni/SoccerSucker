@@ -207,7 +207,7 @@ shinyServer(function(input, output, session) {
 
   output$latestGames <- renderUI({
     list(
-      sliderInput("numberOfGames", "Show only latest n games:", min = 1, max = getReadyGames(), step = 1, value = 1),
+      sliderInput("numberOfGames", "Show n latest games:", min = 1, max = getReadyGames(), step = 1, value = 1),
       DT::dataTableOutput("lastGames", width = "100%", height = "500px")
     )
   })
