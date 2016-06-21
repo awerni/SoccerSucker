@@ -49,7 +49,7 @@ getRanking <- function() {
 
 getRankingLastGames <- function(nGames) {
   sql <- paste0("SELECT rank() OVER (order by sum(points) desc), firstname, name, nationality, sum(points) as points ",
-                "FROM tipview tv full JOIN player p on tv.username = p.username WHERE gameid > ",
+                "FROM tipview tv JOIN player p on tv.username = p.username WHERE points IS NOT NULL AND gameid > ",
                 "(SELECT max(gameid) as g FROM game ",
                 "WHERE regulartimegoals1 IS NOT NULL AND regulartimegoals2 IS NOT NULL) -", nGames, 
                 " GROUP BY name, firstname, nationality")
