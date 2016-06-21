@@ -35,7 +35,7 @@ shinyServer(function(input, output, session) {
   output$missingbets <- DT::renderDataTable({missingTips()}, rownames = FALSE, options = list(pageLength = 10))
   
   # ---- user handling -------
-  #user <- reactiveValues(name = "wernitzn", registered = TRUE, knownuser = TRUE, fullname = getName("qwe"))
+  #user <- reactiveValues(name = "wernitzn", registered = TRUE, knownuser = TRUE, fullname = getName("wernitzn"))
   user <- reactiveValues(name = "", registered = TRUE, knownuser = TRUE, fullname = "")
 
   observeEvent(input$login, {
@@ -105,6 +105,7 @@ shinyServer(function(input, output, session) {
   observe({
     isolate({
       output$bet <-renderTable({
+        input$refresh
         getAllTips(user$name)
       }, include.rownames = FALSE, sanitize.text.function = function(x) x)
     })
@@ -114,17 +115,20 @@ shinyServer(function(input, output, session) {
     games <- getFutureGames()
     fb <- 0
     n <- as.numeric(NA)
-    tiptable <- lapply(games$gameid, function(g) {
+    tiptable <- lapply(1:nrow(games), function(n) {
+        g <- games[n, "gameid"]
+        k <- games[n, "kogame"]
         g1 <- input[[paste0("g", g, "t1")]]
         g2 <- input[[paste0("g", g, "t2")]]
-        if (!is.na(g1) & !is.na(g2)) c(g = g, g1 = g1, g2 = g2, kowinner = NA)
+        kow <- ifelse(k, input[[paste0("g", g, "w")]], NA)
+        if (!is.na(g1) & !is.na(g2)) c(g = g, g1 = g1, g2 = g2, kowinner = kow)
         else NULL
       }
     )
     tiptable <- tiptable[!sapply(tiptable, is.null)]
     
     if (length(tiptable) > 0) {
-      fb <- upsertTip(user$name, tiptable)
+      fb <- upsertTip2(user$name, tiptable)
       mytext <- ifelse(fb <= 1, paste(fb, "bet saved."), paste(fb, "bets saved."))
     } else mytext <- "Please enter something"
     session$sendCustomMessage(type = 'savemessage',
