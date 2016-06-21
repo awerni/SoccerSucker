@@ -1,4 +1,4 @@
-loginText <- "Please log in with our office account."
+loginText <- "Please log in with your account."
 
 db <- list(dbname = "EuroCup2016", host = "myserver", port = 5432, user = "user", password = "pass")
 

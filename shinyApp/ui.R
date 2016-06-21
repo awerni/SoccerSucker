@@ -24,11 +24,13 @@ shinyUI(fluidPage(
              tabPanel("Graphs", tabsetPanel(
                tabPanel("Heatmap", plotOutput("heatmap", width = "100%", height = "600px")),
                tabPanel("Line Ranking", uiOutput("rankingTab")),
+               tabPanel("Nationality", uiOutput("nationplot")),
                tabPanel("PCA Points", uiOutput("pcaPoints")),
                tabPanel("PCA Tips", uiOutput("pcaTips"))
              )),
              tabPanel("Tables", tabsetPanel(
                tabPanel("Missing Bets", DT::dataTableOutput("missingbets")),
+               tabPanel("Latest games", uiOutput("latestGames")),
                tabPanel("Team ranking", DT::dataTableOutput("teamranking"))
              )),
              tabPanel("Help", br(), helpText(helpGer), hr(), helpText(helpEng))
