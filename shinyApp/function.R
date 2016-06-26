@@ -99,17 +99,17 @@ upsertTip <- function(user, tiptable) {
     tipgoals1 <- tt[["g1"]]
     tipgoals2 <- tt[["g2"]]
     kowinner <- ifelse(is.na(tt[["kowinner"]]), "NULL", tt[["kowinner"]])
-    sql <- paste0("SELECT regulartimegoals1, regulartimegoals2, kowinner ",
+    sql <- paste0("SELECT goals1, goals2, kowinner ",
                   "FROM tip WHERE username = '", user, "' AND gameid = ", gameid)
     tip <- dbGetQuery(con, sql)
     if (nrow(tip) == 0) {
-      sql <- paste0("INSERT INTO tip (gameid, username, tiptime, regulartimegoals1, regulartimegoals2, kowinner) ",
+      sql <- paste0("INSERT INTO tip (gameid, username, tiptime, goals1, goals2, kowinner) ",
                     "VALUES (", gameid, ",'", user, "', now() AT TIME ZONE 'Europe/Paris', ", tipgoals1, ",", tipgoals2, ",", kowinner, ")")
       dbGetQuery(con, sql)
       return(1)
     } else {
-      if ((tipgoals1 != tip$regulartimegoals1) | (tipgoals2 != tip$regulartimegoals2)) {
-        sql <- paste0("UPDATE tip SET regulartimegoals1 = ", tipgoals1, ", regulartimegoals2 = ", tipgoals2, 
+      if ((tipgoals1 != tip$goals1) | (tipgoals2 != tip$goals2)) {
+        sql <- paste0("UPDATE tip SET goals1 = ", tipgoals1, ", goals2 = ", tipgoals2, 
                       ", kowinner = ", kowinner, ", tiptime = now() AT TIME ZONE 'Europe/Paris'",
                       " WHERE username = '", user, "' AND gameid = ", gameid)
         dbGetQuery(con, sql)
@@ -145,10 +145,10 @@ getName <- function(user) {
 
 getAllTips <- function(username) {
   sql <- paste0("SELECT g.gameid, g.team1, g.team2, g.kogame, ",
-               "t.regulartimegoals1 as tipgoals1, t.regulartimegoals2 as tipgoals2, t.kowinner, ",
+               "tv.goals1 as tipgoals1, tv.goals2 as tipgoals2, tv.kowinner, ",
                "city, starttime ",
                "FROM gameview g LEFT OUTER JOIN (SELECT * FROM tipview WHERE username = '",
-               username, "') t ON t.gameid = g.gameid ",
+               username, "') tv ON tv.gameid = g.gameid ",
                "WHERE starttime > now() AT TIME ZONE 'Europe/Paris' ORDER BY gameid")
   tips <- getPostgresql(sql)
   tips$starttime <- format(tips$starttime,'%Y-%m-%d %H:%M')
@@ -179,7 +179,8 @@ formatInputKO <- function(gameid, winner, kogame) {
 getResultCross <- function() {
   sql <- paste0("SELECT firstname || ' ' || name as name, nationality, ",
                 "to_char(tv.gameid, '00') || ' ' || team1 || '-' || team2 ",
-                "|| ' (' || g.regulartimegoals1 || ':' || g.regulartimegoals2 || ')' as gamename, ",
+                "|| ' (' || COALESCE(g.overtimegoals1, g.regulartimegoals1) || ':' || ",
+                "COALESCE(g.overtimegoals2, g.regulartimegoals2) || ')' as gamename, ",
                 "points FROM tipview tv JOIN game g ON g.gameid = tv.gameid ",
                 "JOIN player p on p.username = tv.username WHERE points IS NOT NULL")
   data <- getPostgresql(sql)
@@ -193,8 +194,8 @@ getResultCross <- function() {
 getTipCross <- function() {
   sql <- paste0("SELECT firstname || ' ' || name as name, nationality, ",
                 "to_char(tv.gameid, '00') || ' ' || team1 || '-' || team2 as gamename, ",
-                "tv.regulartimegoals1 - tv.regulartimegoals2 as diff FROM tipview tv JOIN game g ON g.gameid = tv.gameid ",
-                "JOIN player p on p.username = tv.username WHERE tv.regulartimegoals1 IS NOT NULL AND tv.regulartimegoals2 IS NOT NULL")
+                "tv.goals1 - tv.goals2 as diff FROM tipview tv JOIN game g ON g.gameid = tv.gameid ",
+                "JOIN player p on p.username = tv.username WHERE tv.goals1 IS NOT NULL AND tv.goals2 IS NOT NULL")
   data <- getPostgresql(sql)
   if (nrow(data) < 2) return(list(data = NULL, n = NULL))
   dn <- unique(data[, c("name", "nationality")])
@@ -205,8 +206,8 @@ getTipCross <- function() {
 
 getHeatmap <- function(data) {
   if (is.null(data$data)) return()
-  data$data <- data$data[apply(data$data, 1, function(x) sum(ifelse(is.na(x), 1, 0))) <= 3,]
-  pheatmap(data$data, cluster_cols = FALSE)
+  data$data <- data$data[apply(data$data, 1, function(x) sum(ifelse(is.na(x), 1, 0))) <= 20,]
+  pheatmap(data$data, color = c("#cccccc", colorRampPalette(c("blue", "yellow", "red"))(12)), cluster_cols = FALSE)
 }
 
 getPCA <- function(data, mainTitle) {
@@ -228,7 +229,7 @@ getNationPlot <- function(data) {
 
 getPlayerResult <- function(username) {
   sql <- paste0("SELECT tv.gameid as game, team1 || '-' || team2 AS teams, starttime as time, ",
-                "tv.regulartimegoals1 || ':' || tv.regulartimegoals2 as tip, ",
+                "tv.goals1 || ':' || tv.goals2 as tip, ",
                 "g.regulartimegoals1 || ':' || g.regulartimegoals2 as result, ",
                 "winner, points FROM tipview tv JOIN game g ON g.gameid = tv.gameid ",
                 "JOIN player p on p.username = tv.username ",
@@ -277,9 +278,21 @@ getReadyGames <- function() {
 
 insertRandomTips <- function() {
    user <- getPostgresql("SELECT username FROM player")$username
+   gameids <- getPostgresql("SELECT gameid FROM game WHERE NOT kogame")$gameid
    sapply(user, function(u) {
-     tiptable <- lapply(1:36, function(g) {
+     tiptable <- lapply(gameids, function(g) {
        c(g = g, g1 = sample(0:5,1), g2 = sample(0:5, 1), kowinner = NA)
+     })
+     upsertTip(u, tiptable)
+   })
+   gameids <- getPostgresql("SELECT gameid FROM game WHERE kogame")$gameid
+   sapply(user, function(u) {
+     tiptable <- lapply(gameids, function(g) {
+       g1tip <- sample(0:5,1)
+       g2tip <- sample(0:5,1)
+       kow <- ifelse(g1tip > g2tip, 1, 2)
+       if (g1tip == g2tip) kow = sample(1:2, 1)
+       c(g = g, g1 = g1tip, g2 = g2tip, kowinner = kow)
      })
      upsertTip(u, tiptable)
    })
