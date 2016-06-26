@@ -1,9 +1,9 @@
 CREATE OR REPLACE VIEW gameview AS
-SELECT *, winner(regulartimegoals1, NULL, NULL, regulartimegoals2, NULL, NULL, TRUE) AS winner,
+SELECT *, winner(regulartimegoals1, overtimegoals1, NULL, regulartimegoals2, overtimegoals2, NULL, TRUE) AS winner,
 winner(regulartimegoals1, overtimegoals1, penaltygoals1, regulartimegoals2, overtimegoals2, penaltygoals2, kogame) AS kowinner FROM game;
 
 CREATE OR REPLACE VIEW tipview AS
-SELECT *, winner(regulartimegoals1, NULL, NULL, regulartimegoals2, NULL, NULL, TRUE) AS winner FROM tip;
+SELECT *, winner(goals1, NULL, NULL, goals2, NULL, NULL, TRUE) AS winner FROM tip;
 
 CREATE OR REPLACE view tipgame AS
 SELECT t.gameid, t.username, t.points, g.kogame FROM tip t JOIN game g ON (t.gameid = g.gameid);
