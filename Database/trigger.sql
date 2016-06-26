@@ -13,11 +13,11 @@ BEGIN
   SELECT INTO NEW.tiptime now() AT TIME ZONE 'Europe/Paris'; 
 
   IF rsGame.kogame THEN
-    IF (NEW.regulartimegoals1 > NEW.regulartimegoals2) THEN
+    IF (NEW.goals1 > NEW.goals2) THEN
       NEW.kowinner := '1';
       RETURN NEW;
     END IF;
-    IF (NEW.regulartimegoals1 < NEW.regulartimegoals2) THEN
+    IF (NEW.goals1 < NEW.goals2) THEN
       NEW.kowinner := '2';
       RETURN NEW;
     END IF;
