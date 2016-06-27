@@ -26,7 +26,8 @@ shinyUI(fluidPage(
                tabPanel("Line Ranking", uiOutput("rankingTab")),
                tabPanel("Nationality", uiOutput("nationplot")),
                tabPanel("PCA Points", uiOutput("pcaPoints")),
-               tabPanel("PCA Tips", uiOutput("pcaTips"))
+               tabPanel("PCA Tips", uiOutput("pcaTips")),
+               tabPanel("Bet Statistics", plotOutput("betstat", width = "100%", height = "400px"), textOutput("betstatdesc"))
              )),
              tabPanel("Tables", tabsetPanel(
                tabPanel("Missing Bets", DT::dataTableOutput("missingbets")),
