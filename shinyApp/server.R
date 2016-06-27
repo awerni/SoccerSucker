@@ -220,4 +220,9 @@ shinyServer(function(input, output, session) {
     getRankingLastGames(input$numberOfGames)
     }, rownames = FALSE, options = list(pageLength = 10)
   )
+  
+  output$betstatdesc <- renderText(betstatdesc)
+  output$betstat <- renderPlot({
+    getBetStat()
+  })
 })
