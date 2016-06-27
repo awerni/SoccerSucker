@@ -274,6 +274,20 @@ getReadyGames <- function() {
                 "WHERE regulartimegoals1 IS NOT NULL AND regulartimegoals2 IS NOT NULL")
   getPostgresql(sql)$g
 }
+
+getBetStat <- function() {
+  sql <- paste("SELECT count(*), sum(points), sum(points)::FLOAT4/count(*) AS avgpoints,",
+               "winner, kowinner IS NOT NULL AS kogame FROM tipview",
+               "WHERE points IS NOT NULL GROUP BY winner, kowinner IS NOT NULL")
+  data <- getPostgresql(sql)
+  data$game <- ifelse(data$kogame, "KO-Game", "Group-Phase-Game")
+  p <- ggplot(data, aes(winner, avgpoints, fill = game)) + geom_bar(stat="identity", position="dodge")
+  p <- p + theme(text = element_text(size = 20))
+  p + geom_text(data = data, aes(winner, avgpoints, group = game, 
+                                 label = paste("# =", count, "\nsum =", sum, "\navg =", round(avgpoints, 2))),
+                vjust=1.5, position=position_dodge(.9), size = 4)
+}
+
 # -------------------------------
 
 insertRandomTips <- function() {
