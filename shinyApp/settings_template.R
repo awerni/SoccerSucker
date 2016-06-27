@@ -22,3 +22,6 @@ helpEng <- paste("For the correct winner (1, 2, or X) there are 3 points to earn
                  "If you bet for a draw, you have to vote for a winner in addition. For the correct guess",
                  "you gain 2 extra points. These extra points are also added, if you choose the correct",
                  "winner after the regular time or overtime.")
+
+betstatdesc <- paste("This plot shows the average points players earned with their bets for team1 (1), team2 (2) or a draw (X) in the",
+                     "KO-phase and group phase of the tournament.")
