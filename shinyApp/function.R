@@ -287,6 +287,42 @@ getBetStat <- function() {
                                  label = paste("# =", count, "\nsum =", sum, "\navg =", round(avgpoints, 2))),
                 vjust=1.5, position=position_dodge(.9), size = 4)
 }
+# -------- translations ---------
+labeltrans <- list(refresh = list(en = "refresh", de = "erfrischen"),
+                   overallranking = list(en = "Overall Ranking", de = "Gesamtrangliste"),
+                   placebets = list(en = "Place Bets", de = "Wetten"),
+                   checkyourresults = list(en = "Check your results", de = "Überprüfe die Ergebnisse"),
+                   graph = list(en = "Graph", de = "Grafik"),
+                   heatmap = list(en = "Heatmap", de = "Hitzekarte"),
+                   lineranking = list(en="Line Ranking", de = "Linienrangfolge"),
+                   nationality = list(en = "Nationality", de = "Nationalität"),
+                   pcapoints = list(en = "PCA Points", de = "HKA Punkte"),
+                   pcatips = list(en = "PCA Tips", de = "HKA Tipps"),
+                   betstatistics = list(en = "Bet Statistics", de = "Wettstatistik"), 
+                   tables = list(en = "Tables", de = "Tabellen"),
+                   missingbets = list(en = "Missing Bets", de = "Fehlende Wetten"),
+                   latestgames = list(en = "Latest games", de = "Letzte Spiele"),
+                   teamranking = list(en = "Team ranking", de = "Mannschaftsrangliste"),
+                   help = list(en = "Help", de = "Hilfe"),
+                   login = list(en = "Login", de = "Einloggen"),
+                   logout = list(en = "Logout", de = "Ausloggen"),
+                   username = list(en = "Username:", de = "Benutzername:"),
+                   password = list(en = "Password:", de = "Passwort:"),
+                   firstname = list(en = "First name:", de = "Vorname:"),
+                   surname = list(en = "Surname:", de = "Nachname:"),
+                   register = list(en = "Register", de = "Registrieren"),
+                   usernotregistered = list(en = "User not registered.", de = "Benutzer nicht registriert."),
+                   wrongpassword = list(en = "Wrong password.", de = "Falsches Password."),
+                   save = list(en = "Save", de = "Speichern"),
+                   betstatdesc = list(en = paste("This plot shows the average points players got for their bets",
+                                                 "for team1 (1), team2 (2) or draws (X) in the",
+                                                 "KO-phase and group phase, respectively of the tournament."), 
+                                      de = paste("Diese Grafik zeigt die durschnittlichen Punkte, die Spieler",
+                                                 "für Ihre Wette für Mannschaft1 (1), Mannschaft2 (2) oder für ein Unentschieden (X)",
+                                                 "in der Gruppenphase bzw. in der KO-Phase des Turniers bekommen haben."))
+                   )
+
+trans <- function(keyword) labeltrans[[keyword]][[lang]]
 
 # -------------------------------
 
