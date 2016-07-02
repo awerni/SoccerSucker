@@ -51,3 +51,5 @@
 update game set halftimegoals1 = 1, halftimegoals2 = 1, regulartimegoals1 = 1, regulartimegoals2 = 1, overtimegoals1 = 1, overtimegoals2 = 1, penaltygoals1 = 3, penaltygoals2 = 5 where gameid = 45;
 
 update game set halftimegoals1 = 1, halftimegoals2 = 1, regulartimegoals1 = 3, regulartimegoals2 = 1 WHERE gameid = 46;
+
+update game set halftimegoals1 = 1, halftimegoals2 = 0, regulartimegoals1 = 1, regulartimegoals2 = 1, overtimegoals1 = 1, overtimegoals2 = 1, penaltygoals1 = 6, penaltygoals2 = 5 where gameid = 47;
