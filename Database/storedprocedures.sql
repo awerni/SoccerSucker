@@ -151,23 +151,6 @@ $$
 LANGUAGE plpgsql;
 
 -----------------------------------------------------
-CREATE OR REPLACE FUNCTION sumWithNULL(n1 INT8, n2 INT8) RETURNS INT8 AS $$
-DECLARE
-  mysum INT8;
-BEGIN
-  mysum := 0;
-  IF n1 IS NOT NULL THEN
-    mysum := mysum + n1;
-  END IF;
-  IF n2 IS NOT NULL THEN
-    mysum := mysum + n2;
-  END IF;
-  RETURN (mysum);
-END;
-$$
-LANGUAGE plpgsql;
-
------------------------------------------------------
 CREATE OR REPLACE FUNCTION NULLtoZero(n INT8) RETURNS INT8 AS $$
 DECLARE
   mysum INT8;
