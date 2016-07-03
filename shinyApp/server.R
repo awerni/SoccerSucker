@@ -225,4 +225,10 @@ shinyServer(function(input, output, session) {
   output$betstat <- renderPlot({
     getBetStat()
   })
+  
+  output$pointsperteamdesc <- renderText(trans("pointsperteamdesc"))
+  output$pointsperteam <- renderPlot({
+    getTeamBetPoints()
+  })
+  
 })
