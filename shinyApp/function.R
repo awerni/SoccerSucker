@@ -50,8 +50,8 @@ getRanking <- function() {
 getRankingLastGames <- function(nGames) {
   sql <- paste0("SELECT rank() OVER (order by sum(points) desc), firstname, name, nationality, sum(points) as points ",
                 "FROM tipview tv JOIN player p on tv.username = p.username WHERE points IS NOT NULL AND gameid > ",
-                "(SELECT max(gameid) as g FROM game ",
-                "WHERE regulartimegoals1 IS NOT NULL AND regulartimegoals2 IS NOT NULL) -", nGames, 
+                "(SELECT max(gameid) as g FROM tipview ",
+                "WHERE points IS NOT NULL) -", nGames, 
                 " GROUP BY name, firstname, nationality")
   rank <- getPostgresql(sql)
   colnames(rank) <- c("Rank", "Firstname", "Name", "Nationality", "Points")
@@ -319,10 +319,49 @@ labeltrans <- list(refresh = list(en = "refresh", de = "erfrischen"),
                                                  "KO-phase and group phase, respectively of the tournament."), 
                                       de = paste("Diese Grafik zeigt die durschnittlichen Punkte, die Spieler",
                                                  "für Ihre Wette für Mannschaft1 (1), Mannschaft2 (2) oder für ein Unentschieden (X)",
-                                                 "in der Gruppenphase bzw. in der KO-Phase des Turniers bekommen haben."))
+                                                 "in der Gruppenphase bzw. in der KO-Phase des Turniers bekommen haben.")),
+                   pointsperteam = list(en = "Points per Team", de = "Punkte pro Mannschaft"),
+                   pointsperteamdesc = list(en = paste("This plot shows which team is the source of points for players.",
+                                                       "If a team fullfils the expectations of the players of our betting game",
+                                                       "the average points per game are high, regardless if they win or loose.",
+                                                       "Since the group phase games provide fewer points, the KO-phase games",
+                                                       "are displayed seperately.",
+                                                       "Only the teams, which made it to the KO-phase, have two bars.",
+                                                       "The little number on the bar shows the number of games."),
+                                            de = paste("Diese Grafik zeigt, welche Fußballmannschaft Punktequelle in unserem",
+                                                       "Wettspiel ist. Wenn ein Team die Erwartungen der Wettspieler erfüllt,",
+                                                       "sind die Durchschnittspunkte pro Spiel hoch, egal ob die Mannschaft",
+                                                       "verloren oder gewonnen hat. Da in der KO-Phase mehr Punkte pro Spiel",
+                                                       "vergeben werden, sind die Gruppen- und KO-Phase getrennt dargestellt. Nur", 
+                                                       "die Mannschaften, die es in die KO-Phase geschafft haben, haben zwei Balken.",
+                                                       "Die kleine Zahl am Balken zeigt die Anzahl der Spiele."))
                    )
 
 trans <- function(keyword) labeltrans[[keyword]][[lang]]
+
+getGameResult <- function(gameid) {
+  h <- new_handle()
+  handle_setheaders(h, "X-Auth-Token" = footballdatakey)
+  req <- curl_fetch_memory("http://api.football-data.org/v1/soccerseasons/424", handle = h)
+  d <- fromJSON(rawToChar(req$content))
+}
+
+getTeamBetPoints <- function() {
+  #myClause <- ifelse(kogame, " NOT ", "")
+  sql <- paste0("SELECT sum(points)/count(distinct(gameid)) AS avgpoints, sum(points), ",
+                "count(distinct(gameid)) as games, team, kogame FROM ",
+                "(SELECT points, team1 AS team, tv.gameid, kogame FROM tipview tv join gameview gv ON tv.gameid = gv.gameid ",
+                "union all ",
+                "SELECT points, team2 AS team, tv.gameid, kogame FROM tipview tv join gameview gv ON tv.gameid = gv.gameid) t ",
+                "GROUP BY team, kogame ORDER BY avgpoints desc;")
+  data <- getPostgresql(sql)
+  data$game <- ifelse(data$kogame, "KO-Game", "Group-Phase-Game")
+  p <- ggplot(data, aes(team, avgpoints, fill = game)) + geom_bar(stat="identity", position="dodge")
+  p <- p + theme(text = element_text(size = 16), axis.text.x = element_text(angle = 90, hjust = 1, vjust = +0.5))
+  p <- p + scale_y_continuous(name="Average Points per Game")
+  p + geom_text(data = data, aes(team, avgpoints, group = game, label = games), 
+                vjust=1.5, position=position_dodge(.9), size = 4) 
+  }
 
 # -------------------------------
 
