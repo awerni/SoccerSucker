@@ -2,6 +2,7 @@ library(shiny)
 library(DT)
 
 source("settings.R")
+source("function.R")
 
 shinyUI(fluidPage(
   
@@ -27,7 +28,8 @@ shinyUI(fluidPage(
                tabPanel(trans("nationality"), uiOutput("nationplot")),
                tabPanel(trans("pcapoints"), uiOutput("pcaPoints")),
                tabPanel(trans("pcatips"), uiOutput("pcaTips")),
-               tabPanel(trans("betstatistics"), plotOutput("betstat", width = "100%", height = "400px"), textOutput("betstatdesc"))
+               tabPanel(trans("betstatistics"), plotOutput("betstat", width = "100%", height = "400px"), textOutput("betstatdesc")),
+               tabPanel(trans("pointsperteam"), plotOutput("pointsperteam", width = "100%", height = "400px"), textOutput("pointsperteamdesc"))
              )),
              tabPanel(trans("tables"), tabsetPanel(
                tabPanel(trans("missingbets"), DT::dataTableOutput("missingbets")),
