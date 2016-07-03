@@ -48,8 +48,10 @@
 --update game set halftimegoals1 = 1, halftimegoals2 = 0, regulartimegoals1 = 2, regulartimegoals2 = 0 WHERE gameid = 43;
 --update game set halftimegoals1 = 1, halftimegoals2 = 2, regulartimegoals1 = 1, regulartimegoals2 = 2 WHERE gameid = 44;
 
-update game set halftimegoals1 = 1, halftimegoals2 = 1, regulartimegoals1 = 1, regulartimegoals2 = 1, overtimegoals1 = 1, overtimegoals2 = 1, penaltygoals1 = 3, penaltygoals2 = 5 where gameid = 45;
+--update game set halftimegoals1 = 1, halftimegoals2 = 1, regulartimegoals1 = 1, regulartimegoals2 = 1, overtimegoals1 = 1, overtimegoals2 = 1, penaltygoals1 = 3, penaltygoals2 = 5 where gameid = 45;
 
-update game set halftimegoals1 = 1, halftimegoals2 = 1, regulartimegoals1 = 3, regulartimegoals2 = 1 WHERE gameid = 46;
+--update game set halftimegoals1 = 1, halftimegoals2 = 1, regulartimegoals1 = 3, regulartimegoals2 = 1 WHERE gameid = 46;
 
-update game set halftimegoals1 = 1, halftimegoals2 = 0, regulartimegoals1 = 1, regulartimegoals2 = 1, overtimegoals1 = 1, overtimegoals2 = 1, penaltygoals1 = 6, penaltygoals2 = 5 where gameid = 47;
+--update game set halftimegoals1 = 1, halftimegoals2 = 0, regulartimegoals1 = 1, regulartimegoals2 = 1, overtimegoals1 = 1, overtimegoals2 = 1, penaltygoals1 = 6, penaltygoals2 = 5 where gameid = 47;
+
+update game set halftimegoals1 = 4, halftimegoals2 = 0, regulartimegoals1 = 5, regulartimegoals2 = 2 WHERE gameid = 48;
