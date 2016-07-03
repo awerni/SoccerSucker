@@ -353,7 +353,7 @@ getTeamBetPoints <- function() {
                 "(SELECT points, team1 AS team, tv.gameid, kogame FROM tipview tv join gameview gv ON tv.gameid = gv.gameid ",
                 "union all ",
                 "SELECT points, team2 AS team, tv.gameid, kogame FROM tipview tv join gameview gv ON tv.gameid = gv.gameid) t ",
-                "GROUP BY team, kogame ORDER BY avgpoints desc;")
+                "WHERE points IS NOT NULL GROUP BY team, kogame")
   data <- getPostgresql(sql)
   data$game <- ifelse(data$kogame, "KO-Game", "Group-Phase-Game")
   p <- ggplot(data, aes(team, avgpoints, fill = game)) + geom_bar(stat="identity", position="dodge")
