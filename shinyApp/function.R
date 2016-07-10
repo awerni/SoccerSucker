@@ -230,7 +230,8 @@ getNationPlot <- function(data) {
 getPlayerResult <- function(username) {
   sql <- paste0("SELECT tv.gameid as game, team1 || '-' || team2 AS teams, starttime as time, ",
                 "tv.goals1 || ':' || tv.goals2 as tip, ",
-                "g.regulartimegoals1 || ':' || g.regulartimegoals2 as result, ",
+                "COALESCE(g.overtimegoals1, g.regulartimegoals1) || ':' || ",
+                "COALESCE(g.overtimegoals2, g.regulartimegoals2) as result, ",
                 "winner, points FROM tipview tv JOIN game g ON g.gameid = tv.gameid ",
                 "JOIN player p on p.username = tv.username ",
                 "WHERE tv.username = '", username, "' AND points IS NOT NULL ",
