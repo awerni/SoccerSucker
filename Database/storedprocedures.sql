@@ -4,14 +4,16 @@ DECLARE
   rsGame record;
   rsTip record;
 BEGIN
-  SELECT INTO rsGame regulartimegoals1, regulartimegoals2, kogame, winner, kowinner FROM gameview WHERE gameid = theGameID;
+  SELECT INTO rsGame COALESCE(overtimegoals1, regulartimegoals1) as gameendgoals1, 
+                     COALESCE(overtimegoals2, regulartimegoals2) as gameendgoals2, 
+                     kogame, winner, kowinner FROM gameview WHERE gameid = theGameID;
   IF NOT found OR (rsGame.winner IS NULL) THEN
     RETURN(NULL);
   END IF;
 
-  SELECT INTO rsTip regulartimegoals1, regulartimegoals2, winner, kowinner FROM tipview WHERE gameid = theGameID AND username = theUser;
+  SELECT INTO rsTip goals1, goals2, winner, kowinner FROM tipview WHERE gameid = theGameID AND username = theUser;
 
-  IF (rsTip.regulartimegoals1 is null OR rsTip.regulartimegoals2 IS NULL) THEN
+  IF (rsTip.goals1 IS NULL OR rsTip.goals2 IS NULL) THEN
     RETURN(NULL);
   END IF;
 
@@ -21,11 +23,11 @@ BEGIN
     points = 0;
   END IF;
 
-  IF (rsgame.regulartimegoals1 - rsGame.regulartimegoals2 = rsTip.regulartimegoals1 - rsTip.regulartimegoals2) THEN
+  IF (rsGame.gameendgoals1 - rsGame.gameendgoals2 = rsTip.goals1 - rsTip.goals2) THEN
     points := points + 1;
   END IF;
 
-  IF (rsgame.regulartimegoals1 = rsTip.regulartimegoals1 AND rsGame.regulartimegoals2 = rsTip.regulartimegoals2) THEN
+  IF (rsGame.gameendgoals1 = rsTip.goals1 AND rsGame.gameendgoals2 = rsTip.goals2) THEN
     points := points + 1;
   END IF;
 
@@ -104,14 +106,8 @@ BEGIN
   IF (NOT kogame) THEN RETURN(NULL); END IF;
 
   IF (regulartimegoals1 IS NULL) OR (regulartimegoals2 IS NULL) THEN RETURN(NULL); END IF;
-  
-  goals1 := regulartimegoals1;
-  goals2 := regulartimegoals2;
-  IF (overtimegoals1 IS NOT NULL) THEN goals1 := goals1 + overtimegoals1; END IF;
-  IF (overtimegoals2 IS NOT NULL) THEN goals2 := goals2 + overtimegoals2; END IF;
-
-  IF (penaltygoals1 IS NOT NULL) THEN goals1 := goals1 + penaltygoals1; END IF;
-  IF (penaltygoals2 IS NOT NULL) THEN goals2 := goals2 + penaltygoals2; END IF;
+  goals1 := COALESCE(penaltygoals1, overtimegoals1, regulartimegoals1);
+  goals2 := COALESCE(penaltygoals2, overtimegoals2, regulartimegoals2);
 
   IF (goals1 > goals2) THEN RETURN('1'); END IF;
   IF (goals1 = goals2) THEN RETURN('X'); END IF;
@@ -119,10 +115,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
 -----------------------------------------------------
 
-CREATE OR REPLACE FUNCTION place_tip(mygame INT2, myuser TEXT, regtimegoals1 INT2, regtimegoals2 INT2, kowin CHAR(1)) RETURNS BOOL AS $$
+CREATE OR REPLACE FUNCTION place_tip(mygame INT2, myuser TEXT, tipgoals1 INT2, tipgoals2 INT2, kowin CHAR(1)) RETURNS BOOL AS $$
 DECLARE
   rec record;
   gameover bool;
@@ -132,42 +127,25 @@ BEGIN
     RAISE EXCEPTION 'game % is already over. You cannot place tips anymore', mygame;
   END IF;
 
-  SELECT INTO rec regulartimegoals1, regulartimegoals2, kowinner FROM tip WHERE gameid = mygame AND username = myuser;
+  SELECT INTO rec goals1, goals2, kowinner FROM tip WHERE gameid = mygame AND username = myuser;
   IF found THEN
-    IF rec.regulartimegoals1 = regtimegoals1 AND rec.regulartimegoals2 = regtimegoals2 AND ((rec.kowinner IS NULL AND kowin IS NULL) OR (rec.kowinner = kowin)) THEN
+    IF rec.goals1 = tipgoals1 AND rec.goals2 = tipgoals2 AND ((rec.kowinner IS NULL AND kowin IS NULL) OR (rec.kowinner = kowin)) THEN
       RETURN FALSE;
     END IF;
   END IF;
 
   LOOP
-    UPDATE tip SET tiptime = now() AT TIME ZONE 'Europe/Paris', regulartimegoals1 = regtimegoals1, regulartimegoals2 = regtimegoals2, kowinner = kowin WHERE gameid = mygame AND username = myuser;
+    UPDATE tip SET tiptime = now() AT TIME ZONE 'Europe/Paris', goals1 = tipgoals1, goals2 = tipgoals2, kowinner = kowin WHERE gameid = mygame AND username = myuser;
     IF found THEN
       RETURN TRUE;
     END IF;
     BEGIN
-      INSERT INTO tip (gameid, username, tiptime, regulartimegoals1, regulartimegoals2, kowinner) VALUES (mygame, myuser, now() AT TIME ZONE 'Europe/Paris', regtimegoals1, regtimegoals2, kowin);
+      INSERT INTO tip (gameid, username, tiptime, goals1, goals2, kowinner) VALUES (mygame, myuser, now() AT TIME ZONE 'Europe/Paris', tipgoals1, tipgoals2, kowin);
       RETURN TRUE;
     EXCEPTION WHEN unique_violation THEN
     -- do nothing, and loop to try the UPDATE again
     END;
   END LOOP;
-END;
-$$
-LANGUAGE plpgsql;
-
------------------------------------------------------
-CREATE OR REPLACE FUNCTION sumWithNULL(n1 INT8, n2 INT8) RETURNS INT8 AS $$
-DECLARE
-  mysum INT8;
-BEGIN
-  mysum := 0;
-  IF n1 IS NOT NULL THEN
-    mysum := mysum + n1;
-  END IF;
-  IF n2 IS NOT NULL THEN
-    mysum := mysum + n2;
-  END IF;
-  RETURN (mysum);
 END;
 $$
 LANGUAGE plpgsql;
@@ -236,16 +214,32 @@ CREATE OR REPLACE FUNCTION updateMrAverage(theGameID INT2) RETURNS BOOL AS $$
 DECLARE
   rsAvg record;
   rsWinner record;
+  winner INT2;
 BEGIN
-  SELECT INTO rsAvg round(avg(regulartimegoals1)) AS regulartimegoals1, 
-                    round(avg(regulartimegoals2)) AS regulartimegoals2 
-    FROM tip WHERE gameid = theGameID AND username <> 'average';
-  SELECT INTO rsWinner kowinner, rank() OVER (order by freq DESC) AS rank 
-    FROM (SELECT count(*) AS freq, kowinner FROM tip GROUP BY kowinner) t ORDER BY rank LIMIT 1;
-
   DELETE FROM TIP WHERE gameid = theGameID AND username = 'average';
-  INSERT INTO tip (regulartimegoals1, regulartimegoals2, kowinner, gameid, username, tiptime) 
-    VALUES (rsAvg.regulartimegoals1, rsAvg.regulartimegoals2, rsWinner.kowinner, theGameID, 'average', now() AT TIME ZONE 'Europe/Paris');
+
+  SELECT INTO rsAvg round(avg(goals1)) AS goals1, 
+                    round(avg(goals2)) AS goals2 
+    FROM tip WHERE gameid = theGameID;
+
+  IF (rsAvg.goals1 IS NULL OR rsAvg.goals2 IS NULL) THEN
+    return(FALSE);
+  END IF;
+
+  IF (rsAvg.goals1 = rsAvg.goals2) THEN
+    SELECT INTO rsWinner count(*) AS freq, kowinner FROM tip
+      WHERE gameid = theGameID GROUP BY kowinner ORDER BY freq DESC LIMIT 1;
+    winner := rsWinner.kowinner;
+  ELSE
+    IF (rsAvg.goals1 > rsAvg.goals2) THEN
+      winner := '1';
+    ELSE
+      winner := '2';
+    END IF;
+  END IF;
+
+  INSERT INTO tip (goals1, goals2, kowinner, gameid, username, tiptime) 
+    VALUES (rsAvg.goals1, rsAvg.goals2, winner, theGameID, 'average', now() AT TIME ZONE 'Europe/Paris');
   RETURN(TRUE);
 END;
 $$

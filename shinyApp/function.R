@@ -49,9 +49,9 @@ getRanking <- function() {
 
 getRankingLastGames <- function(nGames) {
   sql <- paste0("SELECT rank() OVER (order by sum(points) desc), firstname, name, nationality, sum(points) as points ",
-                "FROM tipview tv full JOIN player p on tv.username = p.username WHERE gameid > ",
-                "(SELECT max(gameid) as g FROM game ",
-                "WHERE regulartimegoals1 IS NOT NULL AND regulartimegoals2 IS NOT NULL) -", nGames, 
+                "FROM tipview tv JOIN player p on tv.username = p.username WHERE points IS NOT NULL AND gameid > ",
+                "(SELECT max(gameid) as g FROM tipview ",
+                "WHERE points IS NOT NULL) -", nGames, 
                 " GROUP BY name, firstname, nationality")
   rank <- getPostgresql(sql)
   colnames(rank) <- c("Rank", "Firstname", "Name", "Nationality", "Points")
@@ -99,17 +99,17 @@ upsertTip <- function(user, tiptable) {
     tipgoals1 <- tt[["g1"]]
     tipgoals2 <- tt[["g2"]]
     kowinner <- ifelse(is.na(tt[["kowinner"]]), "NULL", tt[["kowinner"]])
-    sql <- paste0("SELECT regulartimegoals1, regulartimegoals2, kowinner ",
+    sql <- paste0("SELECT goals1, goals2, kowinner ",
                   "FROM tip WHERE username = '", user, "' AND gameid = ", gameid)
     tip <- dbGetQuery(con, sql)
     if (nrow(tip) == 0) {
-      sql <- paste0("INSERT INTO tip (gameid, username, tiptime, regulartimegoals1, regulartimegoals2, kowinner) ",
+      sql <- paste0("INSERT INTO tip (gameid, username, tiptime, goals1, goals2, kowinner) ",
                     "VALUES (", gameid, ",'", user, "', now() AT TIME ZONE 'Europe/Paris', ", tipgoals1, ",", tipgoals2, ",", kowinner, ")")
       dbGetQuery(con, sql)
       return(1)
     } else {
-      if ((tipgoals1 != tip$regulartimegoals1) | (tipgoals2 != tip$regulartimegoals2)) {
-        sql <- paste0("UPDATE tip SET regulartimegoals1 = ", tipgoals1, ", regulartimegoals2 = ", tipgoals2, 
+      if ((tipgoals1 != tip$goals1) | (tipgoals2 != tip$goals2)) {
+        sql <- paste0("UPDATE tip SET goals1 = ", tipgoals1, ", goals2 = ", tipgoals2, 
                       ", kowinner = ", kowinner, ", tiptime = now() AT TIME ZONE 'Europe/Paris'",
                       " WHERE username = '", user, "' AND gameid = ", gameid)
         dbGetQuery(con, sql)
@@ -145,10 +145,10 @@ getName <- function(user) {
 
 getAllTips <- function(username) {
   sql <- paste0("SELECT g.gameid, g.team1, g.team2, g.kogame, ",
-               "t.regulartimegoals1 as tipgoals1, t.regulartimegoals2 as tipgoals2, t.kowinner, ",
+               "tv.goals1 as tipgoals1, tv.goals2 as tipgoals2, tv.kowinner, ",
                "city, starttime ",
                "FROM gameview g LEFT OUTER JOIN (SELECT * FROM tipview WHERE username = '",
-               username, "') t ON t.gameid = g.gameid ",
+               username, "') tv ON tv.gameid = g.gameid ",
                "WHERE starttime > now() AT TIME ZONE 'Europe/Paris' ORDER BY gameid")
   tips <- getPostgresql(sql)
   tips$starttime <- format(tips$starttime,'%Y-%m-%d %H:%M')
@@ -179,7 +179,8 @@ formatInputKO <- function(gameid, winner, kogame) {
 getResultCross <- function() {
   sql <- paste0("SELECT firstname || ' ' || name as name, nationality, ",
                 "to_char(tv.gameid, '00') || ' ' || team1 || '-' || team2 ",
-                "|| ' (' || g.regulartimegoals1 || ':' || g.regulartimegoals2 || ')' as gamename, ",
+                "|| ' (' || COALESCE(g.overtimegoals1, g.regulartimegoals1) || ':' || ",
+                "COALESCE(g.overtimegoals2, g.regulartimegoals2) || ')' as gamename, ",
                 "points FROM tipview tv JOIN game g ON g.gameid = tv.gameid ",
                 "JOIN player p on p.username = tv.username WHERE points IS NOT NULL")
   data <- getPostgresql(sql)
@@ -193,8 +194,8 @@ getResultCross <- function() {
 getTipCross <- function() {
   sql <- paste0("SELECT firstname || ' ' || name as name, nationality, ",
                 "to_char(tv.gameid, '00') || ' ' || team1 || '-' || team2 as gamename, ",
-                "tv.regulartimegoals1 - tv.regulartimegoals2 as diff FROM tipview tv JOIN game g ON g.gameid = tv.gameid ",
-                "JOIN player p on p.username = tv.username WHERE tv.regulartimegoals1 IS NOT NULL AND tv.regulartimegoals2 IS NOT NULL")
+                "tv.goals1 - tv.goals2 as diff FROM tipview tv JOIN game g ON g.gameid = tv.gameid ",
+                "JOIN player p on p.username = tv.username WHERE tv.goals1 IS NOT NULL AND tv.goals2 IS NOT NULL")
   data <- getPostgresql(sql)
   if (nrow(data) < 2) return(list(data = NULL, n = NULL))
   dn <- unique(data[, c("name", "nationality")])
@@ -205,8 +206,8 @@ getTipCross <- function() {
 
 getHeatmap <- function(data) {
   if (is.null(data$data)) return()
-  data$data <- data$data[apply(data$data, 1, function(x) sum(ifelse(is.na(x), 1, 0))) <= 3,]
-  pheatmap(data$data, cluster_cols = FALSE)
+  data$data <- data$data[apply(data$data, 1, function(x) sum(ifelse(is.na(x), 1, 0))) <= 20,]
+  pheatmap(data$data, color = c("#cccccc", colorRampPalette(c("blue", "yellow", "red"))(12)), cluster_cols = FALSE)
 }
 
 getPCA <- function(data, mainTitle) {
@@ -228,8 +229,9 @@ getNationPlot <- function(data) {
 
 getPlayerResult <- function(username) {
   sql <- paste0("SELECT tv.gameid as game, team1 || '-' || team2 AS teams, starttime as time, ",
-                "tv.regulartimegoals1 || ':' || tv.regulartimegoals2 as tip, ",
-                "g.regulartimegoals1 || ':' || g.regulartimegoals2 as result, ",
+                "tv.goals1 || ':' || tv.goals2 as tip, ",
+                "COALESCE(g.overtimegoals1, g.regulartimegoals1) || ':' || ",
+                "COALESCE(g.overtimegoals2, g.regulartimegoals2) as result, ",
                 "winner, points FROM tipview tv JOIN game g ON g.gameid = tv.gameid ",
                 "JOIN player p on p.username = tv.username ",
                 "WHERE tv.username = '", username, "' AND points IS NOT NULL ",
@@ -273,13 +275,114 @@ getReadyGames <- function() {
                 "WHERE regulartimegoals1 IS NOT NULL AND regulartimegoals2 IS NOT NULL")
   getPostgresql(sql)$g
 }
+
+getBetStat <- function() {
+  sql <- paste("SELECT count(*), sum(points), sum(points)::FLOAT4/count(*) AS avgpoints,",
+               "winner, kowinner IS NOT NULL AS kogame FROM tipview",
+               "WHERE points IS NOT NULL GROUP BY winner, kowinner IS NOT NULL")
+  data <- getPostgresql(sql)
+  data$game <- ifelse(data$kogame, "KO-Game", "Group-Phase-Game")
+  p <- ggplot(data, aes(winner, avgpoints, fill = game)) + geom_bar(stat="identity", position="dodge")
+  p <- p + theme(text = element_text(size = 20))
+  p + geom_text(data = data, aes(winner, avgpoints, group = game, 
+                                 label = paste("# =", count, "\nsum =", sum, "\navg =", round(avgpoints, 2))),
+                vjust=1.5, position=position_dodge(.9), size = 4)
+}
+# -------- translations ---------
+labeltrans <- list(refresh = list(en = "refresh", de = "erfrischen"),
+                   overallranking = list(en = "Overall Ranking", de = "Gesamtrangliste"),
+                   placebets = list(en = "Place Bets", de = "Wetten"),
+                   checkyourresults = list(en = "Check your results", de = "Überprüfe die Ergebnisse"),
+                   graph = list(en = "Graph", de = "Grafik"),
+                   heatmap = list(en = "Heatmap", de = "Hitzekarte"),
+                   lineranking = list(en="Line Ranking", de = "Linienrangfolge"),
+                   nationality = list(en = "Nationality", de = "Nationalität"),
+                   pcapoints = list(en = "PCA Points", de = "HKA Punkte"),
+                   pcatips = list(en = "PCA Tips", de = "HKA Tipps"),
+                   betstatistics = list(en = "Bet Statistics", de = "Wettstatistik"), 
+                   tables = list(en = "Tables", de = "Tabellen"),
+                   missingbets = list(en = "Missing Bets", de = "Fehlende Wetten"),
+                   latestgames = list(en = "Latest games", de = "Letzte Spiele"),
+                   teamranking = list(en = "Team ranking", de = "Mannschaftsrangliste"),
+                   help = list(en = "Help", de = "Hilfe"),
+                   login = list(en = "Login", de = "Einloggen"),
+                   logout = list(en = "Logout", de = "Ausloggen"),
+                   username = list(en = "Username:", de = "Benutzername:"),
+                   password = list(en = "Password:", de = "Passwort:"),
+                   firstname = list(en = "First name:", de = "Vorname:"),
+                   surname = list(en = "Surname:", de = "Nachname:"),
+                   register = list(en = "Register", de = "Registrieren"),
+                   usernotregistered = list(en = "User not registered.", de = "Benutzer nicht registriert."),
+                   wrongpassword = list(en = "Wrong password.", de = "Falsches Password."),
+                   save = list(en = "Save", de = "Speichern"),
+                   betstatdesc = list(en = paste("This plot shows the average points players got for their bets",
+                                                 "for team1 (1), team2 (2) or draws (X) in the",
+                                                 "KO-phase and group phase, respectively of the tournament."), 
+                                      de = paste("Diese Grafik zeigt die durschnittlichen Punkte, die Spieler",
+                                                 "für Ihre Wette für Mannschaft1 (1), Mannschaft2 (2) oder für ein Unentschieden (X)",
+                                                 "in der Gruppenphase bzw. in der KO-Phase des Turniers bekommen haben.")),
+                   pointsperteam = list(en = "Points per Team", de = "Punkte pro Mannschaft"),
+                   pointsperteamdesc = list(en = paste("This plot shows which team is the source of points for players.",
+                                                       "If a team fullfils the expectations of the players of our betting game",
+                                                       "the average points per game are high, regardless if they win or loose.",
+                                                       "Since the group phase games provide fewer points, the KO-phase games",
+                                                       "are displayed seperately.",
+                                                       "Only the teams, which made it to the KO-phase, have two bars.",
+                                                       "The little number on the bar shows the number of games."),
+                                            de = paste("Diese Grafik zeigt, welche Fußballmannschaft Punktequelle in unserem",
+                                                       "Wettspiel ist. Wenn ein Team die Erwartungen der Wettspieler erfüllt,",
+                                                       "sind die Durchschnittspunkte pro Spiel hoch, egal ob die Mannschaft",
+                                                       "verloren oder gewonnen hat. Da in der KO-Phase mehr Punkte pro Spiel",
+                                                       "vergeben werden, sind die Gruppen- und KO-Phase getrennt dargestellt. Nur", 
+                                                       "die Mannschaften, die es in die KO-Phase geschafft haben, haben zwei Balken.",
+                                                       "Die kleine Zahl am Balken zeigt die Anzahl der Spiele."))
+                   )
+
+trans <- function(keyword) labeltrans[[keyword]][[lang]]
+
+getGameResult <- function(gameid) {
+  h <- new_handle()
+  handle_setheaders(h, "X-Auth-Token" = footballdatakey)
+  req <- curl_fetch_memory("http://api.football-data.org/v1/soccerseasons/424", handle = h)
+  d <- fromJSON(rawToChar(req$content))
+}
+
+getTeamBetPoints <- function() {
+  #myClause <- ifelse(kogame, " NOT ", "")
+  sql <- paste0("SELECT sum(points)/count(distinct(gameid)) AS avgpoints, sum(points), ",
+                "count(distinct(gameid)) as games, team, kogame FROM ",
+                "(SELECT points, team1 AS team, tv.gameid, kogame FROM tipview tv join gameview gv ON tv.gameid = gv.gameid ",
+                "union all ",
+                "SELECT points, team2 AS team, tv.gameid, kogame FROM tipview tv join gameview gv ON tv.gameid = gv.gameid) t ",
+                "WHERE points IS NOT NULL GROUP BY team, kogame")
+  data <- getPostgresql(sql)
+  data$game <- ifelse(data$kogame, "KO-Game", "Group-Phase-Game")
+  p <- ggplot(data, aes(team, avgpoints, fill = game)) + geom_bar(stat="identity", position="dodge")
+  p <- p + theme(text = element_text(size = 16), axis.text.x = element_text(angle = 90, hjust = 1, vjust = +0.5))
+  p <- p + scale_y_continuous(name="Average Points per Game")
+  p + geom_text(data = data, aes(team, avgpoints, group = game, label = games), 
+                vjust=1.5, position=position_dodge(.9), size = 4) 
+  }
+
 # -------------------------------
 
 insertRandomTips <- function() {
    user <- getPostgresql("SELECT username FROM player")$username
+   gameids <- getPostgresql("SELECT gameid FROM game WHERE NOT kogame")$gameid
    sapply(user, function(u) {
-     tiptable <- lapply(1:36, function(g) {
+     tiptable <- lapply(gameids, function(g) {
        c(g = g, g1 = sample(0:5,1), g2 = sample(0:5, 1), kowinner = NA)
+     })
+     upsertTip(u, tiptable)
+   })
+   gameids <- getPostgresql("SELECT gameid FROM game WHERE kogame")$gameid
+   sapply(user, function(u) {
+     tiptable <- lapply(gameids, function(g) {
+       g1tip <- sample(0:5,1)
+       g2tip <- sample(0:5,1)
+       kow <- ifelse(g1tip > g2tip, 1, 2)
+       if (g1tip == g2tip) kow = sample(1:2, 1)
+       c(g = g, g1 = g1tip, g2 = g2tip, kowinner = kow)
      })
      upsertTip(u, tiptable)
    })

@@ -65,20 +65,20 @@ shinyServer(function(input, output, session) {
   output$status <- renderUI({
     if (user$name == "") {
       list(
-        textInput("username", "Username:"),
-        passwordInput("password", "Password:"),
-        actionButton("login", label = "Login")
+        textInput("username", trans("username")),
+        passwordInput("password", trans("password")),
+        actionButton("login", label = trans("login"))
       )
     } else {
       if (user$registered) {
-        actionButton("logout", label = "Logout")
+        actionButton("logout", label = trans("logout"))
       } else {
         list(
-          textInput("firstname", "First Name:"),
-          textInput("surname", "Surname:"),
-          textInput("nationality", "Nationality:"),
-          actionButton("register", label = "Register"),
-          actionButton("logout", label = "Logout")
+          textInput("firstname", trans("firstname")),
+          textInput("surname", trans("surname")),
+          textInput("nationality", paste(trans("nationality"), ":")),
+          actionButton("register", label = trans("register")),
+          actionButton("logout", label = trans("logout"))
         )
       }
     }
@@ -86,8 +86,8 @@ shinyServer(function(input, output, session) {
 
   output$user <- renderText({
     validate(
-      need(user$registered, "User not registered."),
-      need(user$knownuser, "Wrong password.")
+      need(user$registered, trans("usernotregistered")),
+      need(user$knownuser, trans("wrongpassword"))
     )
     user$fullname
   })
@@ -96,7 +96,7 @@ shinyServer(function(input, output, session) {
   output$placebets <- renderUI({
     if (user$name != "") {
       list(tableOutput("bet"),
-           actionButton("save", "Save"))
+           actionButton("save", trans("save")))
     } else {
       list(h2(loginText))
     }
@@ -220,4 +220,15 @@ shinyServer(function(input, output, session) {
     getRankingLastGames(input$numberOfGames)
     }, rownames = FALSE, options = list(pageLength = 10)
   )
+  
+  output$betstatdesc <- renderText(trans("betstatdesc"))
+  output$betstat <- renderPlot({
+    getBetStat()
+  })
+  
+  output$pointsperteamdesc <- renderText(trans("pointsperteamdesc"))
+  output$pointsperteam <- renderPlot({
+    getTeamBetPoints()
+  })
+  
 })

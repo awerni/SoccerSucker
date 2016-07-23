@@ -2,6 +2,7 @@ library(shiny)
 library(DT)
 
 source("settings.R")
+source("function.R")
 
 shinyUI(fluidPage(
   
@@ -11,29 +12,31 @@ shinyUI(fluidPage(
     column(2,
            img(src='GoStrong.png', width="200", align = "center"),
            hr(),
-           actionButton("refresh", label = "Refresh"),
+           actionButton("refresh", label = trans("refresh")),
            hr(),
            h3(textOutput("user")),
            uiOutput("status")
     ),
     column(10,
            tabsetPanel(
-             tabPanel("Overall Ranking", DT::dataTableOutput("ranking")),
-             tabPanel("Place Bets", uiOutput("placebets")),
-             tabPanel("Check your results", uiOutput("yourresults")),
-             tabPanel("Graphs", tabsetPanel(
-               tabPanel("Heatmap", plotOutput("heatmap", width = "100%", height = "600px")),
-               tabPanel("Line Ranking", uiOutput("rankingTab")),
-               tabPanel("Nationality", uiOutput("nationplot")),
-               tabPanel("PCA Points", uiOutput("pcaPoints")),
-               tabPanel("PCA Tips", uiOutput("pcaTips"))
+             tabPanel(trans("overallranking"), DT::dataTableOutput("ranking")),
+             tabPanel(trans("placebets"), uiOutput("placebets")),
+             tabPanel(trans("checkyourresults"), uiOutput("yourresults")),
+             tabPanel(trans("graph"), tabsetPanel(
+               tabPanel(trans("heatmap"), plotOutput("heatmap", width = "100%", height = "600px")),
+               tabPanel(trans("lineranking"), uiOutput("rankingTab")),
+               tabPanel(trans("nationality"), uiOutput("nationplot")),
+               tabPanel(trans("pcapoints"), uiOutput("pcaPoints")),
+               tabPanel(trans("pcatips"), uiOutput("pcaTips")),
+               tabPanel(trans("betstatistics"), plotOutput("betstat", width = "100%", height = "400px"), textOutput("betstatdesc")),
+               tabPanel(trans("pointsperteam"), plotOutput("pointsperteam", width = "100%", height = "400px"), textOutput("pointsperteamdesc"))
              )),
-             tabPanel("Tables", tabsetPanel(
-               tabPanel("Missing Bets", DT::dataTableOutput("missingbets")),
-               tabPanel("Latest games", uiOutput("latestGames")),
-               tabPanel("Team ranking", DT::dataTableOutput("teamranking"))
+             tabPanel(trans("tables"), tabsetPanel(
+               tabPanel(trans("missingbets"), DT::dataTableOutput("missingbets")),
+               tabPanel(trans("latestgames"), uiOutput("latestGames")),
+               tabPanel(trans("teamranking"), DT::dataTableOutput("teamranking"))
              )),
-             tabPanel("Help", br(), helpText(helpGer), hr(), helpText(helpEng))
+             tabPanel(trans("help"), br(), helpText(helpGer), hr(), helpText(helpEng))
            )
     )
   )

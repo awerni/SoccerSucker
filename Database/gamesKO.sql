@@ -1,4 +1,15 @@
---INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (91, 'France', 'Romania', 'Saint-Denis', 'Jun 25, 2016 21:00', TRUE);
---INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (92, 'Austria', 'Italy', 'Saint-Denis', 'Jun 25, 2016 21:00', TRUE);
 INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (37, 'Switzerland', 'Poland', 'Saint-Étienne', 'Jun 25, 2016 15:00', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (38, 'Wales', 'Northern Ireland', 'Paris', 'Jun 25, 2016 18:00', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (39, 'Croatia', 'Portugal', 'Lens', 'Jun 25, 2016 21:00', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (40, 'France', 'Republic of Ireland', 'Lyon', 'Jun 26, 2016 15:00', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (41, 'Germany', 'Slovakia', 'Villeneuve-d´Ascq', 'Jun 26, 2016 18:00', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (42, 'Hungary', 'Belgium', 'Toulouse', 'Jun 26, 2016 21:00', TRUE);
 INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (43, 'Italy', 'Spain', 'Saint-Denis', 'Jun 27, 2016 18:00', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (44, 'England', 'Iceland', 'Nice', 'Jun 27, 2016 21:00', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (45, 'Poland', 'Portugal', 'Marseille', 'Jun 30, 2016 21:00', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (46, 'Wales', 'Belgium', 'Villeneuve-d´Ascq', 'Jul 01, 2016 21:00', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (47, 'Germany', 'Italy', 'Bordeaux', 'Jul 02, 2016 21:00', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (48, 'France', 'Iceland', 'Saint-Denis', 'Jul 03, 2016 21:00', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (49, 'Portugal', 'Wales', 'Lyon', 'Jul 06, 2016 21:00', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (50, 'Germany', 'France', 'Marseille', 'Jul 07, 2016 21:00', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (51, 'Portugal', 'France', 'Saint-Denis', 'Jul 10, 2016 21:00', TRUE);
