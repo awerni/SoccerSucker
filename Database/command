@@ -1,1 +1,4 @@
-cat em2016.sql storedprocedures.sql trigger.sql teams.sql games.sql user.sql
+#!/bin/sh
+cd ~/SoccerSuccer/Database
+
+cat wc2018.sql player.sql storedprocedures.sql trigger.sql teams.sql games.sql view.sql
