@@ -1,12 +1,13 @@
 library(shiny)
 library(DT)
+library(shinythemes)
 
 source("settings.R")
 source("function.R")
 
-shinyUI(fluidPage(
+shinyUI(fluidPage(theme = shinytheme("spacelab"),
   
-  titlePanel("Euro 2016", windowTitle = "Euro 2016"),
+  titlePanel(trans("sportsevent"), windowTitle = "WC 2018"),
   tags$head(tags$script(src = "message-handler.js")),
   fluidRow(
     column(2,
@@ -23,7 +24,7 @@ shinyUI(fluidPage(
              tabPanel(trans("placebets"), uiOutput("placebets")),
              tabPanel(trans("checkyourresults"), uiOutput("yourresults")),
              tabPanel(trans("graph"), tabsetPanel(
-               tabPanel(trans("heatmap"), plotOutput("heatmap", width = "100%", height = "600px")),
+               tabPanel(trans("heatmap"), d3heatmapOutput("heatmap")),
                tabPanel(trans("lineranking"), uiOutput("rankingTab")),
                tabPanel(trans("nationality"), uiOutput("nationplot")),
                tabPanel(trans("pcapoints"), uiOutput("pcaPoints")),
