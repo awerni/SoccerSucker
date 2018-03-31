@@ -1,6 +1,6 @@
 library(RPostgreSQL)
-library(pheatmap)
-library(ggplot2)
+library(d3heatmap)
+library(tidyverse)
 
 source("settings.R")
 
@@ -61,10 +61,10 @@ getRankingLastGames <- function(nGames) {
 getTeamRanking <- function() {
   sql <- paste0("SELECT rank() OVER (partition BY initialgroup ORDER BY ",
                 "points desc, goalsfor-goalsagainst desc, goalsfor desc, goalsagainst), ",
-                "team, uefaranking, initialgroup, played, won, draw, loss, ",
+                "team, fifaranking, initialgroup, played, won, draw, loss, ",
                 "goalsfor, goalsagainst, goalsfor - goalsagainst as goaldiff, points from groupphasetable")
   teamrank <- getPostgresql(sql)
-  colnames(teamrank) <- c("Rank", "Team", "UEFA-Rank", "Group", "Games", "Won", "Draw", "Loss", "GF", "GA", "GD", "PTS")
+  colnames(teamrank) <- c("Rank", "Team", "FIFA-Rank", "Group", "Games", "Won", "Draw", "Loss", "GF", "GA", "GD", "PTS")
   return(teamrank)
 }
 
@@ -88,7 +88,7 @@ registerUser <- function(user, firstname, surname, nationality) {
   if (firstname == "" | surname == "") return(FALSE)
   sql <- paste0("INSERT INTO player (username,firstname,name,nationality) VALUES ('", user, "','", 
                 firstname, "','", surname, "','", nationality, "')")
-  pg <- getPostgresql(sql)
+  getPostgresql(sql)
   return(TRUE)
 }
 
@@ -150,13 +150,12 @@ getAllTips <- function(username) {
                "FROM gameview g LEFT OUTER JOIN (SELECT * FROM tipview WHERE username = '",
                username, "') tv ON tv.gameid = g.gameid ",
                "WHERE starttime > now() AT TIME ZONE 'Europe/Paris' ORDER BY gameid")
-  tips <- getPostgresql(sql)
-  tips$starttime <- format(tips$starttime,'%Y-%m-%d %H:%M')
-  tips$tipgoals1 <- formatInput(tips$gameid, "1", tips$tipgoals1)
-  tips$tipgoals2 <- formatInput(tips$gameid, "2", tips$tipgoals2)
-  tips$kowinner <- formatInputKO(tips$gameid, tips$kowinner, tips$kogame)
-  tips <- tips[, -4]
-  return(tips)
+  getPostgresql(sql) %>% 
+    mutate(starttime = format(starttime,'%Y-%m-%d %H:%M'),
+           tipgoals1 = formatInput(gameid, "1", tipgoals1),
+           tipgoals2 = formatInput(gameid, "2", tipgoals2),
+           kowinner = formatInputKO(gameid, kowinner, kogame)) %>%
+    select(-kogame)
 }
 
 getFutureGames <- function() {
@@ -207,8 +206,15 @@ getTipCross <- function() {
 getHeatmap <- function(data) {
   if (is.null(data$data)) return()
   data$data <- data$data[apply(data$data, 1, function(x) sum(ifelse(is.na(x), 1, 0))) <= 20,]
-  pheatmap(data$data, color = c("#cccccc", colorRampPalette(c("blue", "yellow", "red"))(12)), cluster_cols = FALSE)
+  g <- pheatmap::pheatmap(data$data, color = c("#cccccc", colorRampPalette(c("blue", "yellow", "red"))(12)), cluster_cols = FALSE)
+  return(g)
 }
+
+#getHeatmap <- function(data) {
+#  if (is.null(data$data)) return()
+#  #d <- matrix(rnorm(100), nrow = 10)
+#  d3heatmap(data$data, scale="column", colors="Blues")
+#}
 
 getPCA <- function(data, mainTitle) {
   if (is.null(data$data)) return()
@@ -309,6 +315,7 @@ labeltrans <- list(refresh = list(en = "refresh", de = "erfrischen"),
                    logout = list(en = "Logout", de = "Ausloggen"),
                    username = list(en = "Username:", de = "Benutzername:"),
                    password = list(en = "Password:", de = "Passwort:"),
+                   sportsevent = list(en = "World Cup 2018", de = "Weltmeisterschaft 2018"),
                    firstname = list(en = "First name:", de = "Vorname:"),
                    surname = list(en = "Surname:", de = "Nachname:"),
                    register = list(en = "Register", de = "Registrieren"),
@@ -344,7 +351,7 @@ getGameResult <- function(gameid) {
   h <- new_handle()
   handle_setheaders(h, "X-Auth-Token" = footballdatakey)
   req <- curl_fetch_memory("http://api.football-data.org/v1/soccerseasons/424", handle = h)
-  d <- fromJSON(rawToChar(req$content))
+  fromJSON(rawToChar(req$content))
 }
 
 getTeamBetPoints <- function() {
@@ -394,6 +401,24 @@ insertRandomGameResults <- function() {
   sapply(1:36, function(g) {
     sql <- paste0("UPDATE game SET regulartimegoals1 =", sample(0:5, 1), ",regulartimegoals2 = ", sample(0:5, 1), " WHERE gameid = ", g)
     ret <- dbGetQuery(con, sql)
+  })
+  disconnectPostgresql(con)
+  return()
+}
+
+update_FIFA_ranking <- function() {
+  url <- "http://api.qa.fifa.com/api/v1/rankings?gender=1&count=100&language=en-GB"
+  document <- jsonlite::fromJSON(txt = url)
+
+  data <- data.frame(rank = document$Results$Rank,
+                     team = sapply(document$Results[, "TeamName"], function(x) x$Description))
+  data <- data %>% mutate(team = gsub("'", "", team)) %>%
+    mutate(team = gsub("Korea Republic", "South Korea", team)) %>%
+    mutate(sql = paste0("UPDATE team set fifaranking = ", rank, " WHERE team = '", team, "';"))
+
+  con <- connectPostgresql()
+  sapply(data$sql, function(s) {
+    dbGetQuery(con, s)
   })
   disconnectPostgresql(con)
   return()
