@@ -165,7 +165,7 @@ shinyServer(function(input, output, session) {
     getTipCross()
   })
     
-  output$heatmap <- renderPlot({
+  output$heatmap <- renderD3heatmap({
     getHeatmap(resultCross())
   })
   

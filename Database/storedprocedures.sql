@@ -124,7 +124,7 @@ DECLARE
 BEGIN
   SELECT starttime < now() AT TIME ZONE 'Europe/Paris' INTO gameover FROM game WHERE gameid = mygame;
   IF gameover THEN
-    RAISE EXCEPTION 'game % is already over. You cannot place tips anymore', mygame;
+    RAISE EXCEPTION 'game % started already. You cannot place tips anymore', mygame;
   END IF;
 
   SELECT INTO rec goals1, goals2, kowinner FROM tip WHERE gameid = mygame AND username = myuser;
@@ -135,12 +135,14 @@ BEGIN
   END IF;
 
   LOOP
-    UPDATE tip SET tiptime = now() AT TIME ZONE 'Europe/Paris', goals1 = tipgoals1, goals2 = tipgoals2, kowinner = kowin WHERE gameid = mygame AND username = myuser;
+    UPDATE tip SET tiptime = now() AT TIME ZONE 'Europe/Paris', goals1 = tipgoals1, goals2 = tipgoals2, kowinner = kowin 
+      WHERE gameid = mygame AND username = myuser;
     IF found THEN
       RETURN TRUE;
     END IF;
     BEGIN
-      INSERT INTO tip (gameid, username, tiptime, goals1, goals2, kowinner) VALUES (mygame, myuser, now() AT TIME ZONE 'Europe/Paris', tipgoals1, tipgoals2, kowin);
+      INSERT INTO tip (gameid, username, tiptime, goals1, goals2, kowinner) 
+        VALUES (mygame, myuser, now() AT TIME ZONE 'Europe/Paris', tipgoals1, tipgoals2, kowin);
       RETURN TRUE;
     EXCEPTION WHEN unique_violation THEN
     -- do nothing, and loop to try the UPDATE again
@@ -194,7 +196,7 @@ $$
 LANGUAGE plpgsql;
 
 -----------------------------------------------------
-CREATE OR REPLACE FUNCTION gameTime(t timestamp without time zone) RETURNS text AS $$
+CREATE OR REPLACE FUNCTION gameTime(t timestamp with time zone) RETURNS text AS $$
 DECLARE
   n timestamp;
 BEGIN
@@ -215,6 +217,7 @@ DECLARE
   rsAvg record;
   rsWinner record;
   winner INT2;
+  isko BOOL;
 BEGIN
   DELETE FROM TIP WHERE gameid = theGameID AND username = 'average';
 
@@ -226,15 +229,19 @@ BEGIN
     return(FALSE);
   END IF;
 
-  IF (rsAvg.goals1 = rsAvg.goals2) THEN
-    SELECT INTO rsWinner count(*) AS freq, kowinner FROM tip
-      WHERE gameid = theGameID GROUP BY kowinner ORDER BY freq DESC LIMIT 1;
-    winner := rsWinner.kowinner;
-  ELSE
-    IF (rsAvg.goals1 > rsAvg.goals2) THEN
-      winner := '1';
+  SELECT INTO isko kogame FROM game WHERE gameid = theGameID;
+
+  IF isko THEN
+    IF (rsAvg.goals1 = rsAvg.goals2) THEN
+      SELECT INTO rsWinner count(*) AS freq, kowinner FROM tip
+        WHERE gameid = theGameID GROUP BY kowinner ORDER BY freq DESC LIMIT 1;
+      winner := rsWinner.kowinner;
     ELSE
-      winner := '2';
+      IF (rsAvg.goals1 > rsAvg.goals2) THEN
+        winner := '1';
+      ELSE
+        winner := '2';
+      END IF;
     END IF;
   END IF;
 

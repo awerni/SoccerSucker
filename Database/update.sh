@@ -1,7 +1,8 @@
 #!/bin/sh
 
-cd /your/sql/directory
-alias d='psql EuroCup2016 -h myserver'
+cd /home/andreas/SoccerSucker/Database
+
+alias d='psql WorldCup2018 postgres -h localhost'
 
 echo "DROP TRIGGER checkTip ON tip;" | d 
 cat update.sql | d 
