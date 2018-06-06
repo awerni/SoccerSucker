@@ -9,7 +9,7 @@ CREATE OR REPLACE view tipgame AS
 SELECT t.gameid, t.username, t.points, g.kogame FROM tip t JOIN game g ON (t.gameid = g.gameid);
 
 CREATE OR REPLACE VIEW userstat AS
-SELECT p.username, name, firstname, nationality, 
+SELECT p.username, name, firstname, nationality, expertstatus, 
        nulltozero(grouppoints) AS grouppoints, nulltozero(groupgames) as groupgames, nulltozero(evalgroupgames) as evalgroupgames, 
        nulltozero(kopoints) AS kopoints, nulltozero(kogames) AS kogames, nulltozero(evalkogames) AS evalkogames
        FROM player p
