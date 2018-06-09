@@ -3,13 +3,13 @@ SELECT *, winner(regulartimegoals1, overtimegoals1, NULL, regulartimegoals2, ove
 winner(regulartimegoals1, overtimegoals1, penaltygoals1, regulartimegoals2, overtimegoals2, penaltygoals2, kogame) AS kowinner FROM game;
 
 CREATE OR REPLACE VIEW tipview AS
-SELECT *, winner(goals1, NULL, NULL, goals2, NULL, NULL, TRUE) AS winner FROM tip;
+SELECT t.*, winner(goals1, NULL, NULL, goals2, NULL, NULL, TRUE) AS winner FROM tip t JOIN player p on t.username = p.username;
 
 CREATE OR REPLACE view tipgame AS
 SELECT t.gameid, t.username, t.points, g.kogame FROM tip t JOIN game g ON (t.gameid = g.gameid);
 
 CREATE OR REPLACE VIEW userstat AS
-SELECT p.username, name, firstname, nationality, expertstatus, 
+SELECT p.username, name, firstname, nationality, expertstatus, artificial, 
        nulltozero(grouppoints) AS grouppoints, nulltozero(groupgames) as groupgames, nulltozero(evalgroupgames) as evalgroupgames, 
        nulltozero(kopoints) AS kopoints, nulltozero(kogames) AS kogames, nulltozero(evalkogames) AS evalkogames
        FROM player p
