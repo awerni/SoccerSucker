@@ -63,6 +63,9 @@ DROP TRIGGER addPoints ON game;
 CREATE OR REPLACE FUNCTION addPoints() RETURNS "trigger" AS $$
 BEGIN
   PERFORM updateMrAverage(NEW.gameid);
+  PERFORM updateExpert(NEW.gameid, 1::INT2);
+  PERFORM updateExpert(NEW.gameid, 2::INT2);
+  PERFORM updateExpert(NEW.gameid, 3::INT2);
   UPDATE tip SET points = getTipPoints(gameid, username) WHERE gameid = NEW.gameid;
   RETURN NEW;
 END;
