@@ -1,7 +1,12 @@
 loginText <- "Please log in with your account."
 
-db <- list(dbname = "EuroCup2016", host = "myserver", port = 5432, user = "user", password = "pass")
+db <- list(dbname = "WorldCup2018", host = "myserver", port = 5432, user = "user", password = "pass")
 lang <- "en"
+
+checkAccount <- function(user, pass) {
+  sql <- paste0("SELECT checklogin FROM checkLogin('", user, "', '", pass, "')")
+  getPostgresql(sql)$checklogin > 0   
+}
   
 helpGer <- paste("Für den richtigen Sieger (1, 2 oder X) gibt es 3 Punkte, die richtige Tordifferenz",
                  "einen Zusatzpunkt und für das exakt richtige Ergebnis einen weiteren Punkt.",
