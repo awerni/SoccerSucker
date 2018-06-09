@@ -42,6 +42,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 -----------------------------------------------------
+DROP FUNCTION getGamePoints(TEXT) CASCADE;
+DROP TYPE teamResult;
 CREATE TYPE teamResult AS (
   team TEXT,
   played INT2,
@@ -223,7 +225,7 @@ BEGIN
 
   SELECT INTO rsAvg round(avg(goals1)) AS goals1, 
                     round(avg(goals2)) AS goals2 
-    FROM tip WHERE gameid = theGameID;
+    FROM tip t JOIN player p on t.username = p.username WHERE not artificial AND gameid = theGameID;
 
   IF (rsAvg.goals1 IS NULL OR rsAvg.goals2 IS NULL) THEN
     return(FALSE);
@@ -233,8 +235,8 @@ BEGIN
 
   IF isko THEN
     IF (rsAvg.goals1 = rsAvg.goals2) THEN
-      SELECT INTO rsWinner count(*) AS freq, kowinner FROM tip
-        WHERE gameid = theGameID GROUP BY kowinner ORDER BY freq DESC LIMIT 1;
+      SELECT INTO rsWinner count(*) AS freq, kowinner FROM tip t JOIN player p ON t.username = p.username
+        WHERE gameid = theGameID AND NOT artificial GROUP BY kowinner ORDER BY freq DESC LIMIT 1;
       winner := rsWinner.kowinner;
     ELSE
       IF (rsAvg.goals1 > rsAvg.goals2) THEN
@@ -253,6 +255,54 @@ $$
 LANGUAGE plpgsql;
 
 ---------------------------------
+
+CREATE OR REPLACE FUNCTION updateExpert(theGameID INT2, expertclass INT2) RETURNS BOOL AS $$
+DECLARE
+  curr_user TEXT;
+  rsAvg record;
+  rsWinner record;
+  winner INT2;
+  isko BOOL;
+BEGIN
+  SELECT INTO curr_user username FROM player WHERE artificial and expertstatus = expertclass;
+  DELETE FROM TIP WHERE gameid = theGameID AND username = curr_user;
+
+  SELECT INTO rsAvg round(avg(goals1)) AS goals1,
+                    round(avg(goals2)) AS goals2
+    FROM tip t JOIN player p on t.username = p.username WHERE not artificial AND expertstatus = expertclass AND gameid = theGameID;
+
+  IF (rsAvg.goals1 IS NULL OR rsAvg.goals2 IS NULL) THEN
+    return(FALSE);
+  END IF;
+
+  SELECT INTO isko kogame FROM game WHERE gameid = theGameID;
+
+  IF isko THEN
+    IF (rsAvg.goals1 = rsAvg.goals2) THEN
+      SELECT INTO rsWinner count(*) AS freq, kowinner FROM tip t JOIN player p ON p.username = t.username
+        WHERE gameid = theGameID AND NOT artificial and expertstatus = expertclass GROUP BY kowinner ORDER BY freq DESC LIMIT 1;
+      winner := rsWinner.kowinner;
+    ELSE
+      IF (rsAvg.goals1 > rsAvg.goals2) THEN
+        winner := '1';
+      ELSE
+        winner := '2';
+      END IF;
+    END IF;
+  END IF;
+
+  INSERT INTO tip (goals1, goals2, kowinner, gameid, username, tiptime)
+    VALUES (rsAvg.goals1, rsAvg.goals2, winner, theGameID, curr_user, now() AT TIME ZONE 'Europe/Paris');
+  RETURN(TRUE);
+END;
+$$
+LANGUAGE plpgsql;
+
+
+
+---------------------------------
+DROP FUNCTION usertimestat(interval);
+DROP TYPE usertimestat;
 CREATE TYPE usertimestat AS (
   rank INT8,
   username TEXT, 
