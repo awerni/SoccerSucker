@@ -10,10 +10,14 @@ shinyServer(function(input, output, session) {
 
   ranking <- reactive({
     input$refresh
-    getRanking()
+    getRanking(input$showplayers)
   })
   
-  output$ranking <- DT::renderDataTable({ranking()},  rownames = FALSE, options = list(pageLength = 10))
+  output$ranking <- DT::renderDataTable(
+    ranking() %>% select(-`Expert-Status`), 
+    style = 'bootstrap', rownames = FALSE, selection = "none",
+    options = list(pageLength = 15)
+  )
 
   teamranking <- reactive({
     input$refresh
@@ -21,12 +25,18 @@ shinyServer(function(input, output, session) {
   })
   
   output$teamranking <- DT::renderDataTable({
-      datatable(teamranking(), rownames = FALSE, selection = "none", options = list(pageLength = 25)) %>% 
-        formatStyle('Group', backgroundColor = styleEqual(LETTERS[1:6], c('#f5fffa', '#fffacd', '#e6e6fa', 
-                                                                          '#faebd7', '#F0F8FF', '#cdc0b0'))
+    datatable(teamranking(), rownames = FALSE, selection = "none", options = list(pageLength = 32)) %>% 
+      formatStyle('Group', backgroundColor = styleEqual(LETTERS[1:8], c('#f5fffa', '#fffacd', '#e6e6fa', 
+                                                                        '#faebd7', '#F0F8FF', '#cdc0b0',
+                                                                        '#FFCCCC', '#CCFFE5'))
       )
-    }
-  )
+  })
+  
+  #%>% 
+  #  formatStyle('Group', backgroundColor = styleEqual(LETTERS[1:8], c('#f5fffa', '#fffacd', '#e6e6fa', 
+  #                                                                    '#faebd7', '#F0F8FF', '#cdc0b0', 
+  #                                                                    '#987654', '#537827')))
+  
   missingTips <- reactive({
     input$refresh
     getMissingTips()
@@ -58,7 +68,7 @@ shinyServer(function(input, output, session) {
   })
   
   observeEvent(input$register, {
-    user$registered <-registerUser(user$name, input$firstname, input$surname, input$nationality)
+    user$registered <-registerUser(user$name, input$firstname, input$surname, input$nationality, input$expertstatus)
     if (user$registered) user$fullname <- paste(input$firstname, input$surname)
   })
   
@@ -77,6 +87,8 @@ shinyServer(function(input, output, session) {
           textInput("firstname", trans("firstname")),
           textInput("surname", trans("surname")),
           textInput("nationality", paste(trans("nationality"), ":")),
+          radioButtons("expertstatus", "expert status", c("beginner" = 1, "intermediate" = 2, "expert" = 3), selected = 2),
+          a("explainations", href="expert.html"),
           actionButton("register", label = trans("register")),
           actionButton("logout", label = trans("logout"))
         )
@@ -157,40 +169,56 @@ shinyServer(function(input, output, session) {
   
   resultCross <- reactive({
     input$refresh
-    getResultCross()
+    getResultCross(input$showplayers)
   })
   
   tipCross <- reactive({
     input$refresh
-    getTipCross()
+    getTipCross(input$showplayers)
   })
     
-  output$heatmap <- renderD3heatmap({
+  output$heatmap <- renderPlot({
     getHeatmap(resultCross())
   })
   
   output$rankingTab <- renderUI({
     list(
-      sliderInput("numberOfTopPlayer", "Number of players to display:", min = 1, max = getNumberOfPlayers(), value = 10),
+      br(),
+      fluidRow(
+        column(6, sliderInput("numberOfTopPlayer", "Number of players to display:", min = 1, max = getNumberOfPlayers(), value = 10)),
+        column(6, checkboxInput("showMe", "show me", TRUE))
+      ),
       plotOutput("topPlayer", width = "100%", height = "500px")
     )
   })
   
   cumulativeResult <- reactive({
     input$refresh
-    getCumulativeRanking()
+    getCumulativeRanking(input$showplayers)
   })
   
   output$topPlayer <- renderPlot({
-    getCumulativePlot(cumulativeResult(), input$numberOfTopPlayer)
+    validate(
+      need(cumulativeResult(), "no table available"),
+      need(input$numberOfTopPlayer, "wait")
+    )
+    getCumulativePlot(cumulativeResult(), input$numberOfTopPlayer, user)
   })
   
   output$nationplot <- renderUI({
     plotOutput("nationboxplot", width = "100%", height = "600px")
   })
-  
+
   output$nationboxplot <- renderPlot({
     getNationPlot(ranking())
+  })
+  
+  output$expertplot <- renderUI({
+    plotOutput("expertboxplot", width = "100%", height = "600px")
+  })
+
+  output$expertboxplot <- renderPlot({
+    getExpertPlot(ranking())
   })
   
   output$pcaPoints <- renderUI({
@@ -198,7 +226,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$topPCA <- renderPlot({
-    getPCA(resultCross(), "Principle Component Analysis based on bet game points")
+    getPCA(resultCross(), "Principle Component Analysis based bet game point similarity")
   })
   
   output$pcaTips <- renderUI({
@@ -217,18 +245,18 @@ shinyServer(function(input, output, session) {
   })
   
   output$lastGames <- DT::renderDataTable({
-    getRankingLastGames(input$numberOfGames)
-    }, rownames = FALSE, options = list(pageLength = 10)
+    getRankingLastGames(input$numberOfGames, input$showplayers)
+    }, style = 'bootstrap', rownames = FALSE, selection = "none", options = list(pageLength = 10)
   )
   
   output$betstatdesc <- renderText(trans("betstatdesc"))
   output$betstat <- renderPlot({
-    getBetStat()
+    getBetStat(input$showplayers)
   })
   
   output$pointsperteamdesc <- renderText(trans("pointsperteamdesc"))
   output$pointsperteam <- renderPlot({
-    getTeamBetPoints()
+    getTeamBetPoints(input$showplayers)
   })
   
 })
