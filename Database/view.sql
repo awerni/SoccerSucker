@@ -3,7 +3,9 @@ SELECT *, winner(regulartimegoals1, overtimegoals1, NULL, regulartimegoals2, ove
 winner(regulartimegoals1, overtimegoals1, penaltygoals1, regulartimegoals2, overtimegoals2, penaltygoals2, kogame) AS kowinner FROM game;
 
 CREATE OR REPLACE VIEW tipview AS
-SELECT t.*, winner(goals1, NULL, NULL, goals2, NULL, NULL, TRUE) AS winner FROM tip t JOIN player p on t.username = p.username;
+SELECT t.*, p.firstname || ' ' || p.name as name, p.nationality, p.expertstatus, p.artificial, 
+winner(goals1, NULL, NULL, goals2, NULL, NULL, TRUE) AS winner 
+FROM tip t JOIN player p on t.username = p.username;
 
 CREATE OR REPLACE view tipgame AS
 SELECT t.gameid, t.username, t.points, g.kogame FROM tip t JOIN game g ON (t.gameid = g.gameid);
@@ -25,7 +27,7 @@ SELECT t.team, fifaranking, initialgroup, played, won, draw, loss, goalsfor, goa
 CREATE OR REPLACE VIEW nationstat AS
 SELECT avg(points) AS avgpoints, sum(points) AS sumpoints, count(points) AS tipgames,
        count(distinct t.username) AS players, nationality
-       FROM tipview t JOIN player p ON p.username = t.username GROUP BY nationality;
+       FROM tipview t GROUP BY nationality;
 
 CREATE OR REPLACE VIEW teampointstat AS
 SELECT team, sum(points) AS sumpoints, sum(num) AS numtips, count(distinct gameid) AS games, sum(points)::REAL/sum(num)::REAL AS avgpoints FROM (
