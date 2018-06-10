@@ -3,6 +3,8 @@ loginText <- "Please log in with your account."
 db <- list(dbname = "WorldCup2018", host = "myserver", port = 5432, user = "user", password = "pass")
 lang <- "en"
 
+logo_file <- "GoStrong.png"
+
 checkAccount <- function(user, pass) {
   sql <- paste0("SELECT checklogin FROM checkLogin('", user, "', '", pass, "')")
   getPostgresql(sql)$checklogin > 0   
