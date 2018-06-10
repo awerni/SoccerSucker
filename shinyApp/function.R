@@ -391,6 +391,7 @@ getGameResult <- function(gameid) {
 
 getTeamBetPoints <- function(showplayers) {
   #myClause <- ifelse(kogame, " NOT ", "")
+  sql2 <- ""
   if (showplayers == "human") sql2 <- "WHERE NOT artificial"
   if (showplayers == "bot") sql2 <- "WHERE artificial"
   sql <- paste0("SELECT sum(points)/count(distinct(gameid)) AS avgpoints, sum(points), ",
