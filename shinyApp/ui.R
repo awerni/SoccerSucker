@@ -10,7 +10,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
   tags$head(tags$script(src = "message-handler.js")),
   fluidRow(
     column(2,
-           img(src='GoStrong.png', width="200", align = "center"),
+           img(src=logo_file, width="200", align = "center"),
            hr(),
            radioButtons("showplayers", "show:", c("humans" = "human", "humans + bots" = "human_bot", "bots" = "bot")),
            hr(),
