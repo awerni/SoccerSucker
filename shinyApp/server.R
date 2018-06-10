@@ -84,11 +84,11 @@ shinyServer(function(input, output, session) {
         actionButton("logout", label = trans("logout"))
       } else {
         list(
+          a("registration help", href="register_help.html", target="_blank"),
           textInput("firstname", trans("firstname")),
           textInput("surname", trans("surname")),
           textInput("nationality", paste(trans("nationality"), ":")),
           radioButtons("expertstatus", "expert status", c("beginner" = 1, "intermediate" = 2, "expert" = 3), selected = 2),
-          a("explainations", href="expert.html"),
           actionButton("register", label = trans("register")),
           actionButton("logout", label = trans("logout"))
         )
@@ -238,6 +238,9 @@ shinyServer(function(input, output, session) {
   })
 
   output$latestGames <- renderUI({
+    validate(
+      need(getReadyGames(), "no game finished yet")
+    )
     list(
       sliderInput("numberOfGames", "Show n latest games:", min = 1, max = getReadyGames(), step = 1, value = 1),
       DT::dataTableOutput("lastGames", width = "100%", height = "500px")
