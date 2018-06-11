@@ -42,7 +42,10 @@ shinyServer(function(input, output, session) {
     getMissingTips()
   })
   
-  output$missingbets <- DT::renderDataTable({missingTips()}, rownames = FALSE, options = list(pageLength = 10))
+  output$missingbets <- DT::renderDataTable({
+    mt <- missingTips() 
+    if (nrow(mt) > 0) mt %>% mutate(starttime = format(starttime,'%Y-%m-%d %H:%M'))
+  },rownames = FALSE, options = list(pageLength = 10))
   
   # ---- user handling -------
   #user <- reactiveValues(name = "wernitzn", registered = TRUE, knownuser = TRUE, fullname = getName("wernitzn"))
