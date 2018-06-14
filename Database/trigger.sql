@@ -66,6 +66,7 @@ BEGIN
   PERFORM updateExpert(NEW.gameid, 1::INT2);
   PERFORM updateExpert(NEW.gameid, 2::INT2);
   PERFORM updateExpert(NEW.gameid, 3::INT2);
+  PERFORM updateRational(NEW.gameid);
   UPDATE tip SET points = getTipPoints(gameid, username) WHERE gameid = NEW.gameid;
   RETURN NEW;
 END;
