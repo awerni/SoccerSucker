@@ -63,6 +63,16 @@ POINTS               INT2                     null,
 constraint PK_TIP primary key (GAMEID, USERNAME)
 );
 
+/*==============================================================*/
+/* Table: USER                                                  */
+/*==============================================================*/
+create table GAMEUSER (
+USERNAME             TEXT                     not null,
+PASSWORD             TEXT                     not null,
+constraint PK_USER primary key (USERNAME, PASSWORD)
+);
+
+
 alter table GAME
    add constraint FK_GAME_REFERENCE_TEAM1 foreign key (TEAM1)
       references TEAM (TEAM)
