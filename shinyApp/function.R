@@ -1,5 +1,5 @@
 library(RPostgreSQL)
-library(d3heatmap)
+#library(d3heatmap)
 library(tidyverse)
 library(ggrepel)
 
@@ -285,6 +285,7 @@ getCumulativeRanking <- function(showplayers){
   sql <- paste(sql, "ORDER by name, tv.gameid")
   data <- getPostgresql(sql)
   if (nrow(data) < 2) return()
+  if (length(unique(data$gameid)) == 1) return()
   data$totalPoints <- do.call(c, tapply(data$points, data$name, FUN = cumsum))
   myLevels <- names(sort(sapply(split(data, data$name), function(x) max(x$totalPoints)), decreasing = TRUE))
   data$name <- factor(data$name, myLevels)
