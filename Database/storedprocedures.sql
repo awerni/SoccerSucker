@@ -298,7 +298,50 @@ END;
 $$
 LANGUAGE plpgsql;
 
+---------------------------------
+CREATE OR REPLACE FUNCTION updateRational(theGameID INT2) RETURNS BOOL AS $$
+DECLARE
+  rsRank record;
+  goal1 INT2;
+  goal2 INT2;
+  winner INT2;
+  isko BOOL;
+BEGIN
+  DELETE FROM TIP WHERE gameid = theGameID AND username = 'rational';
 
+  SELECT INTO rsRank (SELECT fifaranking FROM team WHERE team = team1) AS rank1, 
+                     (SELECT fifaranking FROM team WHERE team = team2) AS rank2 FROM game g WHERE gameid = theGameID;
+
+  IF (rsRank.rank1 IS NULL OR rsRank.rank2 IS NULL) THEN
+    return(FALSE);
+  END IF;
+
+  goal1 := 0;
+  goal2 := 0;
+  IF (rsRank.rank1 < rsRank.rank2) THEN
+    goal1 := round((rsRank.rank2 - rsRank.rank1)/10);
+  ELSE
+    goal2 := round((rsRank.rank1 - rsRank.rank2)/10);
+  END IF; 
+
+  SELECT INTO isko kogame FROM game WHERE gameid = theGameID;
+
+  IF isko THEN
+    IF (goal1 = goal2) THEN
+      IF (rsRank.rank1 < rsRank.rank2) THEN
+        winner := '1';
+      ELSE
+        winner := '2';
+      END IF;
+    END IF;
+  END IF;
+
+  INSERT INTO tip (goals1, goals2, kowinner, gameid, username, tiptime)
+    VALUES (goal1, goal2, winner, theGameID, 'rational', now() AT TIME ZONE 'Europe/Paris');
+  RETURN(TRUE);
+END;
+$$
+LANGUAGE plpgsql;
 
 ---------------------------------
 DROP FUNCTION usertimestat(interval);
