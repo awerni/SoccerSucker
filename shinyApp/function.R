@@ -333,7 +333,11 @@ getBetStat <- function(showplayers) {
 labeltrans <- list(refresh = list(en = "refresh", de = "erfrischen"),
                    overallranking = list(en = "Overall Ranking", de = "Gesamtrangliste"),
                    placebets = list(en = "Place Bets", de = "Wetten"),
+                   human = list(en = "humans", de = "Menschen"),
+                   bot = list(en = "bot", de = "Maschinen"),
+                   show = list(en = "show", de = "zeige"),
                    checkyourresults = list(en = "Check your results", de = "Überprüfe die Ergebnisse"),
+                   loginText = list(en = "Please log in with your account.", de = "Bitte logge dich vorher ein."),
                    graph = list(en = "Graph", de = "Grafik"),
                    heatmap = list(en = "Heatmap", de = "Hitzekarte"),
                    lineranking = list(en="Line Ranking", de = "Linienrangfolge"),
@@ -378,7 +382,11 @@ labeltrans <- list(refresh = list(en = "refresh", de = "erfrischen"),
                                                        "verloren oder gewonnen hat. Da in der KO-Phase mehr Punkte pro Spiel",
                                                        "vergeben werden, sind die Gruppen- und KO-Phase getrennt dargestellt. Nur", 
                                                        "die Mannschaften, die es in die KO-Phase geschafft haben, haben zwei Balken.",
-                                                       "Die kleine Zahl am Balken zeigt die Anzahl der Spiele."))
+                                                       "Die kleine Zahl am Balken zeigt die Anzahl der Spiele.")),
+                   pca_point_similarity = list(en = "Principle Component Analysis based bet game point similarity",
+                                               de = "Hauptkomponentenanalalyse basierend auf der Ähnlichkeit der Spiele-Punkte"),
+                   pca_tip_similarity = list(en = "Principle Component Analysis based on tip similarity", 
+                                             de = "Hauptkomponentenanalalyse basierend auf der Ähnlichkeit der Tipps")
                    )
 
 trans <- function(keyword) labeltrans[[keyword]][[lang]]
