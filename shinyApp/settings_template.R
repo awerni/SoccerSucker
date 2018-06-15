@@ -1,5 +1,3 @@
-loginText <- "Please log in with your account."
-
 db <- list(dbname = "WorldCup2018", host = "myserver", port = 5432, user = "user", password = "pass")
 lang <- "en"
 
