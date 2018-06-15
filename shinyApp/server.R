@@ -113,7 +113,7 @@ shinyServer(function(input, output, session) {
       list(tableOutput("bet"),
            actionButton("save", trans("save")))
     } else {
-      list(h2(loginText))
+      list(h2(trans("loginText")))
     }
   })
   
@@ -157,7 +157,7 @@ shinyServer(function(input, output, session) {
         plotOutput("yourbarplot", width = "80%", height = "600px")
       )
     } else {
-      list(h2(loginText))
+      list(h2(trans("loginText")))
     }
   })
   
@@ -191,7 +191,7 @@ shinyServer(function(input, output, session) {
         column(6, sliderInput("numberOfTopPlayer", "Number of players to display:", min = 1, max = getNumberOfPlayers(), value = 10)),
         column(6, checkboxInput("showMe", "show me", TRUE))
       ),
-      plotOutput("topPlayer", width = "100%", height = "500px")
+      plotOutput("topPlayer", width = "100%", height = "700px")
     )
   })
   
@@ -229,7 +229,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$topPCA <- renderPlot({
-    getPCA(resultCross(), "Principle Component Analysis based bet game point similarity")
+    getPCA(resultCross(), trans("pca_point_similarity"))
   })
   
   output$pcaTips <- renderUI({
@@ -237,7 +237,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$tipPCA <- renderPlot({
-    getPCA(tipCross(), "Principle Component Analysis based on tip similarity")
+    getPCA(tipCross(), trans("pca_tip_similarity"))
   })
 
   output$latestGames <- renderUI({
