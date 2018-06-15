@@ -12,7 +12,11 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
     column(2,
            img(src=logo_file, width="200", align = "center"),
            hr(),
-           radioButtons("showplayers", "show:", c("humans" = "human", "humans + bots" = "human_bot", "bots" = "bot")),
+           {
+             myChoise <- c("human", "human_bot", "bot")
+             names(myChoise) <- c(trans("human"), paste(trans("human"), "+", trans("bot")),  trans("bot"))
+             radioButtons("showplayers", paste0(trans("show"), ":"), myChoise)
+           },
            hr(),
            h3(textOutput("user")),
            uiOutput("status"),
@@ -25,7 +29,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
              tabPanel(trans("placebets"), uiOutput("placebets")),
              tabPanel(trans("checkyourresults"), uiOutput("yourresults")),
              tabPanel(trans("graph"), tabsetPanel(
-               tabPanel(trans("heatmap"), plotOutput("heatmap")),
+               tabPanel(trans("heatmap"), plotOutput("heatmap", width = "100%", height = "650px")),
                tabPanel(trans("lineranking"), uiOutput("rankingTab")),
                tabPanel(trans("nationality"), uiOutput("nationplot")),
                tabPanel(trans("expertstatus"), uiOutput("expertplot")),
