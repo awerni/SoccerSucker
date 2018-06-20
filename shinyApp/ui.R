@@ -41,6 +41,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
              tabPanel(trans("tables"), tabsetPanel(
                tabPanel(trans("missingbets"), DT::dataTableOutput("missingbets")),
                tabPanel(trans("latestgames"), uiOutput("latestGames")),
+               tabPanel(trans("gameresult"), DT::dataTableOutput("gameresult")),
                tabPanel(trans("teamranking"), DT::dataTableOutput("teamranking"))
              )),
              tabPanel(trans("help"), br(), helpText(helpGer), hr(), helpText(helpEng))
