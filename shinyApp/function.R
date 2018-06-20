@@ -267,8 +267,9 @@ getPlayerResult <- function(username) {
 
 getGameResults <- function() {
   sql <- paste0("SELECT gameid, team1, team2, city, starttime, ",
-                "regulartimegoals1 || ':' || regulartimegoals2 || ' (' || halftimegoals1 || ':' || halftimegoals2 || ')' AS result ",
-                "FROM gameview WHERE starttime < now() OR gametime(starttime) = 'soon' ORDER BY starttime DESC")
+                "regulartimegoals1 || ':' || regulartimegoals2 || ' (' || halftimegoals1 || ':' || halftimegoals2 || ')' AS result, ",
+                "(SELECT avg(points) FROM tip WHERE gameid = gv.gameid) AS avg_points ",
+                "FROM gameview gv WHERE starttime < now() OR gametime(starttime) = 'soon' ORDER BY starttime DESC")
   getPostgresql(sql)
 }
 
