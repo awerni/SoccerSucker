@@ -50,7 +50,7 @@ shinyServer(function(input, output, session) {
   output$gameresult <- DT::renderDataTable({
     input$refresh
     gr <- getGameResults()
-    gr %>% mutate(starttime = format(starttime,'%Y-%m-%d %H:%M'))
+    gr %>% mutate(starttime = format(starttime,'%Y-%m-%d %H:%M'), avg_points = round(avg_points, 2))
   },rownames = FALSE, selection = "none", options = list(pageLength = 15))
   
   # ---- user handling -------
