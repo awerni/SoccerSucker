@@ -265,6 +265,13 @@ getPlayerResult <- function(username) {
   getPostgresql(sql)
 }
 
+getGameResults <- function() {
+  sql <- paste0("SELECT gameid, team1, team2, city, starttime, ",
+                "regulartimegoals1 || ':' || regulartimegoals2 || ' (' || halftimegoals1 || ':' || halftimegoals2 || ')' AS result ",
+                "FROM gameview WHERE starttime < now() OR gametime(starttime) = 'soon' ORDER BY starttime DESC")
+  getPostgresql(sql)
+}
+
 getPlayerBarplot <- function(data, limit) {
   if (nrow(data) == 0) return()
   if (nrow(data) > limit) data <- data[1:limit, ]
@@ -349,6 +356,7 @@ labeltrans <- list(refresh = list(en = "refresh", de = "erfrischen"),
                    tables = list(en = "Tables", de = "Tabellen"),
                    missingbets = list(en = "Missing Bets", de = "Fehlende Wetten"),
                    latestgames = list(en = "Latest games", de = "Letzte Spiele"),
+                   gameresult = list(en = "Game results", de = "Spielresultate"),
                    teamranking = list(en = "Team ranking", de = "Mannschaftsrangliste"),
                    help = list(en = "Help", de = "Hilfe"),
                    login = list(en = "Login", de = "Einloggen"),
