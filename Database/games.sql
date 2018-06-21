@@ -14,8 +14,8 @@ INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (36, 'Sp
 
 INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (5, 'France', 'Australia', 'Kazan', 'Jun 16, 2018 13:00+3', FALSE);
 INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (6, 'Peru', 'Denmark', 'Saransk', 'Jun 16, 2018 19:00+3', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (21, 'France', 'Peru', 'Yekaterinburg', 'Jun 21, 2018 17:00+5', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (22, 'Denmark', 'Australia', 'Samara', 'Jun 21, 2018 19:00+4', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (21, 'France', 'Peru', 'Yekaterinburg', 'Jun 21, 2018 19:00+4', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (22, 'Denmark', 'Australia', 'Samara', 'Jun 21, 2018 17:00+5', FALSE);
 INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (37, 'Denmark', 'France', 'Moscow', 'Jun 26, 2018 17:00+3', FALSE);
 INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (38, 'Australia', 'Peru', 'Sochi', 'Jun 26, 2018 17:00+3', FALSE);
 
