@@ -44,7 +44,7 @@ getRanking <- function(showplayers) {
                "END AS pointsPerGame FROM userstat")
   if (showplayers == "human") sql <- paste(sql, "WHERE NOT artificial")
   if (showplayers == "bot") sql <- paste(sql, "WHERE artificial")
-  rank <- getPostgresql(sql) 
+  rank <- getPostgresql(sql)
   if (nrow(rank) == 0) return()
   rank <- rank %>% mutate(pointspergame = signif(pointspergame, digits = 2)) %>%
     mutate(expertstatus = factor(expert_order[expertstatus], levels = expert_order))
@@ -274,7 +274,32 @@ getGameResults <- function(showplayers) {
                 "regulartimegoals1 || ':' || regulartimegoals2 || ' (' || halftimegoals1 || ':' || halftimegoals2 || ')' AS result, ",
                 "(SELECT avg(points) FROM tipview WHERE gameid = gv.gameid ", sql_filter, ") AS avg_points ",
                 "FROM gameview gv WHERE starttime < now() OR gametime(starttime) = 'soon' ORDER BY starttime DESC")
-  getPostgresql(sql)
+  ret <- getPostgresql(sql)
+  if (nrow(ret) > 0 ) ret %>% rename(Game = gameid, Team1 = team1, Team2 = team2, City = city,
+                                     `Start time` = starttime, Result = result, 'Avg points' = avg_points)
+}
+
+getPastGames <- function() {
+  sql <- paste0("SELECT gameid, team1 || ':' || team2 || ",
+                " ' (' || COALESCE(regulartimegoals1::TEXT, '?') || ':' || COALESCE(regulartimegoals2::TEXT, '?') || ')' AS game ",
+                "FROM gameview gv WHERE starttime < now() ORDER BY gameid DESC")
+  g <- getPostgresql(sql)
+  ret <- g$gameid
+  names(ret) <- g$game
+  return(ret)
+}
+
+getTips <- function(gameid, showplayers) {
+  sql_filter <- ""
+  if (showplayers == "human") sql_filter <- " AND NOT artificial"
+  if (showplayers == "bot") sql_filter <- " AND artificial"
+
+  sql <- paste0("SELECT rank() OVER (order by points desc) as Rank, name, goals1 || ':' || goals2 AS tip, ",
+                "CASE WHEN artificial THEN starttime ELSE tiptime END AS time, points ",
+                "FROM tipview tv JOIN game g ON tv.gameid = g.gameid WHERE tv.gameid = ", gameid,
+                sql_filter, " ORDER BY points DESC, name")
+  ret <- getPostgresql(sql)
+  if (nrow(ret) > 0 ) ret %>% rename(Rank = rank, Time = time, Name = name, Points = points, Tip = tip)
 }
 
 getPlayerBarplot <- function(data, limit) {
@@ -304,10 +329,13 @@ getCumulativeRanking <- function(showplayers){
   return(data)
 }
 
-getCumulativePlot <- function(data, numPlayer, user) {
+getCumulativePlot <- function(data, numPlayer, showMe, user) {
   if (numPlayer < length(levels(data$name))) {
-    un <- c(user$fullname, levels(data$name)[1:numPlayer])
-    print(un)
+    if (showMe) {
+      un <- unique(c(user$fullname, levels(data$name)[1:numPlayer]))
+    } else {
+      un <- levels(data$name)[1:numPlayer]
+    }
     data <- data %>% filter(name %in% un)
   }
   p <- ggplot(data, aes(x = as_factor(game, gameid), y = totalPoints, colour = name, group = name)) + geom_line() 
@@ -361,6 +389,7 @@ labeltrans <- list(refresh = list(en = "refresh", de = "erfrischen"),
                    tables = list(en = "Tables", de = "Tabellen"),
                    missingbets = list(en = "Missing Bets", de = "Fehlende Wetten"),
                    latestgames = list(en = "Latest games", de = "Letzte Spiele"),
+                   gamebet = list(en = "Player's bets", de = "Spielerwetten"),
                    gameresult = list(en = "Game results", de = "Spielresultate"),
                    teamranking = list(en = "Team ranking", de = "Mannschaftsrangliste"),
                    help = list(en = "Help", de = "Hilfe"),
@@ -422,7 +451,7 @@ getTeamBetPoints <- function(showplayers) {
                 " UNION ALL ",
                 "SELECT points, team2 AS team, tv.gameid, kogame FROM tipview tv JOIN gameview gv ON tv.gameid = gv.gameid ", sql2, ") t ",
                 "WHERE points IS NOT NULL GROUP BY team, kogame")
-  data <- getPostgresql(sql) 
+  data <- getPostgresql(sql)
   if (nrow(data) == 0) return()
   data <- data %>% mutate(game = ifelse(kogame, "KO-Game", "Group-Phase-Game"))
   p <- ggplot(data, aes(team, avgpoints, fill = game)) + geom_bar(stat="identity", position="dodge")
