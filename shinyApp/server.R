@@ -12,7 +12,7 @@ shinyServer(function(input, output, session) {
     input$refresh
     getRanking(input$showplayers)
   })
-  
+
   output$ranking <- DT::renderDataTable(
     ranking() %>% select(-`Expert-Status`), 
     style = 'bootstrap', rownames = FALSE, selection = "none",
@@ -23,7 +23,7 @@ shinyServer(function(input, output, session) {
     input$refresh
     getTeamRanking()
   })
-  
+
   output$teamranking <- DT::renderDataTable({
     datatable(teamranking(), rownames = FALSE, selection = "none", options = list(pageLength = 32)) %>% 
       formatStyle('Group', backgroundColor = styleEqual(LETTERS[1:8], c('#f5fffa', '#fffacd', '#e6e6fa', 
@@ -31,28 +31,28 @@ shinyServer(function(input, output, session) {
                                                                         '#FFCCCC', '#CCFFE5'))
       )
   })
-  
+
   #%>% 
   #  formatStyle('Group', backgroundColor = styleEqual(LETTERS[1:8], c('#f5fffa', '#fffacd', '#e6e6fa', 
   #                                                                    '#faebd7', '#F0F8FF', '#cdc0b0', 
   #                                                                    '#987654', '#537827')))
-  
+
   missingTips <- reactive({
     input$refresh
     getMissingTips()
   })
-  
+
   output$missingbets <- DT::renderDataTable({
     mt <- missingTips() 
     if (nrow(mt) > 0) mt %>% mutate(starttime = format(starttime,'%Y-%m-%d %H:%M'))
   },rownames = FALSE, selection = "none", options = list(pageLength = 10))
-  
+
   output$gameresult <- DT::renderDataTable({
     input$refresh
     gr <- getGameResults(input$showplayers)
-    gr %>% mutate(starttime = format(starttime,'%Y-%m-%d %H:%M'), avg_points = round(avg_points, 2))
+    gr %>% mutate(`Start time` = format(`Start time`,'%Y-%m-%d %H:%M'), `Avg points` = round(`Avg points`, 2))
   }, rownames = FALSE, selection = "none", options = list(pageLength = 15))
-  
+
   # ---- user handling -------
   #user <- reactiveValues(name = "wernitzn", registered = TRUE, knownuser = TRUE, fullname = getName("wernitzn"))
   user <- reactiveValues(name = "", registered = TRUE, knownuser = TRUE, fullname = "")
@@ -68,19 +68,19 @@ shinyServer(function(input, output, session) {
     user$knownuser <- cLog$knownuser
     user$fullname <- getName(user$name)
   })
-  
+
   observeEvent(input$logout, {
     user$name <- ""
     user$fullname <- ""
     user$registered <- TRUE
     user$knownuser <- TRUE
   })
-  
+
   observeEvent(input$register, {
     user$registered <-registerUser(user$name, input$firstname, input$surname, input$nationality, input$expertstatus)
     if (user$registered) user$fullname <- paste(input$firstname, input$surname)
   })
-  
+
   output$status <- renderUI({
     if (user$name == "") {
       list(
@@ -112,7 +112,7 @@ shinyServer(function(input, output, session) {
     )
     user$fullname
   })
-  
+
   # ------- place bets -----------
   output$placebets <- renderUI({
     if (user$name != "") {
@@ -122,7 +122,7 @@ shinyServer(function(input, output, session) {
       list(h2(trans("loginText")))
     }
   })
-  
+
   observe({
     isolate({
       output$bet <-renderTable({
@@ -131,7 +131,7 @@ shinyServer(function(input, output, session) {
       }, include.rownames = FALSE, sanitize.text.function = function(x) x)
     })
   })
-  
+
   observeEvent(input$save, {
     games <- getFutureGames()
     fb <- 0
@@ -147,7 +147,7 @@ shinyServer(function(input, output, session) {
       }
     )
     tiptable <- tiptable[!sapply(tiptable, is.null)]
-    
+  
     if (length(tiptable) > 0) {
       fb <- upsertTip2(user$name, tiptable)
       mytext <- ifelse(fb <= 1, paste(fb, "bet saved."), paste(fb, "bets saved."))
@@ -155,7 +155,7 @@ shinyServer(function(input, output, session) {
     session$sendCustomMessage(type = 'savemessage',
                               message = mytext)
   })
-  
+
   output$yourresults <- renderUI({
     if (user$name != "") {
       list(
@@ -166,30 +166,30 @@ shinyServer(function(input, output, session) {
       list(h2(trans("loginText")))
     }
   })
-  
+
   playerResult <- reactive({
     input$refresh
     getPlayerResult(user$name)
   })
-  
+
   output$yourbarplot <- renderPlot({
     getPlayerBarplot(playerResult(), input$lastgame)
   })
-  
+
   resultCross <- reactive({
     input$refresh
     getResultCross(input$showplayers)
   })
-  
+
   tipCross <- reactive({
     input$refresh
     getTipCross(input$showplayers)
   })
-    
+  
   output$heatmap <- renderPlot({
     getHeatmap(resultCross())
   })
-  
+
   output$rankingTab <- renderUI({
     list(
       br(),
@@ -200,20 +200,20 @@ shinyServer(function(input, output, session) {
       plotOutput("topPlayer", width = "100%", height = "700px")
     )
   })
-  
+
   cumulativeResult <- reactive({
     input$refresh
     getCumulativeRanking(input$showplayers)
   })
-  
+
   output$topPlayer <- renderPlot({
     validate(
       need(cumulativeResult(), "no table available"),
       need(input$numberOfTopPlayer, "wait")
     )
-    getCumulativePlot(cumulativeResult(), input$numberOfTopPlayer, user)
+    getCumulativePlot(cumulativeResult(), input$numberOfTopPlayer, input$showMe, user)
   })
-  
+
   output$nationplot <- renderUI({
     plotOutput("nationboxplot", width = "100%", height = "600px")
   })
@@ -221,7 +221,7 @@ shinyServer(function(input, output, session) {
   output$nationboxplot <- renderPlot({
     getNationPlot(ranking())
   })
-  
+
   output$expertplot <- renderUI({
     plotOutput("expertboxplot", width = "100%", height = "600px")
   })
@@ -229,19 +229,19 @@ shinyServer(function(input, output, session) {
   output$expertboxplot <- renderPlot({
     getExpertPlot(ranking())
   })
-  
+
   output$pcaPoints <- renderUI({
     plotOutput("topPCA", width = "100%", height = "600px")
   })
-  
+
   output$topPCA <- renderPlot({
     getPCA(resultCross(), trans("pca_point_similarity"))
   })
-  
+
   output$pcaTips <- renderUI({
     plotOutput("tipPCA", width = "100%", height = "600px")
   })
-  
+
   output$tipPCA <- renderPlot({
     getPCA(tipCross(), trans("pca_tip_similarity"))
   })
@@ -255,20 +255,35 @@ shinyServer(function(input, output, session) {
       DT::dataTableOutput("lastGames", width = "100%", height = "500px")
     )
   })
-  
+
   output$lastGames <- DT::renderDataTable({
     getRankingLastGames(input$numberOfGames, input$showplayers)
     }, style = 'bootstrap', rownames = FALSE, selection = "none", options = list(pageLength = 10)
   )
-  
+
   output$betstatdesc <- renderText(trans("betstatdesc"))
   output$betstat <- renderPlot({
     getBetStat(input$showplayers)
   })
-  
+
+  output$gamebet <- DT::renderDataTable({
+    validate(
+      need(input$tipgame2show, "no game running or finished yet")
+    )
+    myTips <- getTips(input$tipgame2show, input$showplayers)
+    validate(
+      need(myTips, "no valid tip")
+    )
+    myTips %>% mutate(Time = format(Time,'%Y-%m-%d %H:%M'))
+  }, style = 'bootstrap', rownames = FALSE, selection = "none", options = list(pageLength = 15))
+
+  observeEvent(input$refresh, {
+    updateSelectInput(session, "tipgame2show", choices = getPastGames(), selected = input$tipgame2show)
+  })
+
   output$pointsperteamdesc <- renderText(trans("pointsperteamdesc"))
   output$pointsperteam <- renderPlot({
     getTeamBetPoints(input$showplayers)
   })
-  
+
 })
