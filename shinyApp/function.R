@@ -314,18 +314,19 @@ getPlayerBarplot <- function(data, limit) {
 }
 
 getCumulativeRanking <- function(showplayers){
-  sql <- paste0("SELECT tv.gameid, team1 || ':' || team2 || ' (' || tv.gameid || ')' as game, name, ",
+  sql <- paste0("SELECT tv.gameid, team1 || ':' || team2 || ' (' || tv.gameid || ')' as game, username, name, ",
                 "points FROM tipview tv JOIN game g ON g.gameid = tv.gameid ",
-                "WHERE points IS NOT NULL ")
+                "WHERE points IS NOT NULL")
   if (showplayers == "human") sql <- paste(sql, "AND NOT artificial")
   if (showplayers == "bot") sql <- paste(sql, "AND artificial")
-  sql <- paste(sql, "ORDER by name, tv.gameid")
+  sql <- paste(sql, "ORDER by username, tv.gameid")
   data <- getPostgresql(sql)
   if (nrow(data) < 2) return()
   if (length(unique(data$gameid)) == 1) return()
-  data$totalPoints <- do.call(c, tapply(data$points, data$name, FUN = cumsum))
-  myLevels <- names(sort(sapply(split(data, data$name), function(x) max(x$totalPoints)), decreasing = TRUE))
-  data$name <- factor(data$name, myLevels)
+  
+  data <- data %>% group_by(username) %>% mutate(totalPoints = cumsum(points)) %>% ungroup() %>% select(-username)
+  myLevels <- data %>% group_by(name) %>% summarize(allPoints = max(totalPoints)) %>% arrange(desc(allPoints)) %>% .$name
+  data <- data %>% mutate(name = factor(name, myLevels)) %>% arrange(gameid)
   return(data)
 }
 
