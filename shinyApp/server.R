@@ -115,6 +115,7 @@ shinyServer(function(input, output, session) {
 
   # ------- place bets -----------
   output$placebets <- renderUI({
+    input$refresh
     if (user$name != "") {
       list(tableOutput("bet"),
            actionButton("save", trans("save")))
