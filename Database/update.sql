@@ -42,7 +42,8 @@ update game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 0, r
 update game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 2, regulartimegoals2 = 2 WHERE gameid = 42;
 update game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 2, regulartimegoals2 = 0 WHERE gameid = 43;
 update game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 0, regulartimegoals2 = 3 WHERE gameid = 44;
-
+update game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 0, regulartimegoals2 = 1 WHERE gameid = 45;
+update game set halftimegoals1 = 1, halftimegoals2 = 0, regulartimegoals1 = 1, regulartimegoals2 = 2 WHERE gameid = 46;
 update game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 0, regulartimegoals2 = 1 WHERE gameid = 47;
 update game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 0, regulartimegoals2 = 1 WHERE gameid = 48;
 
