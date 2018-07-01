@@ -115,26 +115,29 @@ shinyServer(function(input, output, session) {
 
   # ------- place bets -----------
   output$placebets <- renderUI({
-    input$refresh
     if (user$name != "") {
-      list(tableOutput("bet"),
-           actionButton("save", trans("save")))
+      input$refresh
+      list(
+        tableOutput("bet"),
+        actionButton("save", trans("save"))
+      )
     } else {
       list(h2(trans("loginText")))
     }
   })
 
-  observe({
-    isolate({
-      output$bet <-renderTable({
-        input$refresh
-        getAllTips(user$name)
-      }, include.rownames = FALSE, sanitize.text.function = function(x) x)
-    })
-  })
-
+  output$bet <-renderTable({
+      input$refresh
+      getAllTips(user$name)
+    }, include.rownames = FALSE, sanitize.text.function = function(x) x)
+  
   observeEvent(input$save, {
     games <- getFutureGames()
+    if (nrow(games) == 0) {
+      session$sendCustomMessage(type = 'savemessage',
+                                message = "nothing to save")
+      return()
+    }
     fb <- 0
     n <- as.numeric(NA)
     tiptable <- lapply(1:nrow(games), function(n) {
@@ -151,8 +154,8 @@ shinyServer(function(input, output, session) {
   
     if (length(tiptable) > 0) {
       fb <- upsertTip2(user$name, tiptable)
-      mytext <- ifelse(fb <= 1, paste(fb, "bet saved."), paste(fb, "bets saved."))
-    } else mytext <- "Please enter something"
+      mytext <- paste(if(fb <= 1) paste(fb, trans("bet")) else paste(fb, trans("bets")), trans("saved"))
+    } else mytext <- trans("missingbets")
     session$sendCustomMessage(type = 'savemessage',
                               message = mytext)
   })
@@ -275,9 +278,20 @@ shinyServer(function(input, output, session) {
     validate(
       need(myTips, "no valid tip")
     )
-    myTips %>% mutate(Time = format(Time,'%Y-%m-%d %H:%M'))
+    myTips %>% mutate(Time = format(Time,'%Y-%m-%d %H:%M'), Tip = paste0(goals1, ":", goals2)) %>% select(-goals1, -goals2) 
   }, style = 'bootstrap', rownames = FALSE, selection = "none", options = list(pageLength = 15))
 
+  output$gamebetgraph <- renderPlot({
+    validate(
+      need(input$tipgame2show, "no game running or finished yet")
+    )
+    myTips <- getTips(input$tipgame2show, input$showplayers)
+    validate(
+      need(myTips, "no valid tip")
+    )
+    getGameBetPlot(myTips)
+  }) 
+  
   observeEvent(input$refresh, {
     updateSelectInput(session, "tipgame2show", choices = getPastGames(), selected = input$tipgame2show)
   })
