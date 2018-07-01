@@ -28,20 +28,29 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
              tabPanel(trans("overallranking"), DT::dataTableOutput("ranking")),
              tabPanel(trans("placebets"), uiOutput("placebets")),
              tabPanel(trans("checkyourresults"), uiOutput("yourresults")),
-             tabPanel(trans("graph"), tabsetPanel(
+             tabPanel(trans("player_comparison"), tabsetPanel(
                tabPanel(trans("heatmap"), plotOutput("heatmap", width = "100%", height = "650px")),
                tabPanel(trans("lineranking"), uiOutput("rankingTab")),
-               tabPanel(trans("nationality"), uiOutput("nationplot")),
-               tabPanel(trans("expertstatus"), uiOutput("expertplot")),
+               tabPanel(trans("latestgames"), uiOutput("latestGames")),
+               tabPanel(trans("gamebet"), 
+                 p(),
+                 selectInput("tipgame2show", "Select Game:", getPastGames()),
+                 fluidRow(
+                   column(6, DT::dataTableOutput("gamebet")),  
+                   column(6, plotOutput("gamebetgraph"))
+                 )
+               ),
                tabPanel(trans("pcapoints"), uiOutput("pcaPoints")),
                tabPanel(trans("pcatips"), uiOutput("pcaTips")),
+               tabPanel(trans("missingbets"), DT::dataTableOutput("missingbets"))
+             )),
+             tabPanel(trans("summary_statistics"), tabsetPanel(
+               tabPanel(trans("nationality"), uiOutput("nationplot")),
+               tabPanel(trans("expertstatus"), uiOutput("expertplot")),
                tabPanel(trans("betstatistics"), plotOutput("betstat", width = "100%", height = "400px"), textOutput("betstatdesc")),
                tabPanel(trans("pointsperteam"), plotOutput("pointsperteam", width = "100%", height = "400px"), textOutput("pointsperteamdesc"))
              )),
-             tabPanel(trans("tables"), tabsetPanel(
-               tabPanel(trans("missingbets"), DT::dataTableOutput("missingbets")),
-               tabPanel(trans("latestgames"), uiOutput("latestGames")),
-               tabPanel(trans("gamebet"), p(), selectInput("tipgame2show", "Select Game:", getPastGames()), DT::dataTableOutput("gamebet")),
+             tabPanel(trans("game_statistics"), tabsetPanel(
                tabPanel(trans("gameresult"), p(), DT::dataTableOutput("gameresult")),
                tabPanel(trans("teamranking"), p(), DT::dataTableOutput("teamranking"))
              )),
