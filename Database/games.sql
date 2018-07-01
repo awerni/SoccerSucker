@@ -65,3 +65,5 @@ INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (55, 'Sw
 
 INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (54, 'Belgium', 'Japan', 'Rostov-on-Don', 'Jul 2, 2018 21:00+3', TRUE);
 INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (56, 'Colombia', 'England', 'Moscow', 'Jul 3, 2018 21:00+3', TRUE);
+
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (57, 'Uruguay', 'France', 'Nizhny Novgorod', 'Jul 6, 2018 17:00+3', TRUE);
