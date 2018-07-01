@@ -160,7 +160,9 @@ getAllTips <- function(username) {
                "FROM gameview g LEFT OUTER JOIN (SELECT * FROM tipview WHERE username = '",
                username, "') tv ON tv.gameid = g.gameid ",
                "WHERE starttime > now() AT TIME ZONE 'Europe/Paris' ORDER BY gameid")
-  getPostgresql(sql) %>% 
+  res <- getPostgresql(sql) 
+  if (nrow(res) == 0) return()
+  res %>% 
     mutate(starttime = format(starttime,'%Y-%m-%d %H:%M'),
            tipgoals1 = formatInput(gameid, "1", tipgoals1),
            tipgoals2 = formatInput(gameid, "2", tipgoals2),
@@ -272,11 +274,24 @@ getGameResults <- function(showplayers) {
   
   sql <- paste0("SELECT gameid, team1, team2, city, starttime, ",
                 "regulartimegoals1 || ':' || regulartimegoals2 || ' (' || halftimegoals1 || ':' || halftimegoals2 || ')' AS result, ",
+                "overtimegoals1 || ':' || overtimegoals2 AS overtimeresult, ",
+                "penaltygoals1 || ':' || penaltygoals2 AS penaltyresult, ",
                 "(SELECT avg(points) FROM tipview WHERE gameid = gv.gameid ", sql_filter, ") AS avg_points ",
                 "FROM gameview gv WHERE starttime < now() OR gametime(starttime) = 'soon' ORDER BY starttime DESC")
   ret <- getPostgresql(sql)
-  if (nrow(ret) > 0 ) ret %>% rename(Game = gameid, Team1 = team1, Team2 = team2, City = city,
+  if (nrow(ret) > 0) {
+    ret <- ret %>% mutate(result = ifelse(!is.na(overtimeresult), 
+                                          ifelse(!is.na(penaltyresult), 
+                                            paste0(penaltyresult, ", ", overtimeresult, ", ", result), 
+                                            paste(overtimeresult, ", ", result)
+                                          ), 
+                                     result
+                                   )
+                         ) %>% select(-overtimeresult, -penaltyresult)
+    ret <- ret %>% rename(Game = gameid, Team1 = team1, Team2 = team2, City = city,
                                      `Start time` = starttime, Result = result, 'Avg points' = avg_points)
+  }
+  return(ret)
 }
 
 getPastGames <- function() {
@@ -294,12 +309,12 @@ getTips <- function(gameid, showplayers) {
   if (showplayers == "human") sql_filter <- " AND NOT artificial"
   if (showplayers == "bot") sql_filter <- " AND artificial"
 
-  sql <- paste0("SELECT rank() OVER (order by points desc) as Rank, name, goals1 || ':' || goals2 AS tip, ",
+  sql <- paste0("SELECT rank() OVER (order by points desc) as Rank, name, goals1, goals2, ",
                 "CASE WHEN artificial THEN starttime ELSE tiptime END AS time, points ",
                 "FROM tipview tv JOIN game g ON tv.gameid = g.gameid WHERE tv.gameid = ", gameid,
                 sql_filter, " ORDER BY points DESC, name")
   ret <- getPostgresql(sql)
-  if (nrow(ret) > 0 ) ret %>% rename(Rank = rank, Time = time, Name = name, Points = points, Tip = tip)
+  if (nrow(ret) > 0 ) ret %>% rename(Rank = rank, Time = time, Name = name, Points = points)
 }
 
 getPlayerBarplot <- function(data, limit) {
@@ -328,6 +343,12 @@ getCumulativeRanking <- function(showplayers){
   myLevels <- data %>% group_by(name) %>% summarize(allPoints = max(totalPoints)) %>% arrange(desc(allPoints)) %>% .$name
   data <- data %>% mutate(name = factor(name, myLevels)) %>% arrange(gameid)
   return(data)
+}
+
+getGameBetPlot <- function(tips) {
+  g <- ggplot(tips, aes(x = goals1, y = goals2, label = Name)) + geom_point() + theme(text = element_text(size = 14))
+  g <- g + geom_text_repel(size = 5)
+  g + geom_abline(intercept = 0, slope = 1)
 }
 
 getCumulativePlot <- function(data, numPlayer, showMe, user) {
@@ -392,6 +413,9 @@ labeltrans <- list(refresh = list(en = "refresh", de = "erfrischen"),
                    latestgames = list(en = "Latest games", de = "Letzte Spiele"),
                    gamebet = list(en = "Player's bets", de = "Spielerwetten"),
                    gameresult = list(en = "Game results", de = "Spielresultate"),
+                   player_comparison = list(en = "Player comparison", de = "Spielervergleich"),
+                   summary_statistics = list(en = "Summary statistics", de = "Gruppenstatistik"),
+                   game_statistics = list(en = "Game statistics", de = "Spielstatistik"),
                    teamranking = list(en = "Team ranking", de = "Mannschaftsrangliste"),
                    help = list(en = "Help", de = "Hilfe"),
                    login = list(en = "Login", de = "Einloggen"),
@@ -404,6 +428,9 @@ labeltrans <- list(refresh = list(en = "refresh", de = "erfrischen"),
                    register = list(en = "Register", de = "Registrieren"),
                    usernotregistered = list(en = "User not registered.", de = "Benutzer nicht registriert."),
                    wrongpassword = list(en = "Wrong password.", de = "Falsches Password."),
+                   bet = list(en = "bet", de = "Wette"),
+                   bets = list(en = "bets", de = "Wetten"),
+                   saved = list(en = "saved", de = "gespeichert"),
                    save = list(en = "Save", de = "Speichern"),
                    betstatdesc = list(en = paste("This plot shows the average points players got for their bets",
                                                  "for team1 (1), team2 (2) or draws (X) in the",
@@ -466,7 +493,7 @@ getTeamBetPoints <- function(showplayers) {
 # -------------------------------
 
 insertRandomTips <- function() {
-   user <- getPostgresql("SELECT username FROM player")$username
+   user <- getPostgresql("SELECT username FROM player WHERE NOT artificial")$username
    gameids <- getPostgresql("SELECT gameid FROM game WHERE NOT kogame")$gameid
    sapply(user, function(u) {
      tiptable <- lapply(gameids, function(g) {
