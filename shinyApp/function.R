@@ -351,7 +351,7 @@ getGameBetPlot <- function(tips) {
   }
   g <- ggplot(tips, aes(x = goals2, y = goals1, label = Name, color = winner)) + geom_point() + theme(text = element_text(size = 14))
   g <- g + geom_text_repel(size = 5)
-  g + geom_abline(intercept = 0, slope = 1) + xlim(0, max(tips$goals1, 2)) + ylim(0, max(tips$goals2, 2)) 
+  g + geom_abline(intercept = 0, slope = 1) + xlim(0, max(tips$goals2, 2)) + ylim(0, max(tips$goals1, 2)) 
 }
 
 getCumulativePlot <- function(data, numPlayer, showMe, user) {
