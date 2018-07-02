@@ -309,7 +309,7 @@ getTips <- function(gameid, showplayers) {
   if (showplayers == "human") sql_filter <- " AND NOT artificial"
   if (showplayers == "bot") sql_filter <- " AND artificial"
 
-  sql <- paste0("SELECT rank() OVER (order by points desc) as Rank, name, goals1, goals2, ",
+  sql <- paste0("SELECT rank() OVER (order by points desc) as Rank, name, goals1, goals2, winner, kowinner, ",
                 "CASE WHEN artificial THEN starttime ELSE tiptime END AS time, points ",
                 "FROM tipview tv JOIN game g ON tv.gameid = g.gameid WHERE tv.gameid = ", gameid,
                 sql_filter, " ORDER BY points DESC, name")
@@ -346,9 +346,12 @@ getCumulativeRanking <- function(showplayers){
 }
 
 getGameBetPlot <- function(tips) {
-  g <- ggplot(tips, aes(x = goals1, y = goals2, label = Name)) + geom_point() + theme(text = element_text(size = 14))
+  if (!tips %>% select(kowinner) %>% is.na() %>% all()) {
+    tips <- tips %>% mutate(winner = kowinner)
+  }
+  g <- ggplot(tips, aes(x = goals2, y = goals1, label = Name, color = winner)) + geom_point() + theme(text = element_text(size = 14))
   g <- g + geom_text_repel(size = 5)
-  g + geom_abline(intercept = 0, slope = 1)
+  g + geom_abline(intercept = 0, slope = 1) + xlim(0, max(tips$goals1, 2)) + ylim(0, max(tips$goals2, 2)) 
 }
 
 getCumulativePlot <- function(data, numPlayer, showMe, user) {
