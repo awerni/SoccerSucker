@@ -52,7 +52,7 @@ update game set halftimegoals1 = 1, halftimegoals2 = 1, regulartimegoals1 = 4, r
 update game set halftimegoals1 = 1, halftimegoals2 = 1, regulartimegoals1 = 1, regulartimegoals2 = 1, overtimegoals1 = 1, overtimegoals2 = 1, penaltygoals1 = 3, penaltygoals2 = 4 WHERE gameid = 51;
 update game set halftimegoals1 = 1, halftimegoals2 = 1, regulartimegoals1 = 1, regulartimegoals2 = 1, overtimegoals1 = 1, overtimegoals2 = 1, penaltygoals1 = 3, penaltygoals2 = 2 WHERE gameid = 52;
 
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (59, 'Russia', 'Croatia', 'Sochi', 'Jul 7, 2018 21:00+3', TRUE);
+update game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 2, regulartimegoals2 = 0 WHERE gameid = 53;
 
 --update game set halftimegoals1 = 0, halftimegoals2 = 1, regulartimegoals1 = 0, regulartimegoals2 = 2 WHERE gameid = 50;
 --update game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 0, regulartimegoals2 = 0, overtimegoals1 = 1, overtimegoals2 = 0 WHERE gameid = 51;
