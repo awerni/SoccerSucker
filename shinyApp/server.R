@@ -278,7 +278,11 @@ shinyServer(function(input, output, session) {
     validate(
       need(myTips, "no valid tip")
     )
-    myTips %>% mutate(Time = format(Time,'%Y-%m-%d %H:%M'), Tip = paste0(goals1, ":", goals2)) %>% select(-goals1, -goals2) 
+    myTips <- myTips %>% mutate(Time = format(Time,'%Y-%m-%d %H:%M'), Tip = paste0(goals1, ":", goals2)) 
+    if (!myTips %>% select(kowinner) %>% is.na() %>% all()) {
+      myTips <- myTips %>% mutate(Tip = ifelse(goals1 == goals2 & !is.na(kowinner), paste0(Tip, " (", kowinner, ")"), Tip)) 
+    }
+    myTips %>% select(-goals1, -goals2, -winner, -kowinner)
   }, style = 'bootstrap', rownames = FALSE, selection = "none", options = list(pageLength = 15))
 
   output$gamebetgraph <- renderPlot({
