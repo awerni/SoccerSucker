@@ -37,7 +37,7 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                  selectInput("tipgame2show", "Select Game:", getPastGames()),
                  fluidRow(
                    column(6, DT::dataTableOutput("gamebet")),  
-                   column(6, plotOutput("gamebetgraph"))
+                   column(6, plotOutput("gamebetgraph", width = "100%", height = "500px"))
                  )
                ),
                tabPanel(trans("pcapoints"), uiOutput("pcaPoints")),
