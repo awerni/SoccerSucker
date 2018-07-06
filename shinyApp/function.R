@@ -295,12 +295,21 @@ getGameResults <- function(showplayers) {
 }
 
 getPastGames <- function() {
-  sql <- paste0("SELECT gameid, team1 || ':' || team2 || ",
-                " ' (' || COALESCE(regulartimegoals1::TEXT, '?') || ':' || COALESCE(regulartimegoals2::TEXT, '?') || ')' AS game ",
+  sql <- paste0("SELECT gameid, team1 || ':' || team2 as teams, ",
+                "COALESCE(regulartimegoals1::TEXT, '?') || ':' || COALESCE(regulartimegoals2::TEXT, '?') || ' (' || halftimegoals1 || ':' || halftimegoals2 || ')' AS result, ",
+                "overtimegoals1 || ':' || overtimegoals2 AS overtimeresult, ",
+                "penaltygoals1 || ':' || penaltygoals2 AS penaltyresult ",
                 "FROM gameview gv WHERE starttime < now() ORDER BY gameid DESC")
-  g <- getPostgresql(sql)
+  g <- getPostgresql(sql)  %>% mutate(result = ifelse(!is.na(overtimeresult), 
+                                                      ifelse(!is.na(penaltyresult), 
+                                                             paste0(penaltyresult, ", ", overtimeresult, ", ", result), 
+                                                             paste(overtimeresult, ", ", result)
+                                                      ), 
+                                                      result
+                                                    )
+  )
   ret <- g$gameid
-  names(ret) <- g$game
+  names(ret) <- paste(g$teams, g$result)
   return(ret)
 }
 
