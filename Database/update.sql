@@ -58,3 +58,7 @@
 
 update game set halftimegoals1 = 0, halftimegoals2 = 1, regulartimegoals1 = 0, regulartimegoals2 = 2 WHERE gameid =  57;
 update game set halftimegoals1 = 0, halftimegoals2 = 2, regulartimegoals1 = 1, regulartimegoals2 = 2 WHERE gameid =  58;
+
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (61, 'France', 'Belgium', 'Saint Petersburg', 'Jul 10, 2018 21:00+3', TRUE);
+
+update game set halftimegoals1 = 0, halftimegoals2 = 1, regulartimegoals1 = 0, regulartimegoals2 = 2 WHERE gameid =  60;
