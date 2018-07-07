@@ -59,6 +59,7 @@
 update game set halftimegoals1 = 0, halftimegoals2 = 1, regulartimegoals1 = 0, regulartimegoals2 = 2 WHERE gameid =  57;
 update game set halftimegoals1 = 0, halftimegoals2 = 2, regulartimegoals1 = 1, regulartimegoals2 = 2 WHERE gameid =  58;
 
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (61, 'France', 'Belgium', 'Saint Petersburg', 'Jul 10, 2018 21:00+3', TRUE);
+update game set halftimegoals1 = 1, halftimegoals2 = 1, regulartimegoals1 = 1, regulartimegoals2 = 1, overtimegoals1 = 2, overtimegoals2 = 2, penaltygoals1 = 3, penaltygoals2 = 4 WHERE gameid = 59;
 
 update game set halftimegoals1 = 0, halftimegoals2 = 1, regulartimegoals1 = 0, regulartimegoals2 = 2 WHERE gameid =  60;
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (62, 'Croatia', 'England', 'Moscow', 'Jul 11, 2018 21:00+3', TRUE);
