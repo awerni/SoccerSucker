@@ -37,7 +37,8 @@ getNumberOfPlayers <- function() {
 getRanking <- function(showplayers) {
   expert_order <- c("beginner", "intermediate", "expert")
   sql <- paste("SELECT rank() over (ORDER BY grouppoints + kopoints desc), firstname, name,",
-               "nationality, expertstatus, grouppoints + kopoints AS points, grouppoints, kopoints, ",
+               "nationality, expertstatus, department, researchgroup, ",
+               "grouppoints + kopoints AS points, grouppoints, kopoints, ",
                "evalgroupgames + evalkogames AS games, ",
                "CASE WHEN evalgroupgames + evalkogames = 0 THEN 0 ",
                "ELSE (grouppoints + kopoints)/(evalgroupgames::REAL + evalkogames::REAL) ",
@@ -48,7 +49,8 @@ getRanking <- function(showplayers) {
   if (nrow(rank) == 0) return()
   rank <- rank %>% mutate(pointspergame = signif(pointspergame, digits = 2)) %>%
     mutate(expertstatus = factor(expert_order[expertstatus], levels = expert_order))
-  colnames(rank) <- c("Rank", "Firstname", "Name", "Nationality", "Expert-Status", "Total Points", "Group-Points", 
+  colnames(rank) <- c("Rank", "Firstname", "Name", "Nationality", "Expert-Status", "Department", 
+                      "Research Group", "Total Points", "Group-Points", 
                       "KO-Points", "Games", "Points/Game")
   return(rank)
 }
@@ -244,7 +246,8 @@ getPCA <- function(data, mainTitle) {
 
 getNationPlot <- function(data) {
   data <- data %>% rename(totalpoints = `Total Points`)
-  p <- ggplot(data, aes(factor(Nationality), totalpoints)) + geom_boxplot(aes(fill = Nationality))
+  nranking <- data %>% group_by(Nationality) %>% summarise(med = median(totalpoints)) %>% arrange(med) %>% .$Nationality
+  p <- ggplot(data, aes(factor(Nationality, levels = nranking), totalpoints)) + geom_boxplot(aes(fill = Nationality))
   p <- p + theme_gray() + scale_x_discrete(name = "") + scale_y_continuous(name = "Total Points")
   p + coord_flip() + theme(text = element_text(size = 20)) +  theme(text = element_text(size=20))
 }
@@ -254,6 +257,24 @@ getExpertPlot <- function(data) {
   p <- ggplot(data, aes(factor(expertstatus), totalpoints)) + geom_boxplot(aes(fill = expertstatus))
   p <- p + theme_gray() + scale_x_discrete(name = "") + scale_y_continuous(name = "Total Points")
   p + coord_flip() + theme(text = element_text(size = 20)) +  theme(text = element_text(size=20))
+}
+
+getDepartmentPlot <- function(data) {
+  data <- data %>% rename(totalpoints = `Total Points`) %>% filter(!is.na(Department))
+  dranking <- data %>% group_by(Department) %>% summarise(med = median(totalpoints)) %>% arrange(med) %>% .$Department
+  p <- ggplot(data, aes(factor(Department, levels = dranking), totalpoints)) + geom_boxplot(aes(fill = Department))
+  p <- p + theme_gray() + scale_x_discrete(name = "") + scale_y_continuous(name = "Total Points")
+  p + coord_flip() + theme(text = element_text(size = 20)) +  theme(text = element_text(size=20))
+}
+
+getResearchGroupPlot <- function(data, grouping) {
+  data <- data %>% rename(research_group = `Research Group`, totalpoints = `Total Points`) %>% filter(!is.na(research_group))
+  granking <- data %>% group_by(research_group) %>% summarise(med = median(totalpoints)) %>% arrange(med) %>% .$research_group
+  p <- ggplot(data, aes(factor(research_group, levels = granking), totalpoints)) + geom_boxplot(aes(fill = research_group))
+  p <- p + theme_gray() + scale_x_discrete(name = "") + scale_y_continuous(name = "Total Points")
+  p <- p + coord_flip() + theme(text = element_text(size = 20)) +  theme(text = element_text(size=20))
+  if (grouping != "All") p <- p + facet_wrap(~Department, scales = "free")
+  p
 }
 
 getPlayerResult <- function(username) {
@@ -417,6 +438,8 @@ labeltrans <- list(refresh = list(en = "refresh", de = "erfrischen"),
                    lineranking = list(en="Line Ranking", de = "Linienrangfolge"),
                    nationality = list(en = "Nationality", de = "Nationalität"),
                    expertstatus = list(en = "Expert Status", de = "Expertenstatus"),
+                   department = list(en = "Department", de = "Abteilung"),
+                   researchgroup = list(en = "Research Group", de = "Forschungsgruppe"),
                    pcapoints = list(en = "PCA Points", de = "HKA Punkte"),
                    pcatips = list(en = "PCA Tips", de = "HKA Tipps"),
                    betstatistics = list(en = "Bet Statistics", de = "Wettstatistik"), 
@@ -455,7 +478,7 @@ labeltrans <- list(refresh = list(en = "refresh", de = "erfrischen"),
                                                        "If a team fullfils the expectations of the players of our betting game",
                                                        "the average points per game are high, regardless if they win or loose.",
                                                        "Since the group phase games provide fewer points, the KO-phase games",
-                                                       "are displayed seperately.",
+                                                       "are displayed separately.",
                                                        "Only the teams, which made it to the KO-phase, have two bars.",
                                                        "The little number on the bar shows the number of games."),
                                             de = paste("Diese Grafik zeigt, welche Fußballmannschaft Punktequelle in unserem",
