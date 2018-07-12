@@ -47,6 +47,8 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
              tabPanel(trans("summary_statistics"), tabsetPanel(
                tabPanel(trans("nationality"), uiOutput("nationplot")),
                tabPanel(trans("expertstatus"), uiOutput("expertplot")),
+               tabPanel(trans("department"), plotOutput("departmentplot", width = "100%", height = "600px")),
+               tabPanel(trans("researchgroup"), uiOutput("researchgroupplot")),
                tabPanel(trans("betstatistics"), plotOutput("betstat", width = "100%", height = "400px"), textOutput("betstatdesc")),
                tabPanel(trans("pointsperteam"), plotOutput("pointsperteam", width = "100%", height = "400px"), textOutput("pointsperteamdesc"))
              )),
