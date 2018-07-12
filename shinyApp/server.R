@@ -14,7 +14,7 @@ shinyServer(function(input, output, session) {
   })
 
   output$ranking <- DT::renderDataTable(
-    ranking() %>% select(-`Expert-Status`), 
+    ranking() %>% select(-`Expert-Status`, -`Department`, -`Research Group`), 
     style = 'bootstrap', rownames = FALSE, selection = "none",
     options = list(pageLength = 15)
   )
@@ -232,6 +232,22 @@ shinyServer(function(input, output, session) {
 
   output$expertboxplot <- renderPlot({
     getExpertPlot(ranking())
+  })
+  
+  output$departmentplot <- renderPlot({
+    getDepartmentPlot(ranking())
+  })
+  
+  output$researchgroupplot <- renderUI({
+    list(
+      br(),
+      selectInput("rg_group_by", "Group by", choices = c("All", "Departments"), selected = "All"),
+      plotOutput("researchgroupboxplot", width = "100%", height = "600px")
+    )
+  })
+
+  output$researchgroupboxplot <- renderPlot({
+    getResearchGroupPlot(ranking(), input$rg_group_by)
   })
 
   output$pcaPoints <- renderUI({
