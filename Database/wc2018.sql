@@ -34,6 +34,8 @@ NAME                 TEXT                 null,
 FIRSTNAME            TEXT                 null,
 NATIONALITY          TEXT                 null,
 EXPERTSTATUS         INT2                 null,
+DEPARTMENT           TEXT                 null,
+RESEARCHGROUP        TEXT                 null,
 ARTIFICIAL           BOOL                 null,
 PASS                 TEXT                 null,
 constraint PK_PLAYER primary key (USERNAME)
