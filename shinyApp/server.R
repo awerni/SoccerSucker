@@ -13,10 +13,11 @@ shinyServer(function(input, output, session) {
     getRanking(input$showplayers)
   })
 
-  output$ranking <- DT::renderDataTable(
-    ranking() %>% select(-`Expert-Status`), 
-    style = 'bootstrap', rownames = FALSE, selection = "none",
-    options = list(pageLength = 15)
+  output$ranking <- DT::renderDataTable({
+      my_rank <- ranking()
+      validate(need(my_rank, "no ranking available"))
+      my_rank %>% select(-`Expert-Status`)
+    }, style = 'bootstrap', rownames = FALSE, selection = "none", options = list(pageLength = 15)
   )
 
   teamranking <- reactive({
@@ -25,16 +26,16 @@ shinyServer(function(input, output, session) {
   })
 
   output$teamranking <- DT::renderDataTable({
-    datatable(teamranking(), rownames = FALSE, selection = "none", options = list(pageLength = 32)) %>% 
-      formatStyle('Group', backgroundColor = styleEqual(LETTERS[1:8], c('#f5fffa', '#fffacd', '#e6e6fa', 
+    datatable(teamranking(), rownames = FALSE, selection = "none", options = list(pageLength = 32)) %>%
+      formatStyle('Group', backgroundColor = styleEqual(LETTERS[1:8], c('#f5fffa', '#fffacd', '#e6e6fa',
                                                                         '#faebd7', '#F0F8FF', '#cdc0b0',
                                                                         '#FFCCCC', '#CCFFE5'))
       )
   })
 
-  #%>% 
-  #  formatStyle('Group', backgroundColor = styleEqual(LETTERS[1:8], c('#f5fffa', '#fffacd', '#e6e6fa', 
-  #                                                                    '#faebd7', '#F0F8FF', '#cdc0b0', 
+  #%>%
+  #  formatStyle('Group', backgroundColor = styleEqual(LETTERS[1:8], c('#f5fffa', '#fffacd', '#e6e6fa',
+  #                                                                    '#faebd7', '#F0F8FF', '#cdc0b0',
   #                                                                    '#987654', '#537827')))
 
   missingTips <- reactive({
@@ -43,13 +44,14 @@ shinyServer(function(input, output, session) {
   })
 
   output$missingbets <- DT::renderDataTable({
-    mt <- missingTips() 
+    mt <- missingTips()
     if (nrow(mt) > 0) mt %>% mutate(starttime = format(starttime,'%Y-%m-%d %H:%M'))
   },rownames = FALSE, selection = "none", options = list(pageLength = 10))
 
   output$gameresult <- DT::renderDataTable({
     input$refresh
     gr <- getGameResults(input$showplayers)
+    validate(need(gr, "no game result available"))
     gr %>% mutate(`Start time` = format(`Start time`,'%Y-%m-%d %H:%M'), `Avg points` = round(`Avg points`, 2))
   }, rownames = FALSE, selection = "none", options = list(pageLength = 15))
 
@@ -130,7 +132,7 @@ shinyServer(function(input, output, session) {
       input$refresh
       getAllTips(user$name)
     }, include.rownames = FALSE, sanitize.text.function = function(x) x)
-  
+
   observeEvent(input$save, {
     games <- getFutureGames()
     if (nrow(games) == 0) {
@@ -151,13 +153,19 @@ shinyServer(function(input, output, session) {
       }
     )
     tiptable <- tiptable[!sapply(tiptable, is.null)]
-  
+
     if (length(tiptable) > 0) {
       fb <- upsertTip2(user$name, tiptable)
       mytext <- paste(if(fb <= 1) paste(fb, trans("bet")) else paste(fb, trans("bets")), trans("saved"))
     } else mytext <- trans("missingbets")
-    session$sendCustomMessage(type = 'savemessage',
-                              message = mytext)
+
+    showModal(modalDialog(
+      title = "Save bets",
+      mytext
+    ))
+
+    # session$sendCustomMessage(type = 'savemessage',
+    #                           message = mytext)
   })
 
   output$yourresults <- renderUI({
@@ -189,7 +197,7 @@ shinyServer(function(input, output, session) {
     input$refresh
     getTipCross(input$showplayers)
   })
-  
+
   output$heatmap <- renderPlot({
     getHeatmap(resultCross())
   })
@@ -278,9 +286,9 @@ shinyServer(function(input, output, session) {
     validate(
       need(myTips, "no valid tip")
     )
-    myTips <- myTips %>% mutate(Time = format(Time,'%Y-%m-%d %H:%M'), Tip = paste0(goals1, ":", goals2)) 
+    myTips <- myTips %>% mutate(Time = format(Time,'%Y-%m-%d %H:%M'), Tip = paste0(goals1, ":", goals2))
     if (!myTips %>% select(kowinner) %>% is.na() %>% all()) {
-      myTips <- myTips %>% mutate(Tip = ifelse(goals1 == goals2 & !is.na(kowinner), paste0(Tip, " (", kowinner, ")"), Tip)) 
+      myTips <- myTips %>% mutate(Tip = ifelse(goals1 == goals2 & !is.na(kowinner), paste0(Tip, " (", kowinner, ")"), Tip))
     }
     myTips %>% select(-goals1, -goals2, -winner, -kowinner)
   }, style = 'bootstrap', rownames = FALSE, selection = "none", options = list(pageLength = 15))
@@ -294,9 +302,11 @@ shinyServer(function(input, output, session) {
       need(myTips, "no valid tip")
     )
     getGameBetPlot(myTips)
-  }) 
-  
+  })
+
   observeEvent(input$refresh, {
+    pg <- getPastGames()
+    validate(need(pg, "no past games available"))
     updateSelectInput(session, "tipgame2show", choices = getPastGames(), selected = input$tipgame2show)
   })
 
