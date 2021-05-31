@@ -2,7 +2,7 @@
 
 cd /home/andreas/SoccerSucker/Database
 
-alias d='psql WorldCup2018 postgres -h localhost'
+alias d='psql EuroCup2021 postgres -h localhost'
 
 echo "DROP TRIGGER checkTip ON tip;" | d 
 cat update.sql | d 
