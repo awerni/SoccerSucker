@@ -6,7 +6,7 @@ source("settings.R")
 source("function.R")
 
 shinyUI(fluidPage(theme = shinytheme("cerulean"),
-  titlePanel(trans("sportsevent"), windowTitle = "WC 2018"),
+  titlePanel(trans("sportsevent"), windowTitle = "Euro 2021"),
   tags$head(tags$script(src = "message-handler.js")),
   fluidRow(
     column(2,
