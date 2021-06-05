@@ -1,14 +1,16 @@
-library(RPostgreSQL)
+library(RPostgres)
 #library(d3heatmap)
-library(tidyverse)
+#library(tidyverse)
+library(dplyr)
+library(tidyr)
 library(ggrepel)
 
 source("settings.R")
 
 connectPostgresql <- function() {
-  drv <- dbDriver("PostgreSQL")
-  dbConnect(drv, dbname = db$dbname, host = db$host, port = db$port,
-                 user = db$user, password = db$password)
+  drv <- RPostgres::Postgres()
+  DBI::dbConnect(drv, dbname = db$dbname, host = db$host, port = db$port,
+                 user = db$user, password = db$password, sslmode = db$sslmode)
 }
 
 disconnectPostgresql <- function(con) {
@@ -17,13 +19,25 @@ disconnectPostgresql <- function(con) {
 
 getPostgresql <- function(sql) {
   con <- connectPostgresql()
-  ret <- dbGetQuery(con, sql)
-  disconnectPostgresql(con)
-  return(ret)
+  if (class(con) == "try-error") stop("no connection to database")
+  
+  rs <- try(RPostgres::dbSendQuery(con, sql))
+  if (class(rs) == "try-error") {
+    RPostgres::dbDisconnect(con)
+    stop("can not exectute sql command")
+  }
+  
+  data <- try(RPostgres::dbFetch(rs, n = -1))
+  
+  if (class(rs) == "PqResult") RPostgres::dbClearResult(rs)
+  RPostgres::dbDisconnect(con)
+  if (class(data) == "try-error") stop("can not retrieve data")
+  
+  return(data)
 }
 
 getGames <- function() {
-  getPostgresql("SELECT gameid, team1, team2, city, starttime FROM game ORDER BY gameid")
+  getPostgresql("SELECT gameid, team1, team2, city, starttime AT TIME ZONE 'Europe/Paris' AS starttime FROM game ORDER BY gameid")
 }
 
 getNumberOfGames <- function() {
@@ -78,7 +92,8 @@ getTeamRanking <- function() {
 }
 
 getMissingTips <- function() {
-  sql <- paste0("select firstname, name, gameid, team1, team2, starttime FROM player p, game g WHERE ",
+  sql <- paste0("SELECT firstname, name, gameid, team1, team2, starttime AT TIME ZONE 'Europe/Paris' AS starttime ",
+                "FROM player p, game g WHERE ",
                 "(select count(*) FROM tipview t WHERE t.username = p.username AND t.gameid = g.gameid) = 0 ",
                 "AND NOT artificial AND gametime(starttime) = 'soon' order by starttime")
   getPostgresql(sql)
@@ -156,7 +171,7 @@ getName <- function(user) {
 getAllTips <- function(username) {
   sql <- paste0("SELECT g.gameid, g.team1, g.team2, g.kogame, ",
                "tv.goals1 as tipgoals1, tv.goals2 as tipgoals2, tv.kowinner, ",
-               "city, starttime ",
+               "city, starttime AT TIME ZONE 'Europe/Paris' AS starttime ",
                "FROM gameview g LEFT OUTER JOIN (SELECT * FROM tipview WHERE username = '",
                username, "') tv ON tv.gameid = g.gameid ",
                "WHERE starttime > now() AT TIME ZONE 'Europe/Paris' ORDER BY gameid")
@@ -257,7 +272,7 @@ getExpertPlot <- function(data) {
 }
 
 getPlayerResult <- function(username) {
-  sql <- paste0("SELECT tv.gameid as game, team1 || '-' || team2 AS teams, starttime as time, ",
+  sql <- paste0("SELECT tv.gameid as game, team1 || '-' || team2 AS teams, starttime AT TIME ZONE 'Europe/Paris' as time, ",
                 "tv.goals1 || ':' || tv.goals2 as tip, ",
                 "COALESCE(g.overtimegoals1, g.regulartimegoals1) || ':' || ",
                 "COALESCE(g.overtimegoals2, g.regulartimegoals2) as result, ",
@@ -272,7 +287,7 @@ getGameResults <- function(showplayers) {
   if (showplayers == "human") sql_filter <- "AND NOT artificial"
   if (showplayers == "bot") sql_filter <- "AND artificial"
 
-  sql <- paste0("SELECT gameid, team1, team2, city, starttime, ",
+  sql <- paste0("SELECT gameid, team1, team2, city, starttime AT TIME ZONE 'Europe/Paris' as starttime, ",
                 "regulartimegoals1 || ':' || regulartimegoals2 || ' (' || halftimegoals1 || ':' || halftimegoals2 || ')' AS result, ",
                 "overtimegoals1 || ':' || overtimegoals2 AS overtimeresult, ",
                 "penaltygoals1 || ':' || penaltygoals2 AS penaltyresult, ",
