@@ -14,6 +14,8 @@ shinyUI(fluidPage(theme = bs_theme(bootswatch = "cerulean"),
     column(2,
            img(src=logo_file, width="200", align = "center"),
            hr(),
+           p("Version 1.2"),
+           hr(),
            {
              myChoise <- c("human", "human_bot", "bot")
              names(myChoise) <- c(trans("human"), paste(trans("human"), "+", trans("bot")),  trans("bot"))
