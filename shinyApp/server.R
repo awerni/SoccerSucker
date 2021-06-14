@@ -259,6 +259,7 @@ shinyServer(function(input, output, session) {
   })
 
   output$latestGames <- renderUI({
+    input$refresh
     validate(
       need(getReadyGames(), "no game finished yet")
     )
@@ -270,7 +271,7 @@ shinyServer(function(input, output, session) {
 
   output$lastGames <- DT::renderDataTable({
     getRankingLastGames(input$numberOfGames, input$showplayers)
-    }, rownames = FALSE, selection = "none", options = list(pageLength = 10)
+    }, rownames = FALSE, selection = "none", options = list(pageLength = 15)
   )
 
   output$betstatdesc <- renderText(trans("betstatdesc"))
@@ -279,6 +280,7 @@ shinyServer(function(input, output, session) {
   })
 
   output$gamebet <- DT::renderDataTable({
+    input$refresh
     validate(
       need(input$tipgame2show, "no game running or finished yet")
     )
@@ -294,6 +296,7 @@ shinyServer(function(input, output, session) {
   }, rownames = FALSE, selection = "none", options = list(pageLength = 15))
 
   output$gamebetgraph <- renderPlot({
+    input$refresh
     validate(
       need(input$tipgame2show, "no game running or finished yet")
     )
@@ -305,6 +308,7 @@ shinyServer(function(input, output, session) {
   })
 
   observeEvent(input$refresh, {
+    input$refresh
     pg <- getPastGames()
     validate(need(pg, "no past games available"))
     updateSelectInput(session, "tipgame2show", choices = getPastGames(), selected = input$tipgame2show)
