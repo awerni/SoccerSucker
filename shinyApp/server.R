@@ -1,6 +1,6 @@
 library(shiny)
 #library(shinyBS)
-library(RPostgreSQL)
+library(RPostgres)
 library(DT)
 
 source("function.R")
@@ -17,7 +17,7 @@ shinyServer(function(input, output, session) {
       my_rank <- ranking()
       validate(need(my_rank, "no ranking available"))
       my_rank %>% select(-`Expert-Status`)
-    }, style = 'bootstrap', rownames = FALSE, selection = "none", options = list(pageLength = 15)
+    },  rownames = FALSE, selection = "none", options = list(pageLength = 15)
   )
 
   teamranking <- reactive({
@@ -26,7 +26,7 @@ shinyServer(function(input, output, session) {
   })
 
   output$teamranking <- DT::renderDataTable({
-    datatable(teamranking(), rownames = FALSE, selection = "none", options = list(pageLength = 32)) %>%
+    datatable(teamranking(), rownames = FALSE, selection = "none", options = list(pageLength = 24)) %>%
       formatStyle('Group', backgroundColor = styleEqual(LETTERS[1:8], c('#f5fffa', '#fffacd', '#e6e6fa',
                                                                         '#faebd7', '#F0F8FF', '#cdc0b0',
                                                                         '#FFCCCC', '#CCFFE5'))
@@ -270,7 +270,7 @@ shinyServer(function(input, output, session) {
 
   output$lastGames <- DT::renderDataTable({
     getRankingLastGames(input$numberOfGames, input$showplayers)
-    }, style = 'bootstrap', rownames = FALSE, selection = "none", options = list(pageLength = 10)
+    }, rownames = FALSE, selection = "none", options = list(pageLength = 10)
   )
 
   output$betstatdesc <- renderText(trans("betstatdesc"))
@@ -291,7 +291,7 @@ shinyServer(function(input, output, session) {
       myTips <- myTips %>% mutate(Tip = ifelse(goals1 == goals2 & !is.na(kowinner), paste0(Tip, " (", kowinner, ")"), Tip))
     }
     myTips %>% select(-goals1, -goals2, -winner, -kowinner)
-  }, style = 'bootstrap', rownames = FALSE, selection = "none", options = list(pageLength = 15))
+  }, rownames = FALSE, selection = "none", options = list(pageLength = 15))
 
   output$gamebetgraph <- renderPlot({
     validate(

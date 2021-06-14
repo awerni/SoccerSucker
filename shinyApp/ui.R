@@ -1,11 +1,13 @@
 library(shiny)
 library(DT)
-library(shinythemes)
+library(bslib)
+
+#library(shinythemes)
 
 source("settings.R")
 source("function.R")
 
-shinyUI(fluidPage(theme = shinytheme("cerulean"),
+shinyUI(fluidPage(theme = bs_theme(bootswatch = "cerulean"),
   titlePanel(trans("sportsevent"), windowTitle = "Euro 2021"),
   tags$head(tags$script(src = "message-handler.js")),
   fluidRow(
@@ -54,7 +56,8 @@ shinyUI(fluidPage(theme = shinytheme("cerulean"),
                tabPanel(trans("gameresult"), p(), DT::dataTableOutput("gameresult")),
                tabPanel(trans("teamranking"), p(), DT::dataTableOutput("teamranking"))
              )),
-             tabPanel(trans("help"), br(), helpText(helpGer), hr(), helpText(helpEng))
+             tabPanel(trans("help"), br(), helpText(helpEng), hr(), helpText(helpGer), 
+                      a("registration help and legal disclaimer", href="register_help.html", target="_blank"))
            )
     )
   )

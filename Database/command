@@ -1,4 +1,4 @@
 #!/bin/sh
 cd ~/SoccerSuccer/Database
 
-cat tables.sql player.sql storedprocedures.sql trigger.sql teams.sql games.sql view.sql
+cat tables.sql artificialPlayers.sql storedprocedures.sql trigger.sql teams.sql games.sql view.sql
