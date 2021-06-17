@@ -43,6 +43,11 @@ shinyServer(function(input, output, session) {
     getMissingTips()
   })
 
+  tips <- reactive({
+    input$refresh
+    getTips(input$tipgame2show, input$showplayers)
+  })
+
   output$missingbets <- DT::renderDataTable({
     mt <- missingTips()
     if (nrow(mt) > 0) mt %>% mutate(starttime = format(starttime,'%Y-%m-%d %H:%M'))
@@ -284,7 +289,7 @@ shinyServer(function(input, output, session) {
     validate(
       need(input$tipgame2show, "no game running or finished yet")
     )
-    myTips <- getTips(input$tipgame2show, input$showplayers)
+    myTips <- tips()
     validate(
       need(myTips, "no valid tip")
     )
@@ -300,11 +305,12 @@ shinyServer(function(input, output, session) {
     validate(
       need(input$tipgame2show, "no game running or finished yet")
     )
-    myTips <- getTips(input$tipgame2show, input$showplayers)
+    myTips <- tips()
+    myTeams <- getTeams(input$tipgame2show)
     validate(
       need(myTips, "no valid tip")
     )
-    getGameBetPlot(myTips)
+    getGameBetPlot(myTips, myTeams)
   })
 
   observeEvent(input$refresh, {
