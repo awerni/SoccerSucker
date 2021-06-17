@@ -336,7 +336,7 @@ getPastGames <- function() {
                 "COALESCE(regulartimegoals1::TEXT, '?') || ':' || COALESCE(regulartimegoals2::TEXT, '?') || ' (' || halftimegoals1 || ':' || halftimegoals2 || ')' AS result, ",
                 "overtimegoals1 || ':' || overtimegoals2 AS overtimeresult, ",
                 "penaltygoals1 || ':' || penaltygoals2 AS penaltyresult ",
-                "FROM gameview gv WHERE starttime < now() ORDER BY gameid DESC")
+                "FROM gameview gv WHERE starttime < now() ORDER BY starttime DESC")
   g <- getPostgresql(sql)
 
   if (nrow(g) == 0) return()
@@ -361,12 +361,18 @@ getTips <- function(gameid, showplayers) {
   if (showplayers == "human") sql_filter <- " AND NOT artificial"
   if (showplayers == "bot") sql_filter <- " AND artificial"
 
-  sql <- paste0("SELECT rank() OVER (order by points desc) as Rank, name, goals1, goals2, winner, kowinner, ",
+  sql <- paste0("SELECT rank() OVER (order by points desc) as rank, name, goals1, goals2, winner, kowinner, ",
                 "CASE WHEN artificial THEN starttime ELSE tiptime END AS time, points ",
                 "FROM tipview tv JOIN game g ON tv.gameid = g.gameid WHERE tv.gameid = ", gameid,
                 sql_filter, " ORDER BY points DESC, name")
-  ret <- getPostgresql(sql)
-  if (nrow(ret) > 0 ) ret %>% rename(Rank = rank, Time = time, Name = name, Points = points)
+  tips <- getPostgresql(sql)
+  if (nrow(tips) > 0 ) tips %>% rename(Rank = rank, Time = time, Name = name, Points = points)
+}
+
+getTeams <- function(gameid) {
+  sql <- paste("SELECT team1, team2 FROM game WHERE gameid =", gameid)
+  teams <- getPostgresql(sql)
+  if (nrow(teams) > 0) teams %>% as.list()
 }
 
 getPlayerBarplot <- function(data, limit) {
@@ -407,7 +413,7 @@ getCumulativeRanking <- function(showplayers){
     mutate(name = factor(name, myLevels))
 }
 
-getGameBetPlot <- function(tips) {
+getGameBetPlot <- function(tips, teams) {
   if (!tips %>% select(kowinner) %>% is.na() %>% all()) {
     tips <- tips %>% mutate(winner = kowinner)
   }
@@ -415,7 +421,8 @@ getGameBetPlot <- function(tips) {
     geom_text_repel(size = 5) +
     geom_abline(intercept = 0, slope = 1) +
     xlim(0, max(tips$goals2, 2)) +
-    ylim(0, max(tips$goals1, 2))
+    ylim(0, max(tips$goals1, 2)) +
+    xlab(teams$team2) + ylab(teams$team1)
 }
 
 getCumulativePlot <- function(data, numPlayer, showMe, user) {
