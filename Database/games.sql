@@ -39,3 +39,6 @@ INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (23, 'Hu
 INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (24, 'Portugal', 'Germany', 'Munich', 'Jun 19, 2021 18:00+2', FALSE);
 INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (35, 'Portugal', 'France', 'Budapest', 'Jun 23, 2021 21:00+2', FALSE);
 INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (36, 'Germany', 'Hungary', 'Munich', 'Jun 23, 2021 21:00+2', FALSE);
+
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (37, 'Italy', 'Austria', 'London', 'Jun 26, 2021 21:00+1', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (38, 'Wales', 'Denmark', 'London', 'Jun 26, 2021 18:00+2', TRUE);
