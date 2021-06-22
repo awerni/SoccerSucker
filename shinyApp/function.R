@@ -67,7 +67,7 @@ getRankingLastGames <- function(nGames, showplayers) {
   sql <- paste0("SELECT rank() OVER (order by sum(points) desc), name, nationality, sum(points) as points ",
                 "FROM tipview tv WHERE points IS NOT NULL AND gameid IN ",
                 "(SELECT gameid FROM game WHERE regulartimegoals1 IS NOT NULL and regulartimegoals2 IS NOT NULL ",
-                "ORDER BY starttime DESC LIMIT ", nGames, ") ")
+                "ORDER BY starttime DESC, gameid LIMIT ", nGames, ") ")
 
   if (showplayers == "human") sql <- paste(sql, "AND NOT artificial")
   if (showplayers == "bot") sql <- paste(sql, "AND artificial")
@@ -92,7 +92,7 @@ getMissingTips <- function() {
   sql <- paste0("SELECT firstname, name, gameid, team1, team2, starttime AT TIME ZONE 'Europe/Paris' AS starttime ",
                 "FROM player p, game g WHERE ",
                 "(select count(*) FROM tipview t WHERE t.username = p.username AND t.gameid = g.gameid) = 0 ",
-                "AND NOT artificial AND gametime(starttime AT TIME ZONE 'Europe/Paris') = 'soon' order by starttime")
+                "AND NOT artificial AND gametime(starttime AT TIME ZONE 'Europe/Paris') = 'soon' ORDER BY starttime, gameid DESC")
   getPostgresql(sql)
 }
 
@@ -171,7 +171,7 @@ getAllTips <- function(username) {
                "city, starttime AT TIME ZONE 'Europe/Paris' AS starttime ",
                "FROM gameview g LEFT OUTER JOIN (SELECT * FROM tipview WHERE username = '",
                username, "') tv ON tv.gameid = g.gameid ",
-               "WHERE starttime > now() ORDER BY gameid")
+               "WHERE starttime > now() ORDER BY starttime, gameid DESC")
   res <- getPostgresql(sql)
   if (nrow(res) == 0) return()
   res %>%
@@ -231,7 +231,7 @@ getTipCross <- function(showplayers) {
                 "WHERE tv.goals1 IS NOT NULL AND tv.goals2 IS NOT NULL")
   if (showplayers == "human") sql <- paste(sql, "AND NOT artificial")
   if (showplayers == "bot") sql <- paste(sql, "AND artificial")
-  sql <- paste(sql, "ORDER by starttime, name")
+  sql <- paste(sql, "ORDER by starttime, tv.gameid DESC, name")
   data <- getPostgresql(sql)
   if (nrow(data) < 2) return(list(data = NULL, n = NULL))
 
@@ -291,7 +291,7 @@ getPlayerResult <- function(username) {
                 "COALESCE(g.overtimegoals2, g.regulartimegoals2) as result, ",
                 "winner, points FROM tipview tv JOIN game g ON g.gameid = tv.gameid ",
                 "WHERE tv.username = '", username, "' AND points IS NOT NULL ",
-                "ORDER BY tv.gameid DESC")
+                "ORDER BY g.starttime DESC, tv.gameid")
   getPostgresql(sql)
 }
 
@@ -305,7 +305,7 @@ getGameResults <- function(showplayers) {
                 "overtimegoals1 || ':' || overtimegoals2 AS overtimeresult, ",
                 "penaltygoals1 || ':' || penaltygoals2 AS penaltyresult, ",
                 "(SELECT avg(points) FROM tipview WHERE gameid = gv.gameid ", sql_filter, ") AS avg_points ",
-                "FROM gameview gv WHERE starttime < now() OR gametime(starttime) = 'soon' ORDER BY starttime DESC")
+                "FROM gameview gv WHERE starttime < now() OR gametime(starttime) = 'soon' ORDER BY starttime DESC, gameid")
   ret <- getPostgresql(sql)
   if (nrow(ret) == 0) return()
   ret <- ret %>% mutate(result = ifelse(
@@ -336,7 +336,7 @@ getPastGames <- function() {
                 "COALESCE(regulartimegoals1::TEXT, '?') || ':' || COALESCE(regulartimegoals2::TEXT, '?') || ' (' || halftimegoals1 || ':' || halftimegoals2 || ')' AS result, ",
                 "overtimegoals1 || ':' || overtimegoals2 AS overtimeresult, ",
                 "penaltygoals1 || ':' || penaltygoals2 AS penaltyresult ",
-                "FROM gameview gv WHERE starttime < now() ORDER BY starttime DESC")
+                "FROM gameview gv WHERE starttime < now() ORDER BY starttime DESC, gameid")
   g <- getPostgresql(sql)
 
   if (nrow(g) == 0) return()
@@ -387,12 +387,12 @@ getPlayerBarplot <- function(data, limit) {
 }
 
 getCumulativeRanking <- function(showplayers){
-  sql <- paste0("SELECT tv.gameid, team1 || ':' || team2 || ' (' || tv.gameid || ')' as game, username, name, ",
+  sql <- paste0("SELECT tv.gameid, team1 || ':' || team2 || ' (' || tv.gameid || ')' AS game, username, name, ",
                 "points FROM tipview tv JOIN game g ON g.gameid = tv.gameid ",
                 "WHERE points IS NOT NULL")
   if (showplayers == "human") sql <- paste(sql, "AND NOT artificial")
   if (showplayers == "bot") sql <- paste(sql, "AND artificial")
-  sql <- paste(sql, "ORDER by username, starttime")
+  sql <- paste(sql, "ORDER by username, starttime, tv.gameid DESC")
   data <- getPostgresql(sql)
   if (nrow(data) < 2) return()
   if (length(unique(data$gameid)) == 1) return()
