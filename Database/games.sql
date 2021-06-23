@@ -40,8 +40,12 @@ INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (24, 'Po
 INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (35, 'Portugal', 'France', 'Budapest', 'Jun 23, 2021 21:00+2', FALSE);
 INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (36, 'Germany', 'Hungary', 'Munich', 'Jun 23, 2021 21:00+2', FALSE);
 
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (37, 'Italy', 'Austria', 'London', 'Jun 26, 2021 21:00+1', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (37, 'Italy', 'Austria', 'London', 'Jun 26, 2021 20:00+1', TRUE);
+update game set starttime = 'Jun 26, 2021 20:00+1' where gameid = 37;
 INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (38, 'Wales', 'Denmark', 'Amsterdam', 'Jun 26, 2021 18:00+2', TRUE);
-
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (39, 'Belgium', 'Portugal', 'Seville', 'Jun 27, 2021 21:00+2', TRUE);
 INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (40, 'Netherlands', 'Czech Republic', 'Budapest', 'Jun 27, 2021 18:00+2', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (41, 'France', 'Switzerland', 'Bucharest', 'Jun 28, 2021 22:00+3', TRUE);
 INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (42, 'Croatia', 'Spain', 'Copenhagen', 'Jun 28, 2021 18:00+2', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (43, 'Sweden', 'Ukraine', 'Glasgow', 'Jun 29, 2021 20:00+1', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (44, 'England', 'Germany', 'London', 'Jun 29, 2021 17:00+1', TRUE);
