@@ -58,8 +58,15 @@ shinyUI(fluidPage(theme = bs_theme(bootswatch = "cerulean"),
                tabPanel(trans("gameresult"), p(), DT::dataTableOutput("gameresult")),
                tabPanel(trans("teamranking"), p(), DT::dataTableOutput("teamranking"))
              )),
-             tabPanel(trans("help"), br(), helpText(helpEng), hr(), helpText(helpGer), 
-                      a("registration help and legal disclaimer", href="register_help.html", target="_blank"))
+             tabPanel(
+               trans("help"), br(), helpText(helpEng), hr(), helpText(helpGer),
+               p(
+                 a("registration help and legal disclaimer", href="register_help.html", target="_blank")
+               ),
+               p(
+                 R.Version()$version.string
+               )
+             )
            )
     )
   )
