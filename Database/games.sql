@@ -1,60 +1,48 @@
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (1, 'Turkey', 'Italy', 'Rome', 'Jun 11, 2021 21:00+2', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (2, 'Wales', 'Switzerland', 'Baku', 'Jun 12, 2021 17:00+4', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (13, 'Turkey', 'Wales', 'Baku', 'Jun 16, 2021 20:00+4', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (14, 'Italy', 'Switzerland', 'Rome', 'Jun 16, 2021 21:00+2', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (25, 'Switzerland', 'Turkey', 'Baku', 'Jun 20, 2021 20:00+4', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (26, 'Italy', 'Wales', 'Rome', 'Jun 20, 2021 18:00+2', FALSE);
-
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (3, 'Denmark', 'Finland', 'Copenhagen', 'Jun 12, 2021 18:00+2', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (4, 'Belgium', 'Russia', 'Saint Petersburg', 'Jun 12, 2021 22:00+3', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (15, 'Finland', 'Russia', 'Saint Petersburg', 'Jun 16, 2021 16:00+3', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (16, 'Denmark', 'Belgium', 'Copenhagen', 'Jun 17, 2021 18:00+2', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (27, 'Russia', 'Denmark', 'Copenhagen', 'Jun 21, 2021 21:00+2', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (28, 'Finland', 'Belgium', 'Saint Petersburg', 'Jun 21, 2021 22:00+3', FALSE);
-
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (6, 'Austria', 'North Macedonia', 'Bucharest', 'Jun 13, 2021 19:00+3', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (5, 'Netherlands', 'Ukraine', 'Amsterdam', 'Jun 13, 2021 21:00+2', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (18, 'Ukraine', 'North Macedonia', 'Bucharest', 'Jun 17, 2021 16:00+3', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (17, 'Netherlands', 'Austria', 'Amsterdam', 'Jun 17, 2021 21:00+2', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (29, 'North Macedonia', 'Netherlands', 'Amsterdam', 'Jun 21, 2021 18:00+2', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (30, 'Ukraine', 'Austria', 'Bucharest', 'Jun 21, 2021 19:00+3', FALSE);
-
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (7, 'England', 'Croatia', 'London', 'Jun 13, 2021 14:00+1', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (8, 'Scotland', 'Czech Republic', 'Glasgow', 'Jun 14, 2021 14:00+1', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (19, 'Croatia', 'Czech Republic', 'Glasgow', 'Jun 18, 2021 17:00+1', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (20, 'England', 'Scotland', 'London', 'Jun 18, 2021 20:00+1', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (31, 'Croatia', 'Scotland', 'Glasgow', 'Jun 22, 2021 20:00+1', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (32, 'Czech Republic', 'England', 'London', 'Jun 22, 2021 20:00+1', FALSE);
-
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (10, 'Poland', 'Slovakia', 'Saint Petersburg', 'Jun 14, 2021 19:00+3', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (9, 'Spain', 'Sweden', 'Seville', 'Jun 14, 2021 21:00+2', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (21, 'Sweden', 'Slovakia', 'Saint Petersburg', 'Jun 18, 2021 16:00+3', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (22, 'Spain', 'Poland', 'Seville', 'Jun 19, 2021 21:00+2', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (33, 'Slovakia', 'Spain', 'Seville', 'Jun 23, 2021 18:00+2', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (34, 'Sweden', 'Poland', 'Saint Petersburg', 'Jun 23, 2021 19:00+3', FALSE);
-
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (11, 'Hungary', 'Portugal', 'Budapest', 'Jun 15, 2021 18:00+2', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (12, 'France', 'Germany', 'Munich', 'Jun 15, 2021 21:00+2', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (23, 'Hungary', 'France', 'Budapest', 'Jun 19, 2021 15:00+2', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (24, 'Portugal', 'Germany', 'Munich', 'Jun 19, 2021 18:00+2', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (35, 'Portugal', 'France', 'Budapest', 'Jun 23, 2021 21:00+2', FALSE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (36, 'Germany', 'Hungary', 'Munich', 'Jun 23, 2021 21:00+2', FALSE);
-
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (37, 'Italy', 'Austria', 'London', 'Jun 26, 2021 20:00+1', TRUE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (38, 'Wales', 'Denmark', 'Amsterdam', 'Jun 26, 2021 18:00+2', TRUE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (39, 'Belgium', 'Portugal', 'Seville', 'Jun 27, 2021 21:00+2', TRUE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (40, 'Netherlands', 'Czech Republic', 'Budapest', 'Jun 27, 2021 18:00+2', TRUE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (41, 'France', 'Switzerland', 'Bucharest', 'Jun 28, 2021 22:00+3', TRUE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (42, 'Croatia', 'Spain', 'Copenhagen', 'Jun 28, 2021 18:00+2', TRUE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (43, 'Sweden', 'Ukraine', 'Glasgow', 'Jun 29, 2021 20:00+1', TRUE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (44, 'England', 'Germany', 'London', 'Jun 29, 2021 17:00+1', TRUE);
-
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (45, 'Switzerland', 'Spain', 'Saint Petersburg', 'Jul 2, 2021 19:00+3', TRUE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (46, 'Belgium', 'Italy', 'Munich', 'Jul 2, 2021 21:00+2', TRUE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (47, 'Czech Republic', 'Denmark', 'Baku', 'Jul 3, 2021 20:00+4', TRUE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (48, 'Ukraine', 'England', 'Rome', 'Jul 3, 2021 21:00+2', TRUE);
-
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (49, 'Italy', 'Spain', 'London', 'Jul 6, 2021 20:00+1', TRUE);
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (50, 'England', 'Denmark', 'London', 'Jul 7, 2021 20:00+1', TRUE);
-
-INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (51, 'England', 'Italy', 'London', 'Jul 11, 2021 20:00+1', TRUE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (1, 'Qatar', 'Ecuador', 'Al Khor', 'Nov 20, 2022 19:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (2, 'Senegal', 'Netherlands', 'Doha', 'Nov 21, 2022 19:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (18, 'Qatar', 'Senegal', 'Doha', 'Nov 25, 2022 16:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (19, 'Netherlands', 'Ecuador', 'Al Rayyan', 'Nov 25, 2022 19:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (35, 'Ecuador', 'Senegal', 'Al Rayyan', 'Nov 29, 2022 18:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (36, 'Netherlands', 'Qatar', 'Al Khor', 'Nov 29, 2022 18:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (3, 'England', 'Iran', 'Al Rayyan', 'Nov 21, 2022 16:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (4, 'USA', 'Wales', 'Al Rayyan', 'Nov 21, 2022 22:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (17, 'Wales', 'Iran', 'Al Rayyan', 'Nov 25, 2022 13:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (20, 'England', 'USA', 'Al Khor', 'Nov 25, 2022 22:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (33, 'Wales', 'England', 'Al Rayyan', 'Nov 29, 2022 22:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (34, 'Iran', 'USA', 'Doha', 'Nov 29, 2022 22:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (8, 'Argentina', 'Saudi Arabia', 'Lusail', 'Nov 22, 2022 13:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (7, 'Mexico', 'Poland', 'Doha', 'Nov 22, 2022 19:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (22, 'Poland', 'Saudi Arabia', 'Al Rayyan', 'Nov 26, 2022 16:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (24, 'Argentina', 'Mexico', 'Lusail', 'Nov 26, 2022 22:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (39, 'Poland', 'Argentina', 'Doha', 'Nov 30, 2022 22:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (40, 'Saudi Arabia', 'Mexico', 'Lusail', 'Nov 30, 2022 22:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (6, 'Denmark', 'Tunisia', 'Al Rayyan', 'Nov 22, 2022 16:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (5, 'France', 'Australia', 'Al Wakrah', 'Nov 22, 2022 22:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (21, 'Tunisia', 'Australia', 'Al Wakrah', 'Nov 26, 2022 13:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (23, 'France', 'Denmark', 'Doha', 'Nov 26, 2022 19:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (37, 'Australia', 'Denmark', 'Al Wakrah', 'Nov 30, 2022 18:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (38, 'Tunisia', 'France', 'Al Rayyan', 'Nov 30, 2022 18:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (11, 'Germany', 'Japan', 'Al Rayyan', 'Nov 23, 2022 16:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (10, 'Spain', 'Costa Rica', 'Doha', 'Nov 23, 2022 19:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (25, 'Japan', 'Costa Rica', 'Al Rayyan', 'Nov 27, 2022 13:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (28, 'Spain', 'Germany', 'Al Khor', 'Nov 27, 2022 22:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (43, 'Japan', 'Spain', 'Al Rayyan', 'Dec 01, 2022 22:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (44, 'Costa Rica', 'Germany', 'Al Khor', 'Dec 01, 2022 22:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (12, 'Morocco', 'Croatia', 'Al Khor', 'Nov 23, 2022 13:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (9, 'Belgium', 'Canada', 'Al Rayyan', 'Nov 23, 2022 22:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (26, 'Belgium', 'Morocco', 'Doha', 'Nov 27, 2022 16:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (27, 'Croatia', 'Canada', 'Al Rayyan', 'Nov 27, 2022 19:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (41, 'Croatia', 'Belgium', 'Al Rayyan', 'Dec 01, 2022 18:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (42, 'Canada', 'Morocco', 'Doha', 'Dec 01, 2022 18:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (13, 'Switzerland', 'Cameroon', 'Al Wakrah', 'Nov 24, 2022 13:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (16, 'Brazil', 'Serbia', 'Lusail', 'Nov 24, 2022 22:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (29, 'Cameroon', 'Serbia', 'Al Wakrah', 'Nov 28, 2022 13:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (31, 'Brazil', 'Switzerland', 'Doha', 'Nov 28, 2022 19:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (47, 'Serbia', 'Switzerland', 'Doha', 'Dec 02, 2022 22:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (48, 'Cameroon', 'Brazil', 'Lusail', 'Dec 02, 2022 22:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (14, 'Uruguay', 'South Korea', 'Al Rayyan', 'Nov 24, 2022 16:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (15, 'Portugal', 'Ghana', 'Doha', 'Nov 24, 2022 19:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (30, 'South Korea', 'Ghana', 'Al Rayyan', 'Nov 28, 2022 16:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (32, 'Portugal', 'Uruguay', 'Lusail', 'Nov 28, 2022 22:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (45, 'Ghana', 'Uruguay', 'Al Wakrah', 'Dec 02, 2022 18:00+3', FALSE);
+INSERT INTO game (gameid, team1, team2, city, starttime, kogame) VALUES (46, 'South Korea', 'Portugal', 'Al Rayyan', 'Dec 02, 2022 18:00+3', FALSE);
