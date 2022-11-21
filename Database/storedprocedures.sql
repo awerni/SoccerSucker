@@ -124,7 +124,7 @@ DECLARE
   rec record;
   gameover bool;
 BEGIN
-  SELECT starttime < now() AT TIME ZONE 'Europe/Paris' INTO gameover FROM game WHERE gameid = mygame;
+  SELECT starttime AT TIME ZONE 'Europe/Paris' < now() AT TIME ZONE 'Europe/Paris' INTO gameover FROM game WHERE gameid = mygame;
   IF gameover THEN
     RAISE EXCEPTION 'game % started already. You cannot place tips anymore', mygame;
   END IF;
@@ -361,7 +361,7 @@ CREATE OR REPLACE FUNCTION usertimestat(interval) RETURNS SETOF usertimestat AS 
   SELECT rank() OVER (ORDER BY points DESC), *, points::REAL/evalgames::REAL as avgpoints FROM 
                (SELECT t.username, name, firstname, nationality, sum(points) AS points, count(points) AS evalgames 
                 FROM tip t JOIN player p ON p.username = t.username WHERE gameid IN 
-                  (SELECT gameid FROM game WHERE starttime > now() AT TIME ZONE 'Europe/Paris' - $1 AND starttime < now() AT TIME ZONE 'Europe/Paris') 
+                  (SELECT gameid FROM game WHERE starttime AT TIME ZONE 'Europe/Paris'> now() AT TIME ZONE 'Europe/Paris' - $1 AND starttime AT TIME ZONE 'Europe/Paris'< now() AT TIME ZONE 'Europe/Paris')
                 GROUP BY t.username, name, firstname, nationality ORDER BY points DESC) AS r;
 $$
 LANGUAGE sql;
