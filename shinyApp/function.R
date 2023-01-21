@@ -285,10 +285,11 @@ getExpertPlot <- function(data) {
 }
 
 getPlayerResult <- function(username) {
-  sql <- paste0("SELECT tv.gameid as game, team1 || '-' || team2 AS teams, starttime AT TIME ZONE 'Europe/Paris' as time, ",
+  sql <- paste0("SELECT tv.gameid as game, team1 || '-' || team2 AS teams, ",
+                "starttime AT TIME ZONE 'Europe/Paris' AS time, ",
                 "tv.goals1 || ':' || tv.goals2 as tip, ",
                 "COALESCE(g.overtimegoals1, g.regulartimegoals1) || ':' || ",
-                "COALESCE(g.overtimegoals2, g.regulartimegoals2) as result, ",
+                "COALESCE(g.overtimegoals2, g.regulartimegoals2) AS result, ",
                 "winner, points FROM tipview tv JOIN game g ON g.gameid = tv.gameid ",
                 "WHERE tv.username = '", username, "' AND points IS NOT NULL ",
                 "ORDER BY g.starttime DESC, tv.gameid")
@@ -300,12 +301,13 @@ getGameResults <- function(showplayers) {
   if (showplayers == "human") sql_filter <- "AND NOT artificial"
   if (showplayers == "bot") sql_filter <- "AND artificial"
 
-  sql <- paste0("SELECT gameid, team1, team2, city, starttime AT TIME ZONE 'Europe/Paris' as starttime, ",
+  sql <- paste0("SELECT gameid, team1, team2, city, starttime AT TIME ZONE 'Europe/Paris' AS starttime, ",
                 "regulartimegoals1 || ':' || regulartimegoals2 || ' (' || halftimegoals1 || ':' || halftimegoals2 || ')' AS result, ",
                 "overtimegoals1 || ':' || overtimegoals2 AS overtimeresult, ",
                 "penaltygoals1 || ':' || penaltygoals2 AS penaltyresult, ",
                 "(SELECT avg(points) FROM tipview WHERE gameid = gv.gameid ", sql_filter, ") AS avg_points ",
-                "FROM gameview gv WHERE starttime < now() OR gametime(starttime) = 'soon' ORDER BY starttime DESC, gameid")
+                "FROM gameview gv WHERE starttime < now() OR ",
+                "gametime(starttime AT TIME ZONE 'Europe/Paris') = 'soon' ORDER BY starttime DESC, gameid")
   ret <- getPostgresql(sql)
   if (nrow(ret) == 0) return()
   ret <- ret %>% mutate(result = ifelse(
@@ -336,7 +338,8 @@ getPastGames <- function() {
                 "COALESCE(regulartimegoals1::TEXT, '?') || ':' || COALESCE(regulartimegoals2::TEXT, '?') || ' (' || halftimegoals1 || ':' || halftimegoals2 || ')' AS result, ",
                 "overtimegoals1 || ':' || overtimegoals2 AS overtimeresult, ",
                 "penaltygoals1 || ':' || penaltygoals2 AS penaltyresult ",
-                "FROM gameview gv WHERE starttime < now() ORDER BY starttime DESC, gameid")
+                "FROM gameview gv WHERE starttime AT TIME ZONE 'Europe/Paris' < ",
+                "now() AT TIME ZONE 'Europe/Paris' ORDER BY starttime DESC, gameid")
   g <- getPostgresql(sql)
 
   if (nrow(g) == 0) return()
