@@ -14,7 +14,7 @@ shinyUI(fluidPage(theme = bs_theme(bootswatch = "cerulean"),
     column(2,
            img(src=logo_file, width="200", align = "center"),
            hr(),
-           p("Version 1.2"),
+           p("Version 1.3"),
            hr(),
            {
              myChoise <- c("human", "human_bot", "bot")
@@ -51,7 +51,6 @@ shinyUI(fluidPage(theme = bs_theme(bootswatch = "cerulean"),
              tabPanel(trans("summary_statistics"), tabsetPanel(
                tabPanel(trans("nationality"), uiOutput("nationplot")),
                tabPanel(trans("expertstatus"), uiOutput("expertplot")),
-               tabPanel(trans("betstatistics"), plotOutput("betstat", width = "100%", height = "400px"), textOutput("betstatdesc")),
                tabPanel(trans("pointsperteam"), plotOutput("pointsperteam", width = "100%", height = "400px"), textOutput("pointsperteamdesc"))
              )),
              tabPanel(trans("game_statistics"), tabsetPanel(
