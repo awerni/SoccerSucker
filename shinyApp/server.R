@@ -16,7 +16,7 @@ shinyServer(function(input, output, session) {
   output$ranking <- DT::renderDataTable({
       my_rank <- ranking()
       validate(need(my_rank, "no ranking available"))
-      my_rank %>% select(-`Expert-Status`)
+      my_rank |> select(-`Expert-Status`)
     },  rownames = FALSE, selection = "none", options = list(pageLength = 15)
   )
 
@@ -26,14 +26,14 @@ shinyServer(function(input, output, session) {
   })
 
   output$teamranking <- DT::renderDataTable({
-    datatable(teamranking(), rownames = FALSE, selection = "none", options = list(pageLength = 24)) %>%
+    datatable(teamranking(), rownames = FALSE, selection = "none", options = list(pageLength = 24)) |>
       formatStyle('Group', backgroundColor = styleEqual(LETTERS[1:8], c('#f5fffa', '#fffacd', '#e6e6fa',
                                                                         '#faebd7', '#F0F8FF', '#cdc0b0',
                                                                         '#FFCCCC', '#CCFFE5'))
       )
   })
 
-  #%>%
+  #|>
   #  formatStyle('Group', backgroundColor = styleEqual(LETTERS[1:8], c('#f5fffa', '#fffacd', '#e6e6fa',
   #                                                                    '#faebd7', '#F0F8FF', '#cdc0b0',
   #                                                                    '#987654', '#537827')))
@@ -50,14 +50,14 @@ shinyServer(function(input, output, session) {
 
   output$missingbets <- DT::renderDataTable({
     mt <- missingTips()
-    if (nrow(mt) > 0) mt %>% mutate(starttime = format(starttime,'%Y-%m-%d %H:%M'))
+    if (nrow(mt) > 0) mt |> mutate(starttime = format(starttime,'%Y-%m-%d %H:%M'))
   },rownames = FALSE, selection = "none", options = list(pageLength = 10))
 
   output$gameresult <- DT::renderDataTable({
     input$refresh
     gr <- getGameResults(input$showplayers)
     validate(need(gr, "no game result available"))
-    gr %>% mutate(`Start time` = format(`Start time`,'%Y-%m-%d %H:%M'), `Avg points` = round(`Avg points`, 2))
+    gr |> mutate(`Start time` = format(`Start time`,'%Y-%m-%d %H:%M'), `Avg points` = round(`Avg points`, 2))
   }, rownames = FALSE, selection = "none", options = list(pageLength = 15))
 
   # ---- user handling -------
@@ -279,11 +279,6 @@ shinyServer(function(input, output, session) {
     }, rownames = FALSE, selection = "none", options = list(pageLength = 15)
   )
 
-  output$betstatdesc <- renderText(trans("betstatdesc"))
-  output$betstat <- renderPlot({
-    getBetStat(input$showplayers)
-  })
-
   output$gamebet <- DT::renderDataTable({
     input$refresh
     validate(
@@ -293,11 +288,11 @@ shinyServer(function(input, output, session) {
     validate(
       need(myTips, "no valid tip")
     )
-    myTips <- myTips %>% mutate(Time = format(Time,'%Y-%m-%d %H:%M'), Tip = paste0(goals1, ":", goals2))
-    if (!myTips %>% select(kowinner) %>% is.na() %>% all()) {
-      myTips <- myTips %>% mutate(Tip = ifelse(goals1 == goals2 & !is.na(kowinner), paste0(Tip, " (", kowinner, ")"), Tip))
+    myTips <- myTips |> mutate(Time = format(Time,'%Y-%m-%d %H:%M'), Tip = paste0(goals1, ":", goals2))
+    if (!myTips |> select(kowinner) |> is.na() |> all()) {
+      myTips <- myTips |> mutate(Tip = ifelse(goals1 == goals2 & !is.na(kowinner), paste0(Tip, " (", kowinner, ")"), Tip))
     }
-    myTips %>% select(-goals1, -goals2, -winner, -kowinner)
+    myTips |> select(-goals1, -goals2, -winner, -kowinner)
   }, rownames = FALSE, selection = "none", options = list(pageLength = 15))
 
   output$gamebetgraph <- renderPlot({
