@@ -2,3 +2,4 @@
 SoccerSucker.Rproj
 shinyApp/rsconnect/
 shinyApp/settings.R
+.lintr
