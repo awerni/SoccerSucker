@@ -56,7 +56,7 @@ getRanking <- function(showplayers) {
   if (showplayers == "bot") sql <- paste(sql, "WHERE artificial")
   rank <- getPostgresql(sql)
   if (nrow(rank) == 0) return()
-  rank <- rank %>% mutate(pointspergame = signif(pointspergame, digits = 2)) %>%
+  rank <- rank |> mutate(pointspergame = signif(pointspergame, digits = 2)) |>
     mutate(expertstatus = factor(expert_order[expertstatus], levels = expert_order))
   colnames(rank) <- c("Rank", "Firstname", "Name", "Nationality", "Expert-Status", "Total Points", "Group-Points",
                       "KO-Points", "Games", "Points/Game")
@@ -174,11 +174,11 @@ getAllTips <- function(username) {
                "WHERE starttime > now() ORDER BY starttime, gameid DESC")
   res <- getPostgresql(sql)
   if (nrow(res) == 0) return()
-  res %>%
+  res |>
     mutate(starttime = format(starttime,'%Y-%m-%d %H:%M'),
            tipgoals1 = formatInput(gameid, "1", tipgoals1),
            tipgoals2 = formatInput(gameid, "2", tipgoals2),
-           kowinner = formatInputKO(gameid, kowinner, kogame)) %>%
+           kowinner = formatInputKO(gameid, kowinner, kogame)) |>
     select(-kogame)
 }
 
@@ -212,9 +212,9 @@ getResultCross <- function(showplayers) {
   data <- getPostgresql(sql)
   if (nrow(data) < 2) return(list(data = NULL, n = NULL))
 
-  data_cross <- data %>%
-    select(name, gamename, points) %>%
-    pivot_wider(names_from = gamename, values_from = points) %>%
+  data_cross <- data |>
+    select(name, gamename, points) |>
+    pivot_wider(names_from = gamename, values_from = points) |>
     tibble::column_to_rownames("name")
 
   dn <- unique(data[, c("name", "nationality")])
@@ -235,9 +235,9 @@ getTipCross <- function(showplayers) {
   data <- getPostgresql(sql)
   if (nrow(data) < 2) return(list(data = NULL, n = NULL))
 
-  data_cross <- data %>%
-    select(name, gamename, diff) %>%
-    pivot_wider(names_from = gamename, values_from = diff) %>%
+  data_cross <- data |>
+    select(name, gamename, diff) |>
+    pivot_wider(names_from = gamename, values_from = diff) |>
     tibble::column_to_rownames("name")
 
   dn <- unique(data[, c("name", "nationality")])
@@ -265,20 +265,26 @@ getPCA <- function(data, mainTitle) {
   data$data <- apply(data$data, 2, function(x) ifelse(is.na(x), 0, x))
   pca <- prcomp(data$data)
   Nationality <- data$n[rownames(pca$x)]
-  qplot(pca$x[,1], pca$x[,2], main = mainTitle, xlab = "PCA1", ylab = "PCA2", label = rownames(pca$x)) +
+
+  pca_data <- data.frame(pca$x) |>
+    select(PC1, PC2) |>
+    tibble::rownames_to_column("player")
+
+  ggplot(pca_data, aes(x = PC1, y = PC2, label = player)) +
     theme_gray() + theme(text = element_text(size = 20)) +
-    geom_point(aes(colour = Nationality), size = 6, alpha = 1) + geom_text_repel(size = 5)
+      geom_point(aes(colour = Nationality), size = 6, alpha = 1) + geom_text_repel(size = 5) +
+      ggtitle(mainTitle)
 }
 
 getNationPlot <- function(data) {
-  data <- data %>% rename(totalpoints = `Total Points`)
+  data <- data |> rename(totalpoints = `Total Points`)
   ggplot(data, aes(factor(Nationality), totalpoints)) + geom_boxplot(aes(fill = Nationality)) +
     theme_gray() + scale_x_discrete(name = "") + scale_y_continuous(name = "Total Points") +
     coord_flip() + theme(text = element_text(size = 20))
 }
 
 getExpertPlot <- function(data) {
-  data <- data %>% rename(expertstatus = `Expert-Status`, totalpoints = `Total Points`) %>% filter(!is.na(expertstatus))
+  data <- data |> rename(expertstatus = `Expert-Status`, totalpoints = `Total Points`) |> filter(!is.na(expertstatus))
   ggplot(data, aes(factor(expertstatus), totalpoints)) + geom_boxplot(aes(fill = expertstatus)) +
     theme_gray() + scale_x_discrete(name = "") + scale_y_continuous(name = "Total Points") +
     coord_flip() + theme(text = element_text(size = 20))
@@ -310,7 +316,7 @@ getGameResults <- function(showplayers) {
                 "gametime(starttime AT TIME ZONE 'Europe/Paris') = 'soon' ORDER BY starttime DESC, gameid")
   ret <- getPostgresql(sql)
   if (nrow(ret) == 0) return()
-  ret <- ret %>% mutate(result = ifelse(
+  ret <- ret |> mutate(result = ifelse(
     !is.na(overtimeresult),
     ifelse(
       !is.na(penaltyresult),
@@ -318,9 +324,9 @@ getGameResults <- function(showplayers) {
       paste(overtimeresult, ", ", result)
     ),
     result
-  )) %>% select(-overtimeresult, -penaltyresult)
+  )) |> select(-overtimeresult, -penaltyresult)
   ret <-
-    ret %>% rename(
+    ret |> rename(
       Game = gameid,
       Team1 = team1,
       Team2 = team2,
@@ -335,7 +341,8 @@ getGameResults <- function(showplayers) {
 
 getPastGames <- function() {
   sql <- paste0("SELECT gameid, team1 || ':' || team2 as teams, ",
-                "COALESCE(regulartimegoals1::TEXT, '?') || ':' || COALESCE(regulartimegoals2::TEXT, '?') || ' (' || halftimegoals1 || ':' || halftimegoals2 || ')' AS result, ",
+                "COALESCE(regulartimegoals1::TEXT, '?') || ':' || COALESCE(regulartimegoals2::TEXT, '?') || ",
+                "' (' || halftimegoals1 || ':' || halftimegoals2 || ')' AS result, ",
                 "overtimegoals1 || ':' || overtimegoals2 AS overtimeresult, ",
                 "penaltygoals1 || ':' || penaltygoals2 AS penaltyresult ",
                 "FROM gameview gv WHERE starttime AT TIME ZONE 'Europe/Paris' < ",
@@ -344,7 +351,7 @@ getPastGames <- function() {
 
   if (nrow(g) == 0) return()
 
-  g <- g %>% mutate(result = ifelse(
+  g <- g |> mutate(result = ifelse(
     !is.na(overtimeresult),
     ifelse(
       !is.na(penaltyresult),
@@ -369,13 +376,13 @@ getTips <- function(gameid, showplayers) {
                 "FROM tipview tv JOIN game g ON tv.gameid = g.gameid WHERE tv.gameid = ", gameid,
                 sql_filter, " ORDER BY points DESC, name")
   tips <- getPostgresql(sql)
-  if (nrow(tips) > 0 ) tips %>% rename(Rank = rank, Time = time, Name = name, Points = points)
+  if (nrow(tips) > 0 ) tips |> rename(Rank = rank, Time = time, Name = name, Points = points)
 }
 
 getTeams <- function(gameid) {
   sql <- paste("SELECT team1, team2 FROM game WHERE gameid =", gameid)
   teams <- getPostgresql(sql)
-  if (nrow(teams) > 0) teams %>% as.list()
+  if (nrow(teams) > 0) teams |> as.list()
 }
 
 getPlayerBarplot <- function(data, limit) {
@@ -400,25 +407,25 @@ getCumulativeRanking <- function(showplayers){
   if (nrow(data) < 2) return()
   if (length(unique(data$gameid)) == 1) return()
 
-  data <- data %>%
-    group_by(username) %>%
-    mutate(totalPoints = cumsum(points)) %>%
-    ungroup() %>%
+  data <- data |>
+    group_by(username) |>
+    mutate(totalPoints = cumsum(points)) |>
+    ungroup() |>
     select(-username)
 
-  myLevels <- data %>%
-    group_by(name) %>%
-    summarise(allPoints = max(totalPoints), .groups = "drop") %>%
-    arrange(desc(allPoints)) %>%
-    .$name
+  myLevels <- data |>
+    group_by(name) |>
+    summarise(allPoints = max(totalPoints), .groups = "drop") |>
+    arrange(desc(allPoints)) |>
+    pull(name)
 
-  data %>%
+  data |>
     mutate(name = factor(name, myLevels))
 }
 
 getGameBetPlot <- function(tips, teams) {
-  if (!tips %>% select(kowinner) %>% is.na() %>% all()) {
-    tips <- tips %>% mutate(winner = kowinner)
+  if (!tips |> select(kowinner) |> is.na() |> all()) {
+    tips <- tips |> mutate(winner = kowinner)
   }
   ggplot(tips, aes(x = goals2, y = goals1, label = Name, color = winner)) + geom_point() + theme(text = element_text(size = 14)) +
     geom_text_repel(size = 5) +
@@ -435,11 +442,11 @@ getCumulativePlot <- function(data, numPlayer, showMe, user) {
     } else {
       un <- levels(data$name)[1:numPlayer]
     }
-    data <- data %>% filter(name %in% un)
+    data <- data |> filter(name %in% un)
   }
 
   my_size <- 14
-  nGames <- unique(data$gameid) %>% length()
+  nGames <- unique(data$gameid) |> length()
   if (nGames < 20) my_size <- 25
   if (nGames < 30) my_size <- 20
 
@@ -457,23 +464,6 @@ getReadyGames <- function() {
   getPostgresql(sql)$g
 }
 
-getBetStat <- function(showplayers) {
-  sql <- paste("SELECT count(*), sum(points), sum(points)::FLOAT4/count(*) AS avgpoints,",
-               "winner, kowinner IS NOT NULL AS kogame FROM tipview tv",
-               "WHERE points IS NOT NULL ")
-  if (showplayers == "human") sql <- paste(sql, "AND NOT artificial")
-  if (showplayers == "bot") sql <- paste(sql, "AND artificial")
-  sql <- paste(sql, "GROUP BY winner, kowinner IS NOT NULL")
-  data <- getPostgresql(sql)
-  if (nrow(data) == 0) return()
-  data$game <- ifelse(data$kogame, "KO-Game", "Group-Phase-Game")
-
-  ggplot(data, aes(winner, avgpoints, fill = game)) + geom_bar(stat = "identity", position = "dodge") + theme_gray() +
-    theme(text = element_text(size = 20)) +
-    geom_text(data = data, aes(winner, avgpoints, group = game,
-                               label = paste("# =", count, "\nsum =", sum, "\navg =", round(avgpoints, 2))),
-              vjust = 1.5, position = position_dodge(.9), size = 4)
-}
 # -------- translations ---------
 labeltrans <- list(refresh = list(en = "refresh", de = "aktualisieren"),
                    overallranking = list(en = "Overall Ranking", de = "Gesamtrangliste"),
@@ -490,7 +480,6 @@ labeltrans <- list(refresh = list(en = "refresh", de = "aktualisieren"),
                    expertstatus = list(en = "Expert Status", de = "Expertenstatus"),
                    pcapoints = list(en = "PCA Points", de = "HKA Punkte"),
                    pcatips = list(en = "PCA Tips", de = "HKA Tipps"),
-                   betstatistics = list(en = "Bet Statistics", de = "Wettstatistik"),
                    tables = list(en = "Tables", de = "Tabellen"),
                    missingbets = list(en = "Missing Bets", de = "Fehlende Wetten"),
                    latestgames = list(en = "Latest games", de = "Letzte Spiele"),
@@ -505,7 +494,7 @@ labeltrans <- list(refresh = list(en = "refresh", de = "aktualisieren"),
                    logout = list(en = "Logout", de = "Ausloggen"),
                    username = list(en = "Username:", de = "Benutzername:"),
                    password = list(en = "Password:", de = "Passwort:"),
-                   sportsevent = list(en = "World Cup 2022", de = "Weltmeisterschaft 2022"),
+                   sportsevent = list(en = "World Cup 2023", de = "Weltmeisterschaft 2023"),
                    firstname = list(en = "First name:", de = "Vorname:"),
                    surname = list(en = "Surname:", de = "Nachname:"),
                    register = list(en = "Register", de = "Registrieren"),
@@ -564,7 +553,7 @@ getTeamBetPoints <- function(showplayers) {
                 "WHERE points IS NOT NULL GROUP BY team, kogame")
   data <- getPostgresql(sql)
   if (nrow(data) == 0) return()
-  data <- data %>%
+  data <- data |>
     mutate(game = ifelse(kogame, "KO-Game", "Group-Phase-Game"))
 
   ggplot(data, aes(team, avgpoints, fill = game)) + geom_bar(stat="identity", position="dodge") +
@@ -615,8 +604,8 @@ update_FIFA_ranking <- function() {
 
   data <- data.frame(rank = document$Results$Rank,
                      team = sapply(document$Results[, "TeamName"], function(x) x$Description))
-  data <- data %>% mutate(team = gsub("'", "", team)) %>%
-    mutate(team = gsub("Korea Republic", "South Korea", team)) %>%
+  data <- data |> mutate(team = gsub("'", "", team)) |>
+    mutate(team = gsub("Korea Republic", "South Korea", team)) |>
     mutate(sql = paste0("UPDATE team set fifaranking = ", rank, " WHERE team = '", team, "';"))
 
   con <- connectPostgresql()
