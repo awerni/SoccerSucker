@@ -3,3 +3,4 @@ SoccerSucker.Rproj
 shinyApp/rsconnect/
 shinyApp/settings.R
 .lintr
+Database/update.sh
