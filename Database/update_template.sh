@@ -2,7 +2,7 @@
 
 cd /my/DB/dir/database 
 
-alias d='psql EuroCup2021 postgres -h dbserver'
+alias d='psql EuroCup2024 postgres -h dbserver'
 
 echo "DROP TRIGGER checkTip ON tip;" | d 
 cat update.sql | d 
