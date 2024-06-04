@@ -6,7 +6,7 @@ library(DT)
 source("function.R")
 source("settings.R")
 
-shinyServer(function(input, output, session) {
+function(input, output, session) {
 
   ranking <- reactive({
     input$refresh
@@ -133,7 +133,7 @@ shinyServer(function(input, output, session) {
     }
   })
 
-  output$bet <-renderTable({
+  output$bet <- renderTable({
       input$refresh
       getAllTips(user$name)
     }, include.rownames = FALSE, sanitize.text.function = function(x) x)
@@ -319,5 +319,4 @@ shinyServer(function(input, output, session) {
   output$pointsperteam <- renderPlot({
     getTeamBetPoints(input$showplayers)
   })
-
-})
+}
