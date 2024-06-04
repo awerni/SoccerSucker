@@ -1,4 +1,4 @@
-db <- list(dbname = "WorldCup2018", host = "myserver", port = 5432, user = "user", password = "pass")
+db <- list(dbname = "WorldCup2024", host = "myserver", port = 5432, user = "user", password = "pass")
 lang <- "en"
 
 logo_file <- "GoStrong.png"
