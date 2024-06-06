@@ -161,7 +161,7 @@ function(input, output, session) {
 
     if (length(tiptable) > 0) {
       fb <- upsertTip2(user$name, tiptable)
-      mytext <- paste(if(fb <= 1) paste(fb, trans("bet")) else paste(fb, trans("bets")), trans("saved"))
+      mytext <- paste(if(fb == 1) paste(fb, trans("bet")) else paste(fb, trans("bets")), trans("saved"))
     } else mytext <- trans("missingbets")
 
     showModal(modalDialog(
