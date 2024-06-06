@@ -8,7 +8,7 @@ source("settings.R")
 source("function.R")
 
 fluidPage(theme = bs_theme(bootswatch = "cerulean"),
-  titlePanel(trans("sportsevent"), windowTitle = "World Cup 2022"),
+  titlePanel(trans("sportsevent"), windowTitle = "Euro Cup 2024"),
   tags$head(tags$script(src = "message-handler.js")),
   fluidRow(
     column(2,
