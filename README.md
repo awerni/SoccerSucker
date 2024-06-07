@@ -1,7 +1,17 @@
 # SoccerSucker
-Football/Soccer tournament betting software
+Football/Soccer tournament betting software for groups up to ~100 people.
 
-It is based on R/Shiny and a Postgresql database backend
+It is based on R/Shiny and a Postgresql database backend.
+
+** Installation **
+* create a docker image (use Dockerfile_shiny and Dockerfile) and put it on a cloud service.
+* create the database (e.g. at [Supabase](https://supabase.com/))
+* create a settings.R out of the settings_template.R file with database credentials
+* the player/user authentication has several options
+    * LDAP
+    * passwords using the MD5 hash function. 
+        * Put the md5 hashed password into table gameuser of the postgresql database. 
+        * and add the checkLogin() stored procedure to your database (storedproceduresPassword_plpgsql.sql)
 
 See the [Wiki](https://github.com/awerni/SoccerSucker/wiki) for details
 
