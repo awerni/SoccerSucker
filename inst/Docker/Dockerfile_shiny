@@ -1,0 +1,22 @@
+FROM rocker/r-base
+
+LABEL maintainer="Andreas Wernitznig"
+LABEL email="andreas@wernitznig.com"
+
+# system libraries of general use
+RUN apt-get update && apt-get install -y \
+  libssl-dev \
+  libpq-dev \
+  libxml2-dev \
+  libcurl4-gnutls-dev \
+  libfontconfig1-dev \
+  libcairo2-dev \
+  python3-pip \
+  libpython3-dev
+
+RUN mkdir /install
+COPY install_prereqs.R /install/install_prereqs.R
+RUN Rscript /install/install_prereqs.R
+
+RUN rm -rf /var/lib/apt/lists/*
+RUN rm -rf /tmp/downloaded_packages/* /tmp/*.rds
