@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
   libpython3-dev
 
 RUN mkdir /install
-COPY install_prereqs.R /install/install_prereqs.R
+COPY inst/Docker/install_prereqs.R /install/install_prereqs.R
 RUN Rscript /install/install_prereqs.R
 
 RUN rm -rf /var/lib/apt/lists/*
