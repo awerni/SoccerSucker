@@ -3,7 +3,7 @@ Football/Soccer tournament betting software for groups up to ~100 people.
 
 It is based on R/Shiny and a Postgresql database backend.
 
-** Installation **
+## Installation
 * create a docker image (use Dockerfile_shiny and Dockerfile) and put it on a cloud service.
 * create the database (e.g. at [Supabase](https://supabase.com/))
 * create a settings.R out of the settings_template.R file with database credentials
