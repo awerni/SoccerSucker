@@ -1,4 +1,5 @@
-#!/bin/sh
-cd ~/SoccerSuccer/Database
+#!/usr/bin/env bash
+
+cd $(dirname "$0") 
 
 cat tables.sql artificialPlayers.sql storedprocedures.sql trigger.sql teams.sql games.sql view.sql
