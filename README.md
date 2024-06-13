@@ -5,6 +5,7 @@ It is based on R/Shiny and a Postgresql database backend.
 
 ## Installation
 * create the database (e.g. at [Supabase](https://supabase.com/) or [Tembo](https://tembo.io/))
+* create the database structure and insert all required information (Database/command | psql database user -h server)
 * create a settings.R out of the settings_template.R file with database credentials
 * create two docker images (use Dockerfile_shiny and Dockerfile) and put it on a cloud service.
 * the player/user authentication has several options
