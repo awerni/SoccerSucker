@@ -62,12 +62,12 @@ CREATE TRIGGER checkTip
 DROP TRIGGER addPoints ON game;
 CREATE OR REPLACE FUNCTION addPoints() RETURNS "trigger" AS $$
 BEGIN
-  PERFORM updateMrAverage(NEW.gameid);
-  PERFORM updateExpert(NEW.gameid, 1::INT2);
-  PERFORM updateExpert(NEW.gameid, 2::INT2);
-  PERFORM updateExpert(NEW.gameid, 3::INT2);
-  PERFORM updateRational(NEW.gameid);
-  UPDATE tip SET points = getTipPoints(gameid, username) WHERE gameid = NEW.gameid;
+  PERFORM updateMrAverage(NEW.tournamentid, NEW.gameid);
+  PERFORM updateExpert(NEW.tournamentid, NEW.gameid, 1::INT2);
+  PERFORM updateExpert(NEW.tournamentid, NEW.gameid, 2::INT2);
+  PERFORM updateExpert(NEW.tournamentid, NEW.gameid, 3::INT2);
+  PERFORM updateRational(NEW.tournamentid,NEW.gameid);
+  UPDATE tip SET points = getTipPoints(tournamentid, gameid, username) WHERE gameid = NEW.gameid AND tournamentid = NEW.tournamentid;
   RETURN NEW;
 END;
 $$ LANGUAGE 'plpgsql';
