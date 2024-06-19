@@ -10,7 +10,7 @@ function(input, output, session) {
 
   ranking <- reactive({
     input$refresh
-    getRanking(input$showplayers)
+    getRanking(input$showplayers, input$tournament)
   })
 
   output$ranking <- DT::renderDataTable({
@@ -22,7 +22,7 @@ function(input, output, session) {
 
   teamranking <- reactive({
     input$refresh
-    getTeamRanking()
+    getTeamRanking(input$tournament)
   })
 
   output$teamranking <- DT::renderDataTable({
@@ -38,14 +38,18 @@ function(input, output, session) {
   #                                                                    '#faebd7', '#F0F8FF', '#cdc0b0',
   #                                                                    '#987654', '#537827')))
 
+  tournament <- reactive({
+    getTournamentName(input$tournment)
+  })
+
   missingTips <- reactive({
     input$refresh
-    getMissingTips()
+    getMissingTips(input$tournament)
   })
 
   tips <- reactive({
     input$refresh
-    getTips(input$tipgame2show, input$showplayers)
+    getTips(input$tournament, input$tipgame2show, input$showplayers)
   })
 
   output$missingbets <- DT::renderDataTable({
@@ -55,7 +59,7 @@ function(input, output, session) {
 
   output$gameresult <- DT::renderDataTable({
     input$refresh
-    gr <- getGameResults(input$showplayers)
+    gr <- getGameResults(input$showplayers, input$tournament)
     validate(need(gr, "no game result available"))
     gr |> mutate(`Start time` = format(`Start time`,'%Y-%m-%d %H:%M'), `Avg points` = round(`Avg points`, 2))
   }, rownames = FALSE, selection = "none", options = list(pageLength = 15))
@@ -135,11 +139,11 @@ function(input, output, session) {
 
   output$bet <- renderTable({
       input$refresh
-      getAllTips(user$name)
+      getAllTips(input$tournament, user$name)
     }, include.rownames = FALSE, sanitize.text.function = function(x) x)
 
   observeEvent(input$save, {
-    games <- getFutureGames()
+    games <- getFutureGames(input$tournament)
     if (nrow(games) == 0) {
       session$sendCustomMessage(type = 'savemessage',
                                 message = "nothing to save")
@@ -160,7 +164,7 @@ function(input, output, session) {
     tiptable <- tiptable[!sapply(tiptable, is.null)]
 
     if (length(tiptable) > 0) {
-      fb <- upsertTip2(user$name, tiptable)
+      fb <- upsertTip2(user$name, tiptable, input$tournament)
       mytext <- paste(if(fb == 1) paste(fb, trans("bet")) else paste(fb, trans("bets")), trans("saved"))
     } else mytext <- trans("missingbets")
 
@@ -176,7 +180,7 @@ function(input, output, session) {
   output$yourresults <- renderUI({
     if (user$name != "") {
       list(
-        sliderInput("lastgame", "Number of games to display:", min = 1, max = getNumberOfGames(), value = 10),
+        sliderInput("lastgame", "Number of games to display:", min = 1, max = getNumberOfGames(input$tournament), value = 10),
         plotOutput("yourbarplot", width = "80%", height = "600px")
       )
     } else {
@@ -186,7 +190,7 @@ function(input, output, session) {
 
   playerResult <- reactive({
     input$refresh
-    getPlayerResult(user$name)
+    getPlayerResult(user$name, input$tournament)
   })
 
   output$yourbarplot <- renderPlot({
@@ -195,12 +199,12 @@ function(input, output, session) {
 
   resultCross <- reactive({
     input$refresh
-    getResultCross(input$showplayers)
+    getResultCross(input$showplayers, input$tournament)
   })
 
   tipCross <- reactive({
     input$refresh
-    getTipCross(input$showplayers)
+    getTipCross(input$showplayers, input$tournament)
   })
 
   output$heatmap <- renderPlot({
@@ -220,7 +224,7 @@ function(input, output, session) {
 
   cumulativeResult <- reactive({
     input$refresh
-    getCumulativeRanking(input$showplayers)
+    getCumulativeRanking(input$showplayers, input$tournament)
   })
 
   output$topPlayer <- renderPlot({
@@ -266,16 +270,16 @@ function(input, output, session) {
   output$latestGames <- renderUI({
     input$refresh
     validate(
-      need(getReadyGames(), "no game finished yet")
+      need(getReadyGames(input$tournament), "no game finished yet")
     )
     list(
-      sliderInput("numberOfGames", "Show n latest games:", min = 1, max = getReadyGames(), step = 1, value = 1),
+      sliderInput("numberOfGames", "Show n latest games:", min = 1, max = getReadyGames(input$tournament), step = 1, value = 1),
       DT::dataTableOutput("lastGames", width = "100%", height = "500px")
     )
   })
 
   output$lastGames <- DT::renderDataTable({
-    getRankingLastGames(input$numberOfGames, input$showplayers)
+    getRankingLastGames(input$numberOfGames, input$showplayers, input$tournament)
     }, rownames = FALSE, selection = "none", options = list(pageLength = 15)
   )
 
@@ -301,22 +305,34 @@ function(input, output, session) {
       need(input$tipgame2show, "no game running or finished yet")
     )
     myTips <- tips()
-    myTeams <- getTeams(input$tipgame2show)
+    myTeams <- getTeams(input$tournament, input$tipgame2show)
     validate(
       need(myTips, "no valid tip")
     )
     getGameBetPlot(myTips, myTeams)
   })
 
-  observeEvent(input$refresh, {
+  # observeEvent(input$refresh, {
+  #   pg <- getPastGames(input$tournament)
+  #   validate(need(pg, "no past games available"))
+  #   updateSelectInput(session, "tipgame2show", choices = pg, selected = input$tipgame2show)
+  # })
+
+  # observeEvent(input$tournament, {
+  #   pg <- getPastGames(input$tournament)
+  #   validate(need(pg, "no past games available"))
+  #   updateSelectInput(session, "tipgame2show", choices = pg, selected = input$tipgame2show)
+  # })
+
+  observe({
     input$refresh
-    pg <- getPastGames()
+    pg <- getPastGames(input$tournament)
     validate(need(pg, "no past games available"))
-    updateSelectInput(session, "tipgame2show", choices = getPastGames(), selected = input$tipgame2show)
+    updateSelectInput(session, "tipgame2show", choices = pg, selected = input$tipgame2show)
   })
 
   output$pointsperteamdesc <- renderText(trans("pointsperteamdesc"))
   output$pointsperteam <- renderPlot({
-    getTeamBetPoints(input$showplayers)
+    getTeamBetPoints(input$showplayers, input$tournament)
   })
 }
