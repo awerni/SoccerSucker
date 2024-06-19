@@ -4,7 +4,8 @@ DECLARE
   rsGame record;
   isKogame BOOL;
 BEGIN
-  SELECT INTO rsGame kogame, starttime AT TIME ZONE 'Europe/Paris' < now() AT TIME ZONE 'Europe/Paris' as started FROM game WHERE gameid = NEW.gameid;
+  SELECT INTO rsGame kogame, starttime AT TIME ZONE 'Europe/Paris' < now() AT TIME ZONE 'Europe/Paris' as started 
+    FROM game WHERE gameid = NEW.gameid AND tournamentid = NEW.tournamentid;
 
   IF rsGame.started THEN
     RETURN OLD;
