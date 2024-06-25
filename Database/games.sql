@@ -40,7 +40,10 @@ INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) V
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (35, 1, 'Georgia', 'Portugal', 'Arena AufSchalke, Gelsenkirchen', '26 June 2024 21:00+2', FALSE);
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (36, 1, 'Czech Republic', 'Turkey', 'Volksparkstadion, Hamburg', '26 June 2024 21:00+2', FALSE);
 
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (38, 1, 'Switzerland', 'Italy', 'Olympiastadion, Berlin', '29 June 2024 18:00+2', TRUE);
 
+
+---------
 
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (1, 2, 'Argentina', 'Canada', 'Mercedes-Benz Stadium, Atlanta, Georgia', '20 June 2024 20:00-4', FALSE);
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (2, 2, 'Peru', 'Chile', 'AT&T Stadium, Arlington, Texas', '21 June 2024 19:00-5', FALSE);
