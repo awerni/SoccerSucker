@@ -41,7 +41,13 @@ INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) V
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (36, 1, 'Czech Republic', 'Turkey', 'Volksparkstadion, Hamburg', '26 June 2024 21:00+2', FALSE);
 
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (38, 1, 'Switzerland', 'Italy', 'Olympiastadion, Berlin', '29 June 2024 18:00+2', TRUE);
-
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (37, 1, 'Germany', 'Denmark', 'Westfalenstadion, Dortmund', '29 June 2024 21:00+2', TRUE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (40, 1, 'England', 'Slovakia', 'Arena AufSchalke, Gelsenkirchen', '30 June 2024 18:00+2', TRUE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (39, 1, 'Spain', 'Georgia', 'RheinEnergieStadion, Cologne', '30 June 2024 21:00+2', TRUE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (42, 1, 'France', 'Belgium', 'Merkur Spiel-Arena, Düsseldorf', '1 July 2024 18:00+2', TRUE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (41, 1, 'Portugal', 'Slovenia', 'Waldstadion, Frankfurt', '1 July 2024 21:00+2', TRUE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (43, 1, 'Romania', 'Netherlands', 'Allianz Arena, Munich', '2 July 2024 18:00+2', TRUE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (44, 1, 'Austria', 'Turkey', 'Red Bull Arena, Leipzig', '2 July 2024 21:00+2', TRUE);
 
 ---------
 
