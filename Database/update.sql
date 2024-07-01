@@ -34,6 +34,10 @@ UPDATE game set halftimegoals1 = 1, halftimegoals2 = 1, regulartimegoals1 = 1, r
 UPDATE game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 0, regulartimegoals2 = 0 WHERE gameid = 34 AND tournamentid = 1;
 UPDATE game set halftimegoals1 = 1, halftimegoals2 = 0, regulartimegoals1 = 2, regulartimegoals2 = 0 WHERE gameid = 35 AND tournamentid = 1;
 UPDATE game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 1, regulartimegoals2 = 2 WHERE gameid = 36 AND tournamentid = 1;
+UPDATE game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 2, regulartimegoals2 = 0 WHERE gameid = 37 AND tournamentid = 1;
+UPDATE game set halftimegoals1 = 1, halftimegoals2 = 0, regulartimegoals1 = 2, regulartimegoals2 = 0 WHERE gameid = 38 AND tournamentid = 1;
+UPDATE game set halftimegoals1 = 1, halftimegoals2 = 1, regulartimegoals1 = 4, regulartimegoals2 = 1 WHERE gameid = 39 AND tournamentid = 1;
+UPDATE game set halftimegoals1 = 0, halftimegoals2 = 1, regulartimegoals1 = 1, regulartimegoals2 = 1, overtimegoals1 = 2, overtimegoals2 = 1 WHERE gameid = 40 AND tournamentid = 1;
 
 
 UPDATE game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 2, regulartimegoals2 = 0 WHERE gameid = 1 AND tournamentid = 2;
@@ -50,3 +54,9 @@ UPDATE game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 1, r
 UPDATE game set halftimegoals1 = 2, halftimegoals2 = 0, regulartimegoals1 = 3, regulartimegoals2 = 1 WHERE gameid = 12 AND tournamentid = 2;
 UPDATE game set halftimegoals1 = 1, halftimegoals2 = 1, regulartimegoals1 = 2, regulartimegoals2 = 1 WHERE gameid = 13 AND tournamentid = 2;
 UPDATE game set halftimegoals1 = 2, halftimegoals2 = 0, regulartimegoals1 = 5, regulartimegoals2 = 0 WHERE gameid = 14 AND tournamentid = 2;
+UPDATE game set halftimegoals1 = 0, halftimegoals2 = 3, regulartimegoals1 = 1, regulartimegoals2 = 4 WHERE gameid = 15 AND tournamentid = 2;
+UPDATE game set halftimegoals1 = 1, halftimegoals2 = 0, regulartimegoals1 = 3, regulartimegoals2 = 0 WHERE gameid = 16 AND tournamentid = 2;
+UPDATE game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 2, regulartimegoals2 = 0 WHERE gameid = 17 AND tournamentid = 2;
+UPDATE game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 0, regulartimegoals2 = 0 WHERE gameid = 18 AND tournamentid = 2;
+UPDATE game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 0, regulartimegoals2 = 0 WHERE gameid = 19 AND tournamentid = 2;
+UPDATE game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 0, regulartimegoals2 = 3 WHERE gameid = 20 AND tournamentid = 2;
