@@ -269,11 +269,12 @@ function(input, output, session) {
 
   output$latestGames <- renderUI({
     input$refresh
+    n_games <- getReadyGames(input$tournament)
     validate(
-      need(getReadyGames(input$tournament), "no game finished yet")
+      need(n_games, "no game finished yet")
     )
     list(
-      sliderInput("numberOfGames", "Show n latest games:", min = 1, max = getReadyGames(input$tournament), step = 1, value = 1),
+      sliderInput("numberOfGames", "Show n latest games:", min = 1, max = n_games, step = 1, value = 1),
       DT::dataTableOutput("lastGames", width = "100%", height = "500px")
     )
   })
@@ -324,11 +325,14 @@ function(input, output, session) {
   #   updateSelectInput(session, "tipgame2show", choices = pg, selected = input$tipgame2show)
   # })
 
-  observe({
-    input$refresh
+  observeEvent(input$tournament, {
     pg <- getPastGames(input$tournament)
+    if (is.null(pg)) {
+      updateSelectInput(session, "tipgame2show", choices = NULL, selected = NULL)
+    } else {
+      updateSelectInput(session, "tipgame2show", choices = pg, selected = pg[1])
+    }
     validate(need(pg, "no past games available"))
-    updateSelectInput(session, "tipgame2show", choices = pg, selected = input$tipgame2show)
   })
 
   output$pointsperteamdesc <- renderText(trans("pointsperteamdesc"))
