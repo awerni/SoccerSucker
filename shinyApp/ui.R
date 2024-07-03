@@ -8,13 +8,15 @@ source("settings.R")
 source("function.R")
 
 fluidPage(theme = bs_theme(bootswatch = "cerulean"),
-  titlePanel(trans("sportsevent"), windowTitle = "Euro Cup 2024"),
+  titlePanel("Soccer Succer", windowTitle = "Soccer Succer"),
   tags$head(tags$script(src = "message-handler.js")),
   fluidRow(
     column(2,
            img(src=logo_file, width="200", align = "center"),
            hr(),
-           p("Version 1.3"),
+           p("Version 1.4"),
+           hr(),
+           radioButtons("tournament", paste0(trans("select"), ":"), getTournament(), inline = FALSE),
            hr(),
            {
              myChoise <- c("human", "human_bot", "bot")
@@ -36,9 +38,9 @@ fluidPage(theme = bs_theme(bootswatch = "cerulean"),
                tabPanel(trans("heatmap"), plotOutput("heatmap", width = "100%", height = "650px")),
                tabPanel(trans("lineranking"), uiOutput("rankingTab")),
                tabPanel(trans("latestgames"), uiOutput("latestGames")),
-               tabPanel(trans("gamebet"), 
+               tabPanel(trans("gamebet"),
                  p(),
-                 selectInput("tipgame2show", "Select Game:", getPastGames()),
+                 selectInput("tipgame2show", "Select Game:", NULL),
                  fluidRow(
                    column(6, DT::dataTableOutput("gamebet")),  
                    column(6, plotOutput("gamebetgraph", width = "100%", height = "500px"))

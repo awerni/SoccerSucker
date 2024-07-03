@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION getTipPoints(theGameID INT2, theUser TEXT) RETURNS INT2 AS $$
+CREATE OR REPLACE FUNCTION getTipPoints(theTournament INT2, theGameID INT2, theUser TEXT) RETURNS INT2 AS $$
 DECLARE
   points INT2;
   rsGame record;
@@ -6,12 +6,12 @@ DECLARE
 BEGIN
   SELECT INTO rsGame COALESCE(overtimegoals1, regulartimegoals1) as gameendgoals1, 
                      COALESCE(overtimegoals2, regulartimegoals2) as gameendgoals2, 
-                     kogame, winner, kowinner FROM gameview WHERE gameid = theGameID;
+                     kogame, winner, kowinner FROM gameview WHERE gameid = theGameID AND tournamentid = theTournament;
   IF NOT found OR (rsGame.winner IS NULL) THEN
     RETURN(NULL);
   END IF;
 
-  SELECT INTO rsTip goals1, goals2, winner, kowinner FROM tipview WHERE gameid = theGameID AND username = theUser;
+  SELECT INTO rsTip goals1, goals2, winner, kowinner FROM tipview WHERE gameid = theGameID AND tournamentid = theTournament AND username = theUser;
 
   IF (rsTip.goals1 IS NULL OR rsTip.goals2 IS NULL) THEN
     RETURN(NULL);
@@ -43,8 +43,9 @@ END;
 $$ LANGUAGE plpgsql;
 -----------------------------------------------------
 DROP FUNCTION getGamePoints(TEXT) CASCADE;
-DROP TYPE teamResult;
+DROP TYPE teamResult CASCADE;
 CREATE TYPE teamResult AS (
+  tournamentid INT2,
   team TEXT,
   played INT2,
   won INT2,
@@ -55,11 +56,12 @@ CREATE TYPE teamResult AS (
   points INT2
 );
 
-CREATE OR REPLACE FUNCTION getGamePoints(theTeam TEXT) RETURNS teamResult AS $$
+CREATE OR REPLACE FUNCTION getGamePoints(theTeam TEXT, theTournament INT2) RETURNS teamResult AS $$
 DECLARE
   tr teamResult;
   rsGame record;
 BEGIN
+  tr.tournamentid := theTournament;
   tr.team := theTeam;
   tr.played := 0;
   tr.won := 0; 
@@ -70,7 +72,7 @@ BEGIN
   tr.points = 0;
 
   FOR rsGame IN SELECT team1, team2, regulartimegoals1, regulartimegoals2, winner FROM gameview 
-    WHERE NOT kogame AND (team1 = theTeam OR team2 = theTeam) AND regulartimegoals1 IS NOT NULL AND regulartimegoals2 IS NOT NULL
+    WHERE tournamentid = theTournament AND NOT kogame AND (team1 = theTeam OR team2 = theTeam) AND regulartimegoals1 IS NOT NULL AND regulartimegoals2 IS NOT NULL
   LOOP
     tr.played := tr.played + 1;
     IF (rsGame.winner = '1' AND rsGame.team1 = theTeam) OR (rsGame.winner = '2' AND rsGame.team2 = theTeam) THEN 
@@ -119,17 +121,17 @@ $$ LANGUAGE plpgsql;
 
 -----------------------------------------------------
 
-CREATE OR REPLACE FUNCTION place_tip(mygame INT2, myuser TEXT, tipgoals1 INT2, tipgoals2 INT2, kowin CHAR(1)) RETURNS BOOL AS $$
+CREATE OR REPLACE FUNCTION place_tip(mytournament INT2, mygame INT2, myuser TEXT, tipgoals1 INT2, tipgoals2 INT2, kowin CHAR(1)) RETURNS BOOL AS $$
 DECLARE
   rec record;
   gameover bool;
 BEGIN
-  SELECT starttime AT TIME ZONE 'Europe/Paris' < now() AT TIME ZONE 'Europe/Paris' INTO gameover FROM game WHERE gameid = mygame;
+  SELECT starttime AT TIME ZONE 'Europe/Paris' < now() AT TIME ZONE 'Europe/Paris' INTO gameover FROM game WHERE gameid = mygame AND tournamentid = mytournament;
   IF gameover THEN
     RAISE EXCEPTION 'game % started already. You cannot place tips anymore', mygame;
   END IF;
 
-  SELECT INTO rec goals1, goals2, kowinner FROM tip WHERE gameid = mygame AND username = myuser;
+  SELECT INTO rec goals1, goals2, kowinner FROM tip WHERE gameid = mygame AND tournamentid = mytournament AND username = myuser;
   IF found THEN
     IF rec.goals1 = tipgoals1 AND rec.goals2 = tipgoals2 AND ((rec.kowinner IS NULL AND kowin IS NULL) OR (rec.kowinner = kowin)) THEN
       RETURN FALSE;
@@ -138,13 +140,13 @@ BEGIN
 
   LOOP
     UPDATE tip SET tiptime = now() AT TIME ZONE 'Europe/Paris', goals1 = tipgoals1, goals2 = tipgoals2, kowinner = kowin 
-      WHERE gameid = mygame AND username = myuser;
+      WHERE gameid = mygame AND tournamentid = mytournament AND username = myuser;
     IF found THEN
       RETURN TRUE;
     END IF;
     BEGIN
-      INSERT INTO tip (gameid, username, tiptime, goals1, goals2, kowinner) 
-        VALUES (mygame, myuser, now() AT TIME ZONE 'Europe/Paris', tipgoals1, tipgoals2, kowin);
+      INSERT INTO tip (gameid, tournamentid, username, tiptime, goals1, goals2, kowinner) 
+        VALUES (mygame, mytournament, myuser, now() AT TIME ZONE 'Europe/Paris', tipgoals1, tipgoals2, kowin);
       RETURN TRUE;
     EXCEPTION WHEN unique_violation THEN
     -- do nothing, and loop to try the UPDATE again
@@ -214,29 +216,30 @@ END;
 $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION updateMrAverage(theGameID INT2) RETURNS BOOL AS $$
+CREATE OR REPLACE FUNCTION updateMrAverage(theTournament INT2, theGame INT2) RETURNS BOOL AS $$
 DECLARE
   rsAvg record;
   rsWinner record;
   winner INT2;
   isko BOOL;
 BEGIN
-  DELETE FROM TIP WHERE gameid = theGameID AND username = 'average';
+  DELETE FROM TIP WHERE gameid = theGame AND tournamentid = theTournament AND username = 'average';
 
   SELECT INTO rsAvg round(avg(goals1)) AS goals1, 
                     round(avg(goals2)) AS goals2 
-    FROM tip t JOIN player p on t.username = p.username WHERE not artificial AND gameid = theGameID;
+    FROM tip t JOIN player p on t.username = p.username WHERE not artificial AND gameid = theGame AND tournamentid = theTournament;
 
   IF (rsAvg.goals1 IS NULL OR rsAvg.goals2 IS NULL) THEN
     return(FALSE);
   END IF;
 
-  SELECT INTO isko kogame FROM game WHERE gameid = theGameID;
+  SELECT INTO isko kogame FROM game WHERE gameid = theGame AND tournamentid = theTournament;
 
   IF isko THEN
     IF (rsAvg.goals1 = rsAvg.goals2) THEN
       SELECT INTO rsWinner count(*) AS freq, kowinner FROM tip t JOIN player p ON t.username = p.username
-        WHERE gameid = theGameID AND NOT artificial GROUP BY kowinner ORDER BY freq DESC LIMIT 1;
+        WHERE gameid = theGame AND tournamentid = theTournament AND NOT artificial 
+        GROUP BY kowinner ORDER BY freq DESC LIMIT 1;
       winner := rsWinner.kowinner;
     ELSE
       IF (rsAvg.goals1 > rsAvg.goals2) THEN
@@ -247,8 +250,8 @@ BEGIN
     END IF;
   END IF;
 
-  INSERT INTO tip (goals1, goals2, kowinner, gameid, username, tiptime) 
-    VALUES (rsAvg.goals1, rsAvg.goals2, winner, theGameID, 'average', now() AT TIME ZONE 'Europe/Paris');
+  INSERT INTO tip (goals1, goals2, kowinner, gameid, tournamentid, username, tiptime) 
+    VALUES (rsAvg.goals1, rsAvg.goals2, winner, theGame, theTournament, 'average', now() AT TIME ZONE 'Europe/Paris');
   RETURN(TRUE);
 END;
 $$
@@ -256,7 +259,7 @@ LANGUAGE plpgsql;
 
 ---------------------------------
 
-CREATE OR REPLACE FUNCTION updateExpert(theGameID INT2, expertclass INT2) RETURNS BOOL AS $$
+CREATE OR REPLACE FUNCTION updateExpert(theTournament INT2, theGameID INT2, expertclass INT2) RETURNS BOOL AS $$
 DECLARE
   curr_user TEXT;
   rsAvg record;
@@ -265,11 +268,12 @@ DECLARE
   isko BOOL;
 BEGIN
   SELECT INTO curr_user username FROM player WHERE artificial and expertstatus = expertclass;
-  DELETE FROM TIP WHERE gameid = theGameID AND username = curr_user;
+  DELETE FROM TIP WHERE gameid = theGameID AND tournamentid = theTournament AND username = curr_user;
 
   SELECT INTO rsAvg round(avg(goals1)) AS goals1,
                     round(avg(goals2)) AS goals2
-    FROM tip t JOIN player p on t.username = p.username WHERE not artificial AND expertstatus = expertclass AND gameid = theGameID;
+    FROM tip t JOIN player p on t.username = p.username WHERE not artificial AND expertstatus = expertclass 
+    AND gameid = theGameID AND tournamentid = theTournament;
 
   IF (rsAvg.goals1 IS NULL OR rsAvg.goals2 IS NULL) THEN
     return(FALSE);
@@ -280,7 +284,8 @@ BEGIN
   IF isko THEN
     IF (rsAvg.goals1 = rsAvg.goals2) THEN
       SELECT INTO rsWinner count(*) AS freq, kowinner FROM tip t JOIN player p ON p.username = t.username
-        WHERE gameid = theGameID AND NOT artificial and expertstatus = expertclass GROUP BY kowinner ORDER BY freq DESC LIMIT 1;
+        WHERE gameid = theGameID AND tournamentid = theTournament AND NOT artificial and expertstatus = expertclass 
+        GROUP BY kowinner ORDER BY freq DESC LIMIT 1;
       winner := rsWinner.kowinner;
     ELSE
       IF (rsAvg.goals1 > rsAvg.goals2) THEN
@@ -291,15 +296,15 @@ BEGIN
     END IF;
   END IF;
 
-  INSERT INTO tip (goals1, goals2, kowinner, gameid, username, tiptime)
-    VALUES (rsAvg.goals1, rsAvg.goals2, winner, theGameID, curr_user, now() AT TIME ZONE 'Europe/Paris');
+  INSERT INTO tip (goals1, goals2, kowinner, gameid, tournamentid, username, tiptime)
+    VALUES (rsAvg.goals1, rsAvg.goals2, winner, theGameID, theTournament, curr_user, now() AT TIME ZONE 'Europe/Paris');
   RETURN(TRUE);
 END;
 $$
 LANGUAGE plpgsql;
 
 ---------------------------------
-CREATE OR REPLACE FUNCTION updateRational(theGameID INT2) RETURNS BOOL AS $$
+CREATE OR REPLACE FUNCTION updateRational(theTournament INT2, theGameID INT2) RETURNS BOOL AS $$
 DECLARE
   rsRank record;
   goal1 INT2;
@@ -310,7 +315,8 @@ BEGIN
   DELETE FROM TIP WHERE gameid = theGameID AND username = 'rational';
 
   SELECT INTO rsRank (SELECT fifaranking FROM team WHERE team = team1) AS rank1, 
-                     (SELECT fifaranking FROM team WHERE team = team2) AS rank2 FROM game g WHERE gameid = theGameID;
+                     (SELECT fifaranking FROM team WHERE team = team2) AS rank2 FROM game g 
+                     WHERE gameid = theGameID AND tournamentid = theTournament;
 
   IF (rsRank.rank1 IS NULL OR rsRank.rank2 IS NULL) THEN
     return(FALSE);
@@ -336,8 +342,8 @@ BEGIN
     END IF;
   END IF;
 
-  INSERT INTO tip (goals1, goals2, kowinner, gameid, username, tiptime)
-    VALUES (goal1, goal2, winner, theGameID, 'rational', now() AT TIME ZONE 'Europe/Paris');
+  INSERT INTO tip (goals1, goals2, kowinner, gameid, tournamentid, username, tiptime)
+    VALUES (goal1, goal2, winner, theGameID, theTournament, 'rational', now() AT TIME ZONE 'Europe/Paris');
   RETURN(TRUE);
 END;
 $$
@@ -348,7 +354,8 @@ DROP FUNCTION usertimestat(interval);
 DROP TYPE usertimestat;
 CREATE TYPE usertimestat AS (
   rank INT8,
-  username TEXT, 
+  username TEXT,
+  tournamentid INT2,
   name TEXT, 
   firstname TEXT,
   nationality TEXT, 
@@ -358,14 +365,12 @@ CREATE TYPE usertimestat AS (
 );
 
 CREATE OR REPLACE FUNCTION usertimestat(interval) RETURNS SETOF usertimestat AS $$ 
-  SELECT rank() OVER (ORDER BY points DESC), *, points::REAL/evalgames::REAL as avgpoints FROM 
-               (SELECT t.username, name, firstname, nationality, sum(points) AS points, count(points) AS evalgames 
-                FROM tip t JOIN player p ON p.username = t.username WHERE gameid IN 
-                  (SELECT gameid FROM game WHERE starttime AT TIME ZONE 'Europe/Paris'> now() AT TIME ZONE 'Europe/Paris' - $1 AND starttime AT TIME ZONE 'Europe/Paris'< now() AT TIME ZONE 'Europe/Paris')
-                GROUP BY t.username, name, firstname, nationality ORDER BY points DESC) AS r;
+SELECT rank() OVER (ORDER BY points DESC), *, points::REAL/evalgames::REAL as avgpoints FROM 
+              (SELECT t.username, t.tournamentid, name, firstname, nationality, sum(points) AS points, count(points) AS evalgames 
+              FROM tip t JOIN player p ON p.username = t.username WHERE gameid IN 
+                (SELECT gameid FROM game WHERE starttime AT TIME ZONE 'Europe/Paris'> now() AT TIME ZONE 'Europe/Paris' - $1 AND starttime AT TIME ZONE 'Europe/Paris'< now() AT TIME ZONE 'Europe/Paris')
+              GROUP BY t.username, t.tournamentid, name, firstname, nationality ORDER BY points DESC) AS r;
 $$
 LANGUAGE sql;
 
 ---------------------------------
-
-

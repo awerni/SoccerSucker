@@ -5,10 +5,20 @@
 
 
 /*==============================================================*/
+/* Table: TOURNAMENT                                            */
+/*==============================================================*/
+create table TOURNAMENT (
+TOURNAMENTID         INT2                     not null,
+TOURNAMENTNAME       TEXT                     not null,
+constraint PK_TOURNAMENT primary key (TOURNAMENTID)
+);
+
+/*==============================================================*/
 /* Table: GAME                                                  */
 /*==============================================================*/
 create table GAME (
 GAMEID               INT2                     not null,
+TOURNAMENTID         INT2                     not null,
 TEAM1                TEXT                     null,
 TEAM2                TEXT                     null,
 CITY                 TEXT                     null,
@@ -22,7 +32,7 @@ OVERTIMEGOALS1       INT2                     null,
 OVERTIMEGOALS2       INT2                     null,
 PENALTYGOALS1        INT2                     null,
 PENALTYGOALS2        INT2                     null,
-constraint PK_GAME primary key (GAMEID)
+constraint PK_GAME primary key (GAMEID, TOURNAMENTID)
 );
 
 /*==============================================================*/
@@ -54,13 +64,14 @@ constraint PK_TEAM primary key (TEAM)
 /*==============================================================*/
 create table TIP (
 GAMEID               INT2                     not null,
+TOURNAMENTID         INT2                     not null,
 USERNAME             TEXT                     not null,
 TIPTIME              TIMESTAMP WITH TIME ZONE not null,
 GOALS1               INT2                     not null,
 GOALS2               INT2                     not null,
 KOWINNER             CHAR                     null,
 POINTS               INT2                     null,
-constraint PK_TIP primary key (GAMEID, USERNAME)
+constraint PK_TIP primary key (GAMEID, TOURNAMENTID, USERNAME)
 );
 
 /*==============================================================*/
@@ -72,6 +83,10 @@ PASSWORD             TEXT                     not null,
 constraint PK_USER primary key (USERNAME, PASSWORD)
 );
 
+alter table GAME
+   add constraint FK_GAME_TOURNAMENT foreign key (TOURNAMENTID)
+      references TOURNAMENT (TOURNAMENTID)
+      on delete restrict on update cascade;
 
 alter table GAME
    add constraint FK_GAME_REFERENCE_TEAM1 foreign key (TEAM1)
@@ -84,8 +99,8 @@ alter table GAME
       on delete restrict on update cascade;
 
 alter table TIP
-   add constraint FK_TIP_REFERENCE_GAME foreign key (GAMEID)
-      references GAME (GAMEID)
+   add constraint FK_TIP_REFERENCE_GAME foreign key (GAMEID, TOURNAMENTID)
+      references GAME (GAMEID, TOURNAMENTID)
       on delete restrict on update restrict;
 
 alter table TIP
