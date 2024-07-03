@@ -50,6 +50,8 @@ INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) V
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (44, 1, 'Austria', 'Turkey', 'Red Bull Arena, Leipzig', '2 July 2024 21:00+2', TRUE);
 
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (45, 1, 'Spain', 'Germany', 'MHPArena, Stuttgart', '5 July 2024 18:00+2', TRUE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (46, 1, 'Portugal', 'France', 'Volksparkstadion, Hamburg', '5 July 2024 21:00+2', TRUE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (47, 1, 'Netherlands', 'Turkey', 'Olympiastadion, Berlin', '6 July 2024 21:00+2', TRUE);
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (48, 1, 'England', 'Switzerland', 'Merkur Spiel-Arena, Düsseldorf', '6 July 2024 18:00+2', TRUE);
 
 ---------
@@ -81,3 +83,8 @@ INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) V
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (15, 2, 'Paraguay', 'Brazil', 'Allegiant Stadium, Las Vegas, Nevada', '28 June 2024 18:00-7', FALSE);
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (23, 2, 'Brazil', 'Colombia', 'Levi´s Stadium, Santa Clara, California', '2 July 2024 18:00-7', FALSE);
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (24, 2, 'Costa Rica', 'Paraguay', 'Q2 Stadium, Austin, Texas', '2 July 2024 20:00-5', FALSE);
+
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (25, 2, 'Argentina', 'Ecuador', 'NRG Stadium, Houston, Texas', '4 July 2024 20:00-5', TRUE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (26, 2, 'Venezuela', 'Canada', 'AT&T Stadium, Arlington, Texas', '5 July 2024 20:00-5', TRUE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (28, 2, 'Colombia', 'Panama', 'State Farm Stadium, Glendale, Arizona', '6 July 2024 15:00-7', TRUE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (27, 2, 'Uruguay', 'Brazil', 'Allegiant Stadium, Las Vegas, Nevada', '6 July 2024 18:00-7', TRUE);
