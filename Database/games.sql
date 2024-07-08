@@ -54,6 +54,9 @@ INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) V
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (47, 1, 'Netherlands', 'Turkey', 'Olympiastadion, Berlin', '6 July 2024 21:00+2', TRUE);
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (48, 1, 'England', 'Switzerland', 'Merkur Spiel-Arena, Düsseldorf', '6 July 2024 18:00+2', TRUE);
 
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (49, 1, 'Spain', 'France', 'Allianz Arena, Munich', '9 July 2024 21:00+2', TRUE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (50, 1, 'Netherlands', 'England', 'Westfalenstadion, Dortmund', '10 July 2024 21:00+2', TRUE);
+
 ---------
 
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (1, 2, 'Argentina', 'Canada', 'Mercedes-Benz Stadium, Atlanta, Georgia', '20 June 2024 20:00-4', FALSE);
@@ -88,3 +91,6 @@ INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) V
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (26, 2, 'Venezuela', 'Canada', 'AT&T Stadium, Arlington, Texas', '5 July 2024 20:00-5', TRUE);
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (28, 2, 'Colombia', 'Panama', 'State Farm Stadium, Glendale, Arizona', '6 July 2024 15:00-7', TRUE);
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (27, 2, 'Uruguay', 'Brazil', 'Allegiant Stadium, Las Vegas, Nevada', '6 July 2024 18:00-7', TRUE);
+
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (29, 2, 'Argentina', 'Canada', 'MetLife Stadium, East Rutherford, New Jersey', '9 July 2024 20:00-4', TRUE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (30, 2, 'Uruguay', 'Colombia', 'Bank of America Stadium, Charlotte, North Carolina', '10 July 2024 20:00-4', TRUE);
