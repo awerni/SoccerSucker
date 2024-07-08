@@ -42,7 +42,10 @@ UPDATE game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 0, r
 UPDATE game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 1, regulartimegoals2 = 0 WHERE gameid = 42 AND tournamentid = 1;
 UPDATE game set halftimegoals1 = 0, halftimegoals2 = 1, regulartimegoals1 = 0, regulartimegoals2 = 3 WHERE gameid = 43 AND tournamentid = 1;
 UPDATE game set halftimegoals1 = 0, halftimegoals2 = 1, regulartimegoals1 = 1, regulartimegoals2 = 2 WHERE gameid = 44 AND tournamentid = 1;
-
+UPDATE game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 1, regulartimegoals2 = 1, overtimegoals1 = 2, overtimegoals2 = 1 WHERE gameid = 45 AND tournamentid = 1;
+UPDATE game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 0, regulartimegoals2 = 0, overtimegoals1 = 0, overtimegoals2 = 0, penaltygoals1 = 3, penaltygoals2 = 5 WHERE gameid = 46 AND tournamentid = 1;
+UPDATE game set halftimegoals1 = 0, halftimegoals2 = 1, regulartimegoals1 = 2, regulartimegoals2 = 1 WHERE gameid = 47 AND tournamentid = 1;
+UPDATE game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 1, regulartimegoals2 = 1, overtimegoals1 = 1, overtimegoals2 = 1, penaltygoals1 = 5, penaltygoals2 = 3 WHERE gameid = 48 AND tournamentid = 1;
 
 UPDATE game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 2, regulartimegoals2 = 0 WHERE gameid = 1 AND tournamentid = 2;
 UPDATE game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 0, regulartimegoals2 = 0 WHERE gameid = 2 AND tournamentid = 2;
@@ -70,3 +73,5 @@ UPDATE game set halftimegoals1 = 1, halftimegoals2 = 1, regulartimegoals1 = 1, r
 UPDATE game set halftimegoals1 = 2, halftimegoals2 = 0, regulartimegoals1 = 2, regulartimegoals2 = 1 WHERE gameid = 24 AND tournamentid = 2;
 
 UPDATE game set halftimegoals1 = 1, halftimegoals2 = 0, regulartimegoals1 = 1, regulartimegoals2 = 1, overtimegoals1 = 1, overtimegoals2 = 1, penaltygoals1 = 4, penaltygoals2 = 2 WHERE gameid = 25 AND tournamentid = 2;
+UPDATE game set halftimegoals1 = 0, halftimegoals2 = 1, regulartimegoals1 = 1, regulartimegoals2 = 1, overtimegoals1 = 1, overtimegoals2 = 1, penaltygoals1 = 3, penaltygoals2 = 4 WHERE gameid = 26 AND tournamentid = 2;
+UPDATE game set halftimegoals1 = 0, halftimegoals2 = 0, regulartimegoals1 = 0, regulartimegoals2 = 0, overtimegoals1 = 0, overtimegoals2 = 0, penaltygoals1 = 4, penaltygoals2 = 2 WHERE gameid = 27 AND tournamentid = 2;
