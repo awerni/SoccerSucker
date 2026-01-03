@@ -1,99 +1,72 @@
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (1, 1, 'Germany', 'Scotland', 'Fußball Arena München, Munich', '14 June 2024 21:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (2, 1, 'Hungary', 'Switzerland', 'Cologne Stadium, Cologne', '15 June 2024 15:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (14, 1, 'Germany', 'Hungary', 'Stuttgart Arena, Stuttgart', '19 June 2024 18:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (13, 1, 'Scotland', 'Switzerland', 'Cologne Stadium, Cologne', '19 June 2024 21:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (25, 1, 'Switzerland', 'Germany', 'Frankfurt Arena, Frankfurt', '23 June 2024 21:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (26, 1, 'Scotland', 'Hungary', 'Stuttgart Arena, Stuttgart', '23 June 2024 21:00+2', FALSE);
-
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (3, 1, 'Spain', 'Croatia', 'Olympiastadion, Berlin', '15 June 2024 18:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (4, 1, 'Italy', 'Albania', 'BVB Stadion Dortmund, Dortmund', '15 June 2024 21:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (15, 1, 'Croatia', 'Albania', 'Volksparkstadion, Hamburg', '19 June 2024 15:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (16, 1, 'Spain', 'Italy', 'Arena AufSchalke, Gelsenkirchen', '20 June 2024 21:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (27, 1, 'Albania', 'Spain', 'Düsseldorf Arena, Düsseldorf', '24 June 2024 21:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (28, 1, 'Croatia', 'Italy', 'Leipzig Stadium, Leipzig', '24 June 2024 21:00+2', FALSE);
-
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (6, 1, 'Slovenia', 'Denmark', 'Stuttgart Arena, Stuttgart', '16 June 2024 18:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (5, 1, 'Serbia', 'England', 'Arena AufSchalke, Gelsenkirchen', '16 June 2024 21:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (18, 1, 'Slovenia', 'Serbia', 'Fußball Arena München, Munich', '20 June 2024 15:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (17, 1, 'Denmark', 'England', 'Frankfurt Arena, Frankfurt', '20 June 2024 18:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (29, 1, 'England', 'Slovenia', 'Cologne Stadium, Cologne', '25 June 2024 21:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (30, 1, 'Denmark', 'Serbia', 'Fußball Arena München, Munich', '25 June 2024 21:00+2', FALSE);
-
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (7, 1, 'Poland', 'Netherlands', 'Volksparkstadion, Hamburg', '16 June 2024 15:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (8, 1, 'Austria', 'France', 'Düsseldorf Arena, Düsseldorf', '17 June 2024 21:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (19, 1, 'Poland', 'Austria', 'Olympiastadion, Berlin', '21 June 2024 18:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (20, 1, 'Netherlands', 'France', 'Leipzig Stadium, Leipzig', '21 June 2024 21:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (31, 1, 'Netherlands', 'Austria', 'Olympiastadion, Berlin', '25 June 2024 18:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (32, 1, 'France', 'Poland', 'BVB Stadion Dortmund, Dortmund', '25 June 2024 18:00+2', FALSE);
-
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (10, 1, 'Romania', 'Ukraine', 'Fußball Arena München, Munich', '17 June 2024 15:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (9, 1, 'Belgium', 'Slovakia', 'Frankfurt Arena, Frankfurt', '17 June 2024 18:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (21, 1, 'Slovakia', 'Ukraine', 'Düsseldorf Arena, Düsseldorf', '21 June 2024 15:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (22, 1, 'Belgium', 'Romania', 'Cologne Stadium, Cologne', '22 June 2024 21:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (33, 1, 'Slovakia', 'Romania', 'Frankfurt Arena, Frankfurt', '26 June 2024 18:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (34, 1, 'Ukraine', 'Belgium', 'Stuttgart Arena, Stuttgart', '26 June 2024 18:00+2', FALSE);
-
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (11, 1, 'Turkey', 'Georgia', 'BVB Stadion Dortmund, Dortmund', '18 June 2024 18:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (12, 1, 'Portugal', 'Czech Republic', 'Leipzig Stadium, Leipzig', '18 June 2024 21:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (24, 1, 'Georgia', 'Czech Republic', 'Volksparkstadion, Hamburg', '22 June 2024 15:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (23, 1, 'Turkey', 'Portugal', 'BVB Stadion Dortmund, Dortmund', '22 June 2024 18:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (35, 1, 'Georgia', 'Portugal', 'Arena AufSchalke, Gelsenkirchen', '26 June 2024 21:00+2', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (36, 1, 'Czech Republic', 'Turkey', 'Volksparkstadion, Hamburg', '26 June 2024 21:00+2', FALSE);
-
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (38, 1, 'Switzerland', 'Italy', 'Olympiastadion, Berlin', '29 June 2024 18:00+2', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (37, 1, 'Germany', 'Denmark', 'Westfalenstadion, Dortmund', '29 June 2024 21:00+2', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (40, 1, 'England', 'Slovakia', 'Arena AufSchalke, Gelsenkirchen', '30 June 2024 18:00+2', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (39, 1, 'Spain', 'Georgia', 'RheinEnergieStadion, Cologne', '30 June 2024 21:00+2', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (42, 1, 'France', 'Belgium', 'Merkur Spiel-Arena, Düsseldorf', '1 July 2024 18:00+2', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (41, 1, 'Portugal', 'Slovenia', 'Waldstadion, Frankfurt', '1 July 2024 21:00+2', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (43, 1, 'Romania', 'Netherlands', 'Allianz Arena, Munich', '2 July 2024 18:00+2', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (44, 1, 'Austria', 'Turkey', 'Red Bull Arena, Leipzig', '2 July 2024 21:00+2', TRUE);
-
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (45, 1, 'Spain', 'Germany', 'MHPArena, Stuttgart', '5 July 2024 18:00+2', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (46, 1, 'Portugal', 'France', 'Volksparkstadion, Hamburg', '5 July 2024 21:00+2', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (47, 1, 'Netherlands', 'Turkey', 'Olympiastadion, Berlin', '6 July 2024 21:00+2', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (48, 1, 'England', 'Switzerland', 'Merkur Spiel-Arena, Düsseldorf', '6 July 2024 18:00+2', TRUE);
-
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (49, 1, 'Spain', 'France', 'Allianz Arena, Munich', '9 July 2024 21:00+2', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (50, 1, 'Netherlands', 'England', 'Westfalenstadion, Dortmund', '10 July 2024 21:00+2', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (51, 1, 'Spain', 'England', 'Berlin (Olympiastadion)', '14 July 2024 21:00+2', TRUE);
-
----------
-
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (1, 2, 'Argentina', 'Canada', 'Mercedes-Benz Stadium, Atlanta, Georgia', '20 June 2024 20:00-4', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (2, 2, 'Peru', 'Chile', 'AT&T Stadium, Arlington, Texas', '21 June 2024 19:00-5', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (10, 2, 'Peru', 'Canada', 'Children´s Mercy Park, Kansas City, Kansas', '25 June 2024 17:00-5', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (9, 2, 'Chile', 'Argentina', 'MetLife Stadium, East Rutherford, New Jersey', '25 June 2024 21:00-4', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (17, 2, 'Argentina', 'Peru', 'Hard Rock Stadium, Miami Gardens, Florida', '29 June 2024 20:00-4', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (18, 2, 'Canada', 'Chile', 'Inter&Co Stadium, Orlando, Florida', '29 June 2024 20:00-4', FALSE);
-
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (4, 2, 'Ecuador', 'Venezuela', 'Levi´s Stadium, Santa Clara, California', '22 June 2024 15:00-7', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (3, 2, 'Mexico', 'Jamaica', 'NRG Stadium, Houston, Texas', '22 June 2024 20:00-5', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (12, 2, 'Ecuador', 'Jamaica', 'Allegiant Stadium, Las Vegas, Nevada', '26 June 2024 15:00-7', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (11, 2, 'Venezuela', 'Mexico', 'SoFi Stadium, Inglewood, California', '26 June 2024 18:00-7', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (19, 2, 'Mexico', 'Ecuador', 'State Farm Stadium, Glendale, Arizona', '30 June 2024 17:00-7', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (20, 2, 'Jamaica', 'Venezuela', 'Q2 Stadium, Austin, Texas', '30 June 2024 19:00-5', FALSE);
-
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (5, 2, 'United States', 'Bolivia', 'AT&T Stadium, Arlington, Texas', '23 June 2024 17:00-5', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (6, 2, 'Uruguay', 'Panama', 'Hard Rock Stadium, Miami Gardens, Florida', '23 June 2024 21:00-4', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (13, 2, 'Panama', 'United States', 'Mercedes-Benz Stadium, Atlanta, Georgia', '27 June 2024 18:00-4', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (14, 2, 'Uruguay', 'Bolivia', 'MetLife Stadium, East Rutherford, New Jersey', '27 June 2024 21:00-4', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (21, 2, 'United States', 'Uruguay', 'Arrowhead Stadium, Kansas City, Missouri', '1 July 2024 20:00-5', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (22, 2, 'Bolivia', 'Panama', 'Inter&Co Stadium, Orlando, Florida', '1 July 2024 21:00-4', FALSE);
-
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (8, 2, 'Colombia', 'Paraguay', 'NRG Stadium, Houston, Texas', '24 June 2024 17:00-5', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (7, 2, 'Brazil', 'Costa Rica', 'SoFi Stadium, Inglewood, California', '24 June 2024 18:00-7', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (16, 2, 'Colombia', 'Costa Rica', 'State Farm Stadium, Glendale, Arizona', '28 June 2024 15:00-7', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (15, 2, 'Paraguay', 'Brazil', 'Allegiant Stadium, Las Vegas, Nevada', '28 June 2024 18:00-7', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (23, 2, 'Brazil', 'Colombia', 'Levi´s Stadium, Santa Clara, California', '2 July 2024 18:00-7', FALSE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (24, 2, 'Costa Rica', 'Paraguay', 'Q2 Stadium, Austin, Texas', '2 July 2024 20:00-5', FALSE);
-
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (25, 2, 'Argentina', 'Ecuador', 'NRG Stadium, Houston, Texas', '4 July 2024 20:00-5', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (26, 2, 'Venezuela', 'Canada', 'AT&T Stadium, Arlington, Texas', '5 July 2024 20:00-5', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (28, 2, 'Colombia', 'Panama', 'State Farm Stadium, Glendale, Arizona', '6 July 2024 15:00-7', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (27, 2, 'Uruguay', 'Brazil', 'Allegiant Stadium, Las Vegas, Nevada', '6 July 2024 18:00-7', TRUE);
-
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (29, 2, 'Argentina', 'Canada', 'MetLife Stadium, East Rutherford, New Jersey', '9 July 2024 20:00-4', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (30, 2, 'Uruguay', 'Colombia', 'Bank of America Stadium, Charlotte, North Carolina', '10 July 2024 20:00-4', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (31, 2, 'Canada', 'Uruguay', 'Bank of America Stadium, Charlotte, North Carolina', '13 July 2024 20:00-4', TRUE);
-INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (32, 2, 'Argentina', 'Colombia', 'Hard Rock Stadium, Miami Gardens, Florida', '14 July 2024 20:00-4', TRUE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (1, 1, 'Mexico', 'South Africa', 'Estadio Azteca, Mexico City', '11 June 2026 13:00-6', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (2, 1, 'South Korea', 'UEFA Path D winner', 'Estadio Akron, Zapopan', '11 June 2026 20:00-6', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (3, 1, 'Canada', 'UEFA Path A winner', 'BMO Field, Toronto', '12 June 2026 15:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (4, 1, 'United States', 'Paraguay', 'SoFi Stadium, Inglewood', '12 June 2026 18:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (5, 1, 'Haiti', 'Scotland', 'Gillette Stadium, Foxborough', '13 June 2026 21:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (6, 1, 'Australia', 'UEFA Path C winner', 'BC Place, Vancouver', '13 June 2026 21:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (7, 1, 'Brazil', 'Morocco', 'MetLife Stadium, East Rutherford', '13 June 2026 18:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (8, 1, 'Qatar', 'Switzerland', 'Levi''s Stadium, Santa Clara', '13 June 2026 12:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (9, 1, 'Ivory Coast', 'Ecuador', 'Lincoln Financial Field, Philadelphia', '14 June 2026 19:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (10, 1, 'Germany', 'Curaçao', 'NRG Stadium, Houston', '14 June 2026 12:00-5', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (11, 1, 'Netherlands', 'Japan', 'AT&T Stadium, Arlington', '14 June 2026 15:00-5', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (12, 1, 'UEFA Path B winner', 'Tunisia', 'Estadio BBVA, Guadalupe', '14 June 2026 20:00-6', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (13, 1, 'Saudi Arabia', 'Uruguay', 'Hard Rock Stadium, Miami Gardens', '15 June 2026 18:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (14, 1, 'Spain', 'Cape Verde', 'Mercedes-Benz Stadium, Atlanta', '15 June 2026 12:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (15, 1, 'Iran', 'New Zealand', 'SoFi Stadium, Inglewood', '15 June 2026 18:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (16, 1, 'Belgium', 'Egypt', 'Lumen Field, Seattle', '15 June 2026 12:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (17, 1, 'France', 'Senegal', 'MetLife Stadium, East Rutherford', '16 June 2026 15:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (18, 1, 'IC Path 2 winner', 'Norway', 'Gillette Stadium, Foxborough', '16 June 2026 18:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (19, 1, 'Argentina', 'Algeria', 'Arrowhead Stadium, Kansas City', '16 June 2026 20:00-5', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (20, 1, 'Austria', 'Jordan', 'Levi''s Stadium, Santa Clara', '16 June 2026 21:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (21, 1, 'Ghana', 'Panama', 'BMO Field, Toronto', '17 June 2026 19:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (22, 1, 'England', 'Croatia', 'AT&T Stadium, Arlington', '17 June 2026 15:00-5', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (23, 1, 'Portugal', 'IC Path 1 winner', 'NRG Stadium, Houston', '17 June 2026 12:00-5', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (24, 1, 'Uzbekistan', 'Colombia', 'Estadio Azteca, Mexico City', '17 June 2026 20:00-6', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (25, 1, 'UEFA Path D winner', 'South Africa', 'Mercedes-Benz Stadium, Atlanta', '18 June 2026 12:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (26, 1, 'Switzerland', 'UEFA Path A winner', 'SoFi Stadium, Inglewood', '18 June 2026 12:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (27, 1, 'Canada', 'Qatar', 'BC Place, Vancouver', '18 June 2026 15:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (28, 1, 'Mexico', 'South Korea', 'Estadio Akron, Zapopan', '18 June 2026 19:00-6', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (29, 1, 'Brazil', 'Haiti', 'Lincoln Financial Field, Philadelphia', '19 June 2026 21:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (30, 1, 'Scotland', 'Morocco', 'Gillette Stadium, Foxborough', '19 June 2026 18:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (31, 1, 'UEFA Path C winner', 'Paraguay', 'Levi''s Stadium, Santa Clara', '19 June 2026 21:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (32, 1, 'United States', 'Australia', 'Lumen Field, Seattle', '19 June 2026 12:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (33, 1, 'Germany', 'Ivory Coast', 'BMO Field, Toronto', '20 June 2026 16:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (34, 1, 'Ecuador', 'Curaçao', 'Arrowhead Stadium, Kansas City', '20 June 2026 19:00-5', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (35, 1, 'Netherlands', 'UEFA Path B winner', 'NRG Stadium, Houston', '20 June 2026 12:00-5', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (36, 1, 'Tunisia', 'Japan', 'Estadio BBVA, Guadalupe', '20 June 2026 22:00-6', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (37, 1, 'Uruguay', 'Cape Verde', 'Hard Rock Stadium, Miami Gardens', '21 June 2026 18:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (38, 1, 'Spain', 'Saudi Arabia', 'Mercedes-Benz Stadium, Atlanta', '21 June 2026 12:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (39, 1, 'Belgium', 'Iran', 'SoFi Stadium, Inglewood', '21 June 2026 12:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (40, 1, 'New Zealand', 'Egypt', 'BC Place, Vancouver', '21 June 2026 18:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (41, 1, 'Norway', 'Senegal', 'MetLife Stadium, East Rutherford', '22 June 2026 20:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (42, 1, 'France', 'IC Path 2 winner', 'Lincoln Financial Field, Philadelphia', '22 June 2026 17:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (43, 1, 'Argentina', 'Austria', 'AT&T Stadium, Arlington', '22 June 2026 12:00-5', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (44, 1, 'Jordan', 'Algeria', 'Levi''s Stadium, Santa Clara', '22 June 2026 20:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (45, 1, 'England', 'Ghana', 'Gillette Stadium, Foxborough', '23 June 2026 16:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (46, 1, 'Panama', 'Croatia', 'BMO Field, Toronto', '23 June 2026 19:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (47, 1, 'Portugal', 'Uzbekistan', 'NRG Stadium, Houston', '23 June 2026 12:00-5', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (48, 1, 'Colombia', 'IC Path 1 winner', 'Estadio Akron, Zapopan', '23 June 2026 20:00-6', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (49, 1, 'Scotland', 'Brazil', 'Hard Rock Stadium, Miami Gardens', '24 June 2026 18:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (50, 1, 'Morocco', 'Haiti', 'Mercedes-Benz Stadium, Atlanta', '24 June 2026 18:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (51, 1, 'Switzerland', 'Canada', 'BC Place, Vancouver', '24 June 2026 12:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (52, 1, 'UEFA Path A winner', 'Qatar', 'Lumen Field, Seattle', '24 June 2026 12:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (53, 1, 'UEFA Path D winner', 'Mexico', 'Estadio Azteca, Mexico City', '24 June 2026 19:00-6', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (54, 1, 'South Africa', 'South Korea', 'Estadio BBVA, Guadalupe', '24 June 2026 19:00-6', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (55, 1, 'Curaçao', 'Ivory Coast', 'Lincoln Financial Field, Philadelphia', '25 June 2026 16:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (56, 1, 'Ecuador', 'Germany', 'MetLife Stadium, East Rutherford', '25 June 2026 16:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (57, 1, 'Japan', 'UEFA Path B winner', 'AT&T Stadium, Arlington', '25 June 2026 18:00-5', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (58, 1, 'Tunisia', 'Netherlands', 'Arrowhead Stadium, Kansas City', '25 June 2026 18:00-5', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (59, 1, 'UEFA Path C winner', 'United States', 'SoFi Stadium, Inglewood', '25 June 2026 19:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (60, 1, 'Paraguay', 'Australia', 'Levi''s Stadium, Santa Clara', '25 June 2026 19:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (61, 1, 'Norway', 'France', 'Gillette Stadium, Foxborough', '26 June 2026 15:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (62, 1, 'Senegal', 'IC Path 2 winner', 'BMO Field, Toronto', '26 June 2026 15:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (63, 1, 'Egypt', 'Iran', 'Lumen Field, Seattle', '26 June 2026 20:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (64, 1, 'New Zealand', 'Belgium', 'BC Place, Vancouver', '26 June 2026 20:00-7', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (65, 1, 'Cape Verde', 'Saudi Arabia', 'NRG Stadium, Houston', '26 June 2026 19:00-5', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (66, 1, 'Uruguay', 'Spain', 'Estadio Akron, Zapopan', '26 June 2026 18:00-6', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (67, 1, 'Panama', 'England', 'MetLife Stadium, East Rutherford', '27 June 2026 17:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (68, 1, 'Croatia', 'Ghana', 'Lincoln Financial Field, Philadelphia', '27 June 2026 17:00-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (69, 1, 'Algeria', 'Austria', 'Arrowhead Stadium, Kansas City', '27 June 2026 21:00-5', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (70, 1, 'Jordan', 'Argentina', 'AT&T Stadium, Arlington', '27 June 2026 21:00-5', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (71, 1, 'Colombia', 'Portugal', 'Hard Rock Stadium, Miami Gardens', '27 June 2026 19:30-4', FALSE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (72, 1, 'IC Path 1 winner', 'Uzbekistan', 'Mercedes-Benz Stadium, Atlanta', '27 June 2026 19:30-4', FALSE);
