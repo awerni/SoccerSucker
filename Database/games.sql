@@ -56,6 +56,7 @@ INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) V
 
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (49, 1, 'Spain', 'France', 'Allianz Arena, Munich', '9 July 2024 21:00+2', TRUE);
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (50, 1, 'Netherlands', 'England', 'Westfalenstadion, Dortmund', '10 July 2024 21:00+2', TRUE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (51, 1, 'Spain', 'England', 'Berlin (Olympiastadion)', '14 July 2024 21:00+2', TRUE);
 
 ---------
 
@@ -94,3 +95,5 @@ INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) V
 
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (29, 2, 'Argentina', 'Canada', 'MetLife Stadium, East Rutherford, New Jersey', '9 July 2024 20:00-4', TRUE);
 INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (30, 2, 'Uruguay', 'Colombia', 'Bank of America Stadium, Charlotte, North Carolina', '10 July 2024 20:00-4', TRUE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (31, 2, 'Canada', 'Uruguay', 'Bank of America Stadium, Charlotte, North Carolina', '13 July 2024 20:00-4', TRUE);
+INSERT INTO game (gameid, tournamentid, team1, team2, city, starttime, kogame) VALUES (32, 2, 'Argentina', 'Colombia', 'Hard Rock Stadium, Miami Gardens, Florida', '14 July 2024 20:00-4', TRUE);
