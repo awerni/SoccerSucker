@@ -29,3 +29,24 @@ helpEng <- paste("For the correct winner (1, 2, or X) there are 3 points to earn
                  "If you bet for a draw, you have to vote for a winner in addition. For the correct guess",
                  "you gain 2 extra points. These extra points are also added, if you choose the correct",
                  "winner after the regular time or overtime.")
+
+helpPor <- paste("Para o vencedor correto (1, 2 ou X) há 3 pontos a ganhar. A diferença de gols correta",
+                 "leva a um ponto adicional. Se você acertar o resultado exato, ganha mais um ponto.",
+                 "Os pontos são recompensados após o tempo regular (90 min. + tempo adicional).",
+                 "A partir da fase nocaute, quase as mesmas regras se aplicam. O resultado é considerado após 120 minutos (tempo regular e",
+                 "prorrogação, se necessário) e você ganha pontos duplos.",
+                 "Na fase nocaute, a decisão às vezes não é feita após o tempo regular ou prorrogação.",
+                 "Se você apostar em um empate, deve votar em um vencedor além disso. Para o palpite correto",
+                 "você ganha 2 pontos extras. Esses pontos extras também são adicionados se você escolher o",
+                 "vencedor correto após o tempo regular ou prorrogação.")
+
+helpFr <- paste("Pour le bon vainqueur (1, 2 ou X), il y a 3 points à gagner. La bonne différence de buts",
+                "mène à un point supplémentaire. Si vous deviez le résultat exact, vous gagnez un autre point.",
+                "Les points sont récompensés après le temps réglementaire (90 min. + temps supplémentaire).",
+                "À partir de la phase éliminatoire, presque les mêmes règles s'appliquent. Le résultat est pris après 120 minutes (temps réglementaire et",
+                "prolongation, si nécessaire) et vous obtenez des points doubles.",
+                "En phase éliminatoire, la décision n'est parfois pas prise après le temps réglementaire ou la prolongation.",
+                "Si vous pariez sur un match nul, vous devez également voter pour un vainqueur. Pour la bonne supposition",
+                "vous gagnez 2 points supplémentaires. Ces points supplémentaires sont également ajoutés si vous choisissez le",
+                "bon vainqueur après le temps réglementaire ou la prolongation.")
+
