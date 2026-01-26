@@ -60,7 +60,7 @@ fluidPage(theme = bs_theme(bootswatch = "cerulean"),
                tabPanel(trans("teamranking"), p(), DT::dataTableOutput("teamranking"))
              )),
              tabPanel(
-               trans("help"), br(), helpText(helpEng), hr(), helpText(helpGer), hr(), helpText(helpPor), hr(), helpText(helpFr), br(),
+               trans("help"), br(), trans("helptext"), hr(), br(),
                p(
                  a("registration help and legal disclaimer", href="register_help.html", target="_blank")
                ),
