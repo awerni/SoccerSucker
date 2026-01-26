@@ -199,7 +199,7 @@ getFutureGames <- function(tournamentid) {
 }
 
 formatInput <- function(gameid, team, goals) {
-  paste0("<input id='g", gameid, "t", team, "' class='shiny-bound-input' type='number' value='",
+  paste0("<input id='g", gameid, "t", team, "'class='shiny-input-number' type='number' value='",
          goals, "' min = '0' max = '10'>")
 }
 
