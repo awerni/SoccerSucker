@@ -16,6 +16,8 @@ fluidPage(theme = bs_theme(bootswatch = "cerulean"),
            hr(),
            p("Version 1.4"),
            hr(),
+           p(textOutput("URL")),
+           hr(),
            radioButtons("tournament", paste0(trans("select"), ":"), getTournament(), inline = FALSE),
            hr(),
            {
