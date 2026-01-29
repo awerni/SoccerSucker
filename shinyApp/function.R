@@ -205,7 +205,7 @@ formatInput <- function(gameid, team, goals) {
 
 formatInputKO <- function(gameid, winner, kogame) {
   ifelse(kogame,
-    paste0("<input id='g", gameid, "w","' class='shiny-bound-input' type='number' value='",
+    paste0("<input id='g", gameid, "w","' class='shiny-input-checkbox' type='number' value='",
             winner, "' min = '1' max = '2'>")
     , "")
 }
@@ -302,6 +302,7 @@ getExpertPlot <- function(data) {
   ggplot(data, aes(factor(expertstatus), totalpoints)) + geom_boxplot(aes(fill = expertstatus)) +
     theme_gray() + scale_x_discrete(name = "") + scale_y_continuous(name = "Total Points") +
     coord_flip() + theme(text = element_text(size = 20))
+  if (nrow(ret) == 0) return()
 }
 
 getPlayerResult <- function(username, tournamentid) {
@@ -331,7 +332,6 @@ getGameResults <- function(showplayers, tournamentid) {
                 "gametime(starttime ", time_zone_clause, ") = 'soon') ORDER BY starttime DESC, gameid")
 
   ret <- getPostgresql(sql)
-  if (nrow(ret) == 0) return()
 
   ret <- ret |>
     mutate(result = case_when(
