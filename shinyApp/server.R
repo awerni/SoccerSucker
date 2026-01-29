@@ -8,9 +8,22 @@ source("settings.R")
 
 function(input, output, session) {
 
+  queryParameters <- reactive({
+    parseQueryString(session$clientData$url_search)
+  })
+
   ranking <- reactive({
     input$refresh
     getRanking(input$showplayers, input$tournament)
+  })
+
+  output$URL <- renderText({
+    qp <- queryParameters()
+    if (!is.null(qp[["lang"]])) {
+      paste0("lang: ", qp[["lang"]])
+    } else {
+      "No lang parameter found"
+    }
   })
 
   output$ranking <- DT::renderDataTable({
