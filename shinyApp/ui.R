@@ -4,7 +4,6 @@ library(bslib)
 
 #library(shinythemes)
 
-source("settings.R")
 source("function.R")
 
 fluidPage(theme = bs_theme(bootswatch = "cerulean"),
@@ -14,9 +13,9 @@ fluidPage(theme = bs_theme(bootswatch = "cerulean"),
     column(2,
            img(src=logo_file, width="200", align = "center"),
            hr(),
-           p("Version 1.4"),
+           p("Version 1.5"),
            hr(),
-           p(textOutput("URL")),
+           p(textOutput("timezone")),
            hr(),
            radioButtons("tournament", paste0(trans("select"), ":"), getTournament(), inline = FALSE),
            hr(),
