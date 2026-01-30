@@ -302,7 +302,6 @@ getExpertPlot <- function(data) {
   ggplot(data, aes(factor(expertstatus), totalpoints)) + geom_boxplot(aes(fill = expertstatus)) +
     theme_gray() + scale_x_discrete(name = "") + scale_y_continuous(name = "Total Points") +
     coord_flip() + theme(text = element_text(size = 20))
-  if (nrow(ret) == 0) return()
 }
 
 getPlayerResult <- function(username, tournamentid) {
@@ -481,10 +480,10 @@ getTournament <- function() {
 getTournamentName <- function(tournamentid) {
   sql <- "SELECT tournamentname FROM tournament"
   sql <- paste0(sql, " WHERE tournamentid = ", tournamentid)
-  getPostgresql(sql)$tournamentname  
+  getPostgresql(sql)$tournamentname
 }
 
-trans <- function(keyword) labeltrans[[keyword]][[lang]]
+trans <- function(keyword, currlang = lang) labeltrans[[keyword]][[currlang]]
 
 getGameResult <- function(gameid) {
   h <- new_handle()
