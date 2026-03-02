@@ -16,6 +16,11 @@ function(input, output, session) {
     time_zone
   })
 
+  observeEvent(input$reload, {
+    time_zone <<- "America/Sao_Paulo"
+    session$reload()
+  })
+
   output$ranking <- DT::renderDataTable({
       my_rank <- ranking()
       validate(need(my_rank, "no ranking available"))
@@ -42,7 +47,7 @@ function(input, output, session) {
   #                                                                    '#987654', '#537827')))
 
   tournament <- reactive({
-    getTournamentName(input$tournment)
+    getTournamentName(input$tournament)
   })
 
   missingTips <- reactive({
@@ -211,7 +216,11 @@ function(input, output, session) {
   })
 
   output$heatmap <- renderPlot({
-    getHeatmap(resultCross())
+    rc <- resultCross()
+    validate(
+      need(rc$n, "no data available")
+    )
+    getHeatmap(rc)
   })
 
   output$rankingTab <- renderUI({
