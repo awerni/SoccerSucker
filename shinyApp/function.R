@@ -205,7 +205,7 @@ getFutureGames <- function(tournamentid) {
 
   con <- connectPostgresql()
   r <- tbl(con, "game") |>
-    filter(starttime > now(), tournamentid == tournamentid) |>
+    filter(starttime > now(), tournamentid == !!tournamentid) |>
     arrange(starttime, gameid) |>
     select(gameid, kogame) |>
     collect() |>
