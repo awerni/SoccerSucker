@@ -54,12 +54,12 @@ fluidPage(theme = bs_theme(bootswatch = "cerulean"),
         )),
         tabPanel(trans("summary_statistics"), tabsetPanel(
           tabPanel(trans("nationality"), uiOutput("nationplot")),
-          tabPanel(trans("expertstatus"), uiOutput("expertplot")),
-          tabPanel(trans("pointsperteam"), plotOutput("pointsperteam", width = "100%", height = "400px"), textOutput("pointsperteamdesc"))
+          tabPanel(trans("expertstatus"), uiOutput("expertplot"))
         )),
         tabPanel(trans("game_statistics"), tabsetPanel(
           tabPanel(trans("gameresult"), p(), DT::dataTableOutput("gameresult")),
-          tabPanel(trans("teamranking"), p(), DT::dataTableOutput("teamranking"))
+          tabPanel(trans("teamranking"), p(), DT::dataTableOutput("teamranking")),
+          tabPanel(trans("pointsperteam"), plotOutput("pointsperteam", width = "100%", height = "400px"), textOutput("pointsperteamdesc"))
         )),
         tabPanel(
           trans("help"), br(), trans("helptext"), hr(), br(),
