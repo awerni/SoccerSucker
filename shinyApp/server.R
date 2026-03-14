@@ -18,8 +18,7 @@ function(input, output, session) {
 
   observeEvent(input$reload, {
     if (time_zone() == "Europe/Paris") time_zone("America/Sao_Paulo")
-    else
-    time_zone("Europe/Paris")
+    else time_zone("Europe/Paris")
     #session$reload()
   })
 
@@ -36,17 +35,17 @@ function(input, output, session) {
   })
 
   output$teamranking <- DT::renderDataTable({
-    datatable(teamranking(), rownames = FALSE, selection = "none", options = list(pageLength = 24)) |>
-      formatStyle('Group', backgroundColor = styleEqual(LETTERS[1:8], c('#f5fffa', '#fffacd', '#e6e6fa',
-                                                                        '#faebd7', '#F0F8FF', '#cdc0b0',
-                                                                        '#FFCCCC', '#CCFFE5'))
-      )
+    datatable(
+      teamranking(),
+      rownames = FALSE,
+      selection = "none",
+      options = list(pageLength = 24, lengthChange = FALSE)
+    ) |>
+    formatStyle(
+      'Group',
+      backgroundColor = styleEqual(LETTERS[1:length(group_colors)], group_colors)
+    )
   })
-
-  #|>
-  #  formatStyle('Group', backgroundColor = styleEqual(LETTERS[1:8], c('#f5fffa', '#fffacd', '#e6e6fa',
-  #                                                                    '#faebd7', '#F0F8FF', '#cdc0b0',
-  #                                                                    '#987654', '#537827')))
 
   tournament <- reactive({
     getTournamentName(input$tournament)
@@ -78,6 +77,7 @@ function(input, output, session) {
   #user <- reactiveValues(name = "wernitzn", registered = TRUE, knownuser = TRUE, fullname = getName("wernitzn"))
   user <- reactiveValues(name = "", registered = TRUE, knownuser = TRUE, fullname = "")
   time_zone <- reactiveVal("Europe/Paris", label = "time_zone")
+  language <- reactiveVal("en", label = "language")
 
   observeEvent(input$login, {
     u <- isolate(input$username)
