@@ -13,12 +13,14 @@ function(input, output, session) {
   })
 
   output$timezone <- renderText({
-    time_zone
+    time_zone()
   })
 
   observeEvent(input$reload, {
-    time_zone <<- "America/Sao_Paulo"
-    session$reload()
+    if (time_zone() == "Europe/Paris") time_zone("America/Sao_Paulo")
+    else
+    time_zone("Europe/Paris")
+    #session$reload()
   })
 
   output$ranking <- DT::renderDataTable({
@@ -75,6 +77,7 @@ function(input, output, session) {
   # ---- user handling -------
   #user <- reactiveValues(name = "wernitzn", registered = TRUE, knownuser = TRUE, fullname = getName("wernitzn"))
   user <- reactiveValues(name = "", registered = TRUE, knownuser = TRUE, fullname = "")
+  time_zone <- reactiveVal("Europe/Paris", label = "time_zone")
 
   observeEvent(input$login, {
     u <- isolate(input$username)
