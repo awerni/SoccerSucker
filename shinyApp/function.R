@@ -522,26 +522,46 @@ getGameResult <- function(gameid) {
 }
 
 getTeamBetPoints <- function(showplayers, tournamentid) {
-  #myClause <- ifelse(kogame, " NOT ", "")
-  sql2 <- paste("WHERE TRUE", getShowPlayersClause(showplayers))
-  sql1 <- paste0("tipview tv JOIN gameview gv ON tv.gameid = gv.gameid AND ",
-                 "tv.tournamentid = gv.tournamentid AND tv.tournamentid = ", tournamentid, " ")
-  sql <- paste0("SELECT sum(points)/count(distinct(gameid)) AS avgpoints, sum(points), ",
-                "count(distinct(gameid)) as games, team, kogame FROM ",
-                "(SELECT points, team1 AS team, tv.gameid, kogame FROM ", sql1,  sql2,
-                " UNION ALL ",
-                "SELECT points, team2 AS team, tv.gameid, kogame FROM ", sql1, sql2, ") t ",
-                "WHERE points IS NOT NULL GROUP BY team, kogame")
-  data <- getPostgresql(sql)
+  sql <- paste0(
+    "SELECT sum(points)/count(distinct(gameid)) AS avgpoints,
+            sum(points),
+            count(distinct(gameid)) as games,
+            team, kogame
+     FROM (
+       SELECT points, team1 AS team, tv.gameid, kogame
+       FROM tipview tv
+       JOIN gameview gv
+         ON tv.gameid = gv.gameid
+        AND tv.tournamentid = gv.tournamentid
+        AND tv.tournamentid = $1 ",
+     getShowPlayersClause(showplayers),
+     " UNION ALL
+       SELECT points, team2 AS team, tv.gameid, kogame
+       FROM tipview tv
+       JOIN gameview gv
+         ON tv.gameid = gv.gameid
+        AND tv.tournamentid = gv.tournamentid
+        AND tv.tournamentid = $1 ",
+     getShowPlayersClause(showplayers),
+     "
+     ) t
+     WHERE points IS NOT NULL
+     GROUP BY team, kogame"
+  )
+
+  data <- getPostgresql(sql, params = list(tournamentid))
   if (nrow(data) == 0) return()
   data <- data |>
     mutate(game = ifelse(kogame, "KO-Game", "Group-Phase-Game"))
 
-  ggplot(data, aes(team, avgpoints, fill = game)) + geom_bar(stat="identity", position="dodge") +
-    theme_gray() + theme(text = element_text(size = 20), axis.text.x = element_text(angle = 90, hjust = 1, vjust = +0.5)) +
-    scale_y_continuous(name="Average Points per Game") + xlab("") +
+  ggplot(data, aes(team, avgpoints, fill = game)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    theme_gray() +
+    theme(text = element_text(size = 20), axis.text.x = element_text(angle = 90, hjust = 1, vjust = +0.5)) +
+    scale_y_continuous(name="Average Points per Game") +
+    xlab("") +
     geom_text(data = data, aes(team, avgpoints, group = game, label = games),
-              vjust=1.5, position=position_dodge(.9), size = 4)
+              vjust = 1.5, position = position_dodge(.9), size = 4)
 }
 
 # -------------------------------
