@@ -354,4 +354,8 @@ function(input, output, session) {
   output$pointsperteam <- renderPlot({
     getTeamBetPoints(input$showplayers, input$tournament)
   })
+
+  onStop(function() {
+    poolClose(pool)
+  })
 }
