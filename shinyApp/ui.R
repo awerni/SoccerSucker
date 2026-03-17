@@ -16,8 +16,9 @@ page_sidebar(
   window_title = "Soccer Succer",
   sidebar = sidebar(
     width = 300,
-    div(class = "text-center",
-        img(src = logo_file, width = "180px")
+    div(
+      class = "text-center",
+      img(src = logo_file, width = "180px")
     ),
     hr(),
     textOutput("timezone"),
@@ -90,7 +91,7 @@ page_sidebar(
       navset_card_tab(
         nav_panel(trans("gameresult"), DTOutput("gameresult")),
         nav_panel(
-          trans("teamranking"), 
+          trans("teamranking"),
           card(
             height = "calc(100vh - 140px)",
             DTOutput("teamranking", height = "100%")
