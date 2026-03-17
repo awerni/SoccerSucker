@@ -1,7 +1,6 @@
 .Rproj.user/
 SoccerSucker.Rproj
 shinyApp/rsconnect/
-shinyApp/settings.R
 .Renviron
 .lintr
 Database/update.sh
