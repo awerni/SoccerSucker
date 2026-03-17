@@ -14,8 +14,8 @@ time_zone <- "Europe/Paris"
 #time_zone <- "America/Sao_Paulo"
 
 checkAccount <- function(user, pass) {
-  sql <- paste0("SELECT checklogin FROM checkLogin('", user, "', '", pass, "')")
-  getPostgresql(sql)$checklogin > 0
+  sql <- "SELECT checklogin FROM checkLogin($1, $2)"
+  getPostgresql(sql, params = list(user, pass))$checklogin > 0
 }
 
 group_colors <- c(
