@@ -76,8 +76,8 @@ function(input, output, session) {
   # ---- user handling -------
   #user <- reactiveValues(name = "wernitzn", registered = TRUE, knownuser = TRUE, fullname = getName("wernitzn"))
   user <- reactiveValues(name = "", registered = TRUE, knownuser = TRUE, fullname = "")
-  time_zone <- reactiveVal("Europe/Paris", label = "time_zone")
   language <- reactiveVal("en", label = "language")
+  time_zone <- reactiveVal("Europe/Paris", label = "time_zone")
 
   observeEvent(input$login, {
     u <- isolate(input$username)
