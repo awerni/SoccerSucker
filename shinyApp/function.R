@@ -88,7 +88,7 @@ getRanking <- function(showplayers, tournamentid) {
 
   sql <- paste(sql, getShowPlayersClause(showplayers))
 
-  rank <- getPostgresql(sql, tournamentid)
+  rank <- getPostgresql(sql, params = tournamentid)
   if (nrow(rank) == 0) return()
   if (max(rank$games) > 0) rank <- rank |> filter(games > 0)
   rank <- rank |> mutate(pointspergame = signif(pointspergame, digits = 2)) |>
@@ -402,9 +402,9 @@ getTips <- function(tournamentid, gameid, showplayers) {
   sql <- paste0("SELECT rank() OVER (order by points desc) as rank, name, goals1, goals2, winner, kowinner, ",
                 "CASE WHEN artificial THEN starttime ELSE tiptime END AS time, points ",
                 "FROM tipview tv JOIN game g ON tv.gameid = g.gameid AND tv.tournamentid = g.tournamentid ",
-                "WHERE tv.gameid = ", gameid, " AND tv.tournamentid = $1 ",
+                "WHERE tv.gameid = $1 AND tv.tournamentid = $2 ",
                 sql_filter, " ORDER BY points DESC, name")
-  tips <- getPostgresql(sql, params = tournamentid)
+  tips <- getPostgresql(sql, params = list(gameid, tournamentid))
   if (nrow(tips) > 0 ) tips |> rename(Rank = rank, Time = time, Name = name, Points = points)
 }
 
@@ -506,9 +506,8 @@ getTournament <- function() {
 }
 
 getTournamentName <- function(tournamentid) {
-  sql <- "SELECT tournamentname FROM tournament"
-  sql <- paste0(sql, " WHERE tournamentid = ", tournamentid)
-  getPostgresql(sql)$tournamentname
+  sql <- "SELECT tournamentname FROM tournament WHERE tournamentid = $1"
+  getPostgresql(sql, params = tournamentid)$tournamentname
 }
 
 trans <- function(keyword, currlang = lang) labeltrans[[keyword]][[currlang]]
@@ -573,10 +572,10 @@ insertRandomTips <- function(tournamentid) {
 
 insertRandomGameResults <- function(tournamentid) {
   sapply(1:24, function(g) {
-    sql <- paste0("UPDATE game SET regulartimegoals1 =", sample(0:5, 1), 
-                  ", regulartimegoals2 = ", sample(0:5, 1), 
-                  " WHERE gameid = ", g, " AND tournamentid = ", tournamentid)
-    dbExecute(pool, sql)
+    sql <- paste0("UPDATE game SET regulartimegoals1 = $1, ",
+                  "regulartimegoals2 = $2 ",
+                  "WHERE gameid = $3 AND tournamentid = $4")
+    dbExecute(pool, sql, parames = list(sample(0:5, 1), sample(0:5, 1), g, tournamentid))
   })
   return()
 }
@@ -598,7 +597,10 @@ update_FIFA_ranking <- function() {
 }
 
 getShowPlayersClause <- function(showplayers) {
+  if (!showplayers %in% c("human", "bot", "human_bot")) {
+    stop("Invalid showplayers value")
+  }
   if (showplayers == "human") return("AND NOT artificial")
   if (showplayers == "bot") return("AND artificial")
-  return("")
+  return("") # human_bot
 }
