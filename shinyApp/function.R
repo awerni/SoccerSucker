@@ -20,7 +20,11 @@ pool <- dbPool(
   bigint   = "numeric"
 )
 
-time_zone_clause <- paste0("AT TIME ZONE '", time_zone, "'")
+time_zone_clause <- {
+  allowed <- c("Europe/Paris", "America/Sao_Paulo")
+  if (!time_zone %in% allowed) stop("Invalid timezone")
+  paste0("AT TIME ZONE '", time_zone, "'")
+}
 
 connectPostgresql <- function() {
   drv <- RPostgres::Postgres()
@@ -59,18 +63,16 @@ disconnectPostgresql <- function(con) {
 # }
 
 getPostgresql <- function(sql, params = NULL) {
-
   if (!is.null(params)) {
     return(DBI::dbGetQuery(pool, sql, params = params))
   } else {
     return(DBI::dbGetQuery(pool, sql))
   }
-
 }
 
 getNumberOfGames <- function(tournamentid) {
   sql <- "SELECT count(*) AS num FROM game WHERE tournamentid = $1"
-  getPostgresql(sql, tournamentid)$num
+  getPostgresql(sql, params = tournamentid)$num
 }
 
 getNumberOfPlayers <- function() {
@@ -144,9 +146,9 @@ checkLogin <- function(user, pass) {
 
 registerUser <- function(user, firstname, surname, nationality, expertstatus) {
   if (firstname == "" | surname == "") return(FALSE)
-  sql <- paste0("INSERT INTO player (username, firstname, name, nationality, expertstatus, artificial) VALUES ",
-                "('", user, "','", firstname, "','", surname, "','", nationality, "',", expertstatus, ", FALSE)")
-  getPostgresql(sql)
+  sql <- paste0("INSERT INTO player (username, firstname, name, nationality, expertstatus, artificial) ",
+                "VALUES ($1, $2, $3, $4, $5, FALSE)")
+  getPostgresql(sql, params = list(user, firstname, surname, nationality, expertstatus))
   return(TRUE)
 }
 
@@ -546,7 +548,9 @@ getTeamBetPoints <- function(showplayers, tournamentid) {
 
 insertRandomTips <- function(tournamentid) {
   user <- getPostgresql("SELECT username FROM player WHERE NOT artificial")$username
-  sql <- paste0("SELECT gameid FROM game WHERE NOT kogame AND tournamentid = $1")
+  sql_core <- "SELECT gameid FROM game WHERE tournamentid = $1 "
+
+  sql <- paste0(sql_core, "AND NOT kogame")
   gameids <- getPostgresql(sql, params = tournamentid)$gameid
   sapply(user, function(u) {
     tiptable <- lapply(gameids, function(g) {
@@ -554,13 +558,13 @@ insertRandomTips <- function(tournamentid) {
     })
     upsertTip2(u, tiptable, tournamentid)
   })
-  sql <- gsub("NOT ", "", sql)
+  sql <- paste0(sql_core, "AND kogame")
   gameids <- getPostgresql(sql, params = tournamentid)$gameid
   if (length(gameids) == 0) return()
   sapply(user, function(u) {
     tiptable <- lapply(gameids, function(g) {
-      g1tip <- sample(0:5,1)
-      g2tip <- sample(0:5,1)
+      g1tip <- sample(0:5, 1)
+      g2tip <- sample(0:5, 1)
       kow <- ifelse(g1tip > g2tip, 1, 2)
       if (g1tip == g2tip) kow = sample(1:2, 1)
       c(g = g, g1 = g1tip, g2 = g2tip, kowinner = kow)
@@ -575,7 +579,7 @@ insertRandomGameResults <- function(tournamentid) {
     sql <- paste0("UPDATE game SET regulartimegoals1 = $1, ",
                   "regulartimegoals2 = $2 ",
                   "WHERE gameid = $3 AND tournamentid = $4")
-    dbExecute(pool, sql, parames = list(sample(0:5, 1), sample(0:5, 1), g, tournamentid))
+    dbExecute(pool, sql, params = list(sample(0:5, 1), sample(0:5, 1), g, tournamentid))
   })
   return()
 }
@@ -584,15 +588,16 @@ update_FIFA_ranking <- function() {
   url <- "http://api.qa.fifa.com/api/v1/rankings?gender=1&count=100&language=en-GB"
   document <- jsonlite::fromJSON(txt = url)
 
-  data <- data.frame(rank = document$Results$Rank,
-                     team = sapply(document$Results[, "TeamName"], function(x) x$Description))
-  data <- data |> mutate(team = gsub("'", "", team)) |>
-    mutate(team = gsub("Korea Republic", "South Korea", team)) |>
-    mutate(sql = paste0("UPDATE team set fifaranking = ", rank, " WHERE team = '", team, "';"))
+  data <- data.frame(
+      rank = document$Results$Rank,
+      team = sapply(document$Results[, "TeamName"], function(x) x$Description)
+    ) |> mutate(
+      team = gsub("'", "", team),
+      team = gsub("Korea Republic", "South Korea", team)
+    )
 
-  sapply(data$sql, function(s) {
-    dbExecute(pool, sql)
-  })
+  sql <- "UPDATE team SET fifaranking = $1 WHERE team = $2"
+  dbExecute(pool, sql, params = list(data$rank, data$team))
   return()
 }
 
