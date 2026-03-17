@@ -11,14 +11,13 @@ page_sidebar(
     base_font = font_google("Inter"),
     enable_tooltips = TRUE
   ),
-  title = "⚽ Soccer Succer",
+  title = NULL,
+  header = NULL,
   window_title = "Soccer Succer",
   sidebar = sidebar(
     width = 300,
     div(class = "text-center",
-        img(src = logo_file, width = "180px"),
-        hr(),
-        strong("Version 1.5")
+        img(src = logo_file, width = "180px")
     ),
     hr(),
     textOutput("timezone"),
