@@ -604,23 +604,6 @@ insertRandomGameResults <- function(tournamentid) {
   return()
 }
 
-update_FIFA_ranking <- function() {
-  url <- "http://api.qa.fifa.com/api/v1/rankings?gender=1&count=100&language=en-GB"
-  document <- jsonlite::fromJSON(txt = url)
-
-  data <- data.frame(
-      rank = document$Results$Rank,
-      team = sapply(document$Results[, "TeamName"], function(x) x$Description)
-    ) |> mutate(
-      team = gsub("'", "", team),
-      team = gsub("Korea Republic", "South Korea", team)
-    )
-
-  sql <- "UPDATE team SET fifaranking = $1 WHERE team = $2"
-  dbExecute(pool, sql, params = list(data$rank, data$team))
-  return()
-}
-
 getShowPlayersClause <- function(showplayers) {
   if (!showplayers %in% c("human", "bot", "human_bot")) {
     stop("Invalid showplayers value")
