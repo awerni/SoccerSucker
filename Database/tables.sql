@@ -7,9 +7,10 @@
 /*==============================================================*/
 /* Table: TOURNAMENT                                            */
 /*==============================================================*/
-create table TOURNAMENT (
+create table TOURNAMENT2 (
 TOURNAMENTID         INT2                     not null,
 TOURNAMENTNAME       TEXT                     not null,
+LOOCKED              BOOL                     not null DEFAULT FALSE,
 constraint PK_TOURNAMENT primary key (TOURNAMENTID)
 );
 
@@ -81,6 +82,25 @@ create table GAMEUSER (
 USERNAME             TEXT                     not null,
 PASSWORD             TEXT                     not null,
 constraint PK_USER primary key (USERNAME, PASSWORD)
+);
+
+/*==============================================================*/
+/* Table: ADMIN_USER                                            */
+/*==============================================================*/
+create table admin_user (
+  username           TEXT PRIMARY KEY,
+  password           TEXT,
+  role               TEXT CHECK (role IN ('admin','editor','viewer'))
+);
+
+/*==============================================================*/
+/* Table: AUDIT_LOG                                             */
+/*==============================================================*/
+create table audit_log (
+  id serial PRIMARY KEY,
+  action             TEXT,
+  user_name          TEXT,
+  timestamp timestamptz DEFAULT now()
 );
 
 alter table GAME
