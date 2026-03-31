@@ -1,10 +1,10 @@
 INSERT INTO team(team, initialgroup) VALUES('Mexico', 'A');
 INSERT INTO team(team, initialgroup) VALUES('South Africa', 'A');
 INSERT INTO team(team, initialgroup) VALUES('South Korea', 'A');
-INSERT INTO team(team, initialgroup) VALUES('UEFA Path D winner', 'A');
+INSERT INTO team(team, initialgroup) VALUES('Chech Republic', 'A');
 	
 INSERT INTO team(team, initialgroup) VALUES('Canada', 'B');
-INSERT INTO team(team, initialgroup) VALUES('UEFA Path A winner', 'B');
+INSERT INTO team(team, initialgroup) VALUES('Bosnia and Herzegovina', 'B');
 INSERT INTO team(team, initialgroup) VALUES('Qatar', 'B');
 INSERT INTO team(team, initialgroup) VALUES('Switzerland', 'B');
 	
@@ -13,10 +13,10 @@ INSERT INTO team(team, initialgroup) VALUES('Morocco', 'C');
 INSERT INTO team(team, initialgroup) VALUES('Haiti', 'C');
 INSERT INTO team(team, initialgroup) VALUES('Scotland', 'C');
 	
-INSERT INTO team(team, initialgroup) VALUES('United States', 'D');
+INSERT INTO team(team, initialgroup) VALUES('USA', 'D');
 INSERT INTO team(team, initialgroup) VALUES('Paraguay', 'D');
 INSERT INTO team(team, initialgroup) VALUES('Australia', 'D');
-INSERT INTO team(team, initialgroup) VALUES('UEFA Path C winner', 'D');
+INSERT INTO team(team, initialgroup) VALUES('Turkey', 'D');
 
 INSERT INTO team(team, initialgroup) VALUES('Germany', 'E');
 INSERT INTO team(team, initialgroup) VALUES('Curaçao', 'E');
@@ -25,7 +25,7 @@ INSERT INTO team(team, initialgroup) VALUES('Ecuador', 'E');
 	
 INSERT INTO team(team, initialgroup) VALUES('Netherlands', 'F');
 INSERT INTO team(team, initialgroup) VALUES('Japan', 'F');
-INSERT INTO team(team, initialgroup) VALUES('UEFA Path B winner', 'F');
+INSERT INTO team(team, initialgroup) VALUES('Sweden', 'F');
 INSERT INTO team(team, initialgroup) VALUES('Tunisia', 'F');
 	
 INSERT INTO team(team, initialgroup) VALUES('Belgium', 'G');
