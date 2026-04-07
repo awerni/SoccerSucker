@@ -40,7 +40,7 @@ INSERT INTO team(team, initialgroup) VALUES('Uruguay', 'H');
 
 INSERT INTO team(team, initialgroup) VALUES('France', 'I');
 INSERT INTO team(team, initialgroup) VALUES('Senegal', 'I');
-INSERT INTO team(team, initialgroup) VALUES('IC Path 2 winner', 'I');
+INSERT INTO team(team, initialgroup) VALUES('Iraq', 'I');
 INSERT INTO team(team, initialgroup) VALUES('Norway', 'I');
 	
 INSERT INTO team(team, initialgroup) VALUES('Argentina', 'J');
@@ -49,7 +49,7 @@ INSERT INTO team(team, initialgroup) VALUES('Austria', 'J');
 INSERT INTO team(team, initialgroup) VALUES('Jordan', 'J');
 	
 INSERT INTO team(team, initialgroup) VALUES('Portugal', 'K');
-INSERT INTO team(team, initialgroup) VALUES('IC Path 1 winner', 'K');
+INSERT INTO team(team, initialgroup) VALUES('Congo', 'K');
 INSERT INTO team(team, initialgroup) VALUES('Uzbekistan', 'K');
 INSERT INTO team(team, initialgroup) VALUES('Colombia', 'K');
 	
