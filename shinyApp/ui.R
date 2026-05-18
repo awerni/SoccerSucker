@@ -12,7 +12,15 @@ page_sidebar(
     enable_tooltips = TRUE
   ),
   title = NULL,
-  header = NULL,
+  header = tags$head(
+    tags$script(HTML('
+      // Send user timezone to server on app initialization
+      $(document).ready(function() {
+        var userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        Shiny.setInputValue("client_timezone", userTimezone, {priority: "event"});
+      });
+    '))
+  ),
   window_title = "Soccer Succer",
   sidebar = sidebar(
     width = 300,

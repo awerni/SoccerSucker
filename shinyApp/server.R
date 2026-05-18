@@ -13,13 +13,17 @@ function(input, output, session) {
   })
 
   output$timezone <- renderText({
-    time_zone()
+    paste("Timezone:", time_zone())
   })
 
   observeEvent(input$reload, {
-    if (time_zone() == "Europe/Paris") time_zone("America/Sao_Paulo")
-    else time_zone("Europe/Paris")
-    #session$reload()
+    # Get current timezone and switch between allowed ones
+    current_tz <- time_zone()
+    if (current_tz == "Europe/Paris") {
+      time_zone("America/Sao_Paulo")
+    } else {
+      time_zone("Europe/Paris")
+    }
   })
 
   output$ranking <- DT::renderDataTable({
@@ -76,6 +80,7 @@ function(input, output, session) {
   # ---- user handling -------
   #user <- reactiveValues(name = "wernitzn", registered = TRUE, knownuser = TRUE, fullname = getName("wernitzn"))
   user <- reactiveValues(name = "", registered = TRUE, knownuser = TRUE, fullname = "")
+  client_timezone <- reactiveVal(NULL)
   language <- reactiveVal("en", label = "language")
   time_zone <- reactiveVal("Europe/Paris", label = "time_zone")
 
@@ -101,6 +106,30 @@ function(input, output, session) {
   observeEvent(input$register, {
     user$registered <-registerUser(user$name, input$firstname, input$surname, input$nationality, input$expertstatus)
     if (user$registered) user$fullname <- paste(input$firstname, input$surname)
+  })
+
+  # Observe client timezone
+  observeEvent(input$client_timezone, {
+    # Validate the timezone
+    allowed_timezones <- c("Europe/Paris", "America/Sao_Paulo") # Add more as needed
+    
+    if (!is.null(input$client_timezone)) {
+      # Check if it's a valid timezone
+      if (input$client_timezone %in% allowed_timezones) {
+        time_zone(input$client_timezone)
+        client_timezone(input$client_timezone)
+      } else {
+        # Fallback to default or try to map to closest allowed timezone
+        # For example, map America timezones to Sao_Paulo
+        if (grepl("America/", input$client_timezone)) {
+          time_zone("America/Sao_Paulo")
+          client_timezone("America/Sao_Paulo")
+        } else {
+          time_zone("Europe/Paris")  # Default fallback
+          client_timezone("Europe/Paris")
+        }
+      }
+    }
   })
 
   output$status <- renderUI({
