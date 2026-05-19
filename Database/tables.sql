@@ -7,7 +7,7 @@
 /*==============================================================*/
 /* Table: TOURNAMENT                                            */
 /*==============================================================*/
-create table TOURNAMENT2 (
+create table TOURNAMENT (
 TOURNAMENTID         INT2                     not null,
 TOURNAMENTNAME       TEXT                     not null,
 LOOCKED              BOOL                     not null DEFAULT FALSE,
