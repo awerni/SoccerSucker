@@ -236,15 +236,8 @@ getAllTips <- function(tournamentid, username, tz = time_zone) {
 }
 
 getFutureGames <- function(tournamentid) {
-  #r <- getPostgresql(paste("SELECT gameid, kogame FROM game WHERE starttime > now() ",
-  #                    "AND tournamentid = ", tournamentid, " ORDER by starttime, gameid"))
-
-  tbl(pool, "game") |>
-    filter(starttime > now(), tournamentid == !!tournamentid) |>
-    arrange(starttime, gameid) |>
-    select(gameid, kogame) |>
-    collect() |>
-    as.data.frame()
+  sql <- "SELECT gameid, kogame FROM game WHERE starttime > now() AND tournamentid = $1 ORDER BY starttime, gameid"
+  getPostgresql(sql, params = tournamentid)
 }
 
 formatInput <- function(gameid, team, goals) {
