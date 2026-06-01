@@ -7,31 +7,197 @@ source("function.R")
 
 function(input, output, session) {
 
+  # ---- language ---------------------------------------------------------------
+  available_languages <- c("en", "de", "pt", "fr")
+
+  language_mapping <- list(
+    "en" = "en", "en-US" = "en", "en-GB" = "en",
+    "de" = "de", "de-DE" = "de", "de-AT" = "de", "de-CH" = "de",
+    "pt" = "pt", "pt-BR" = "pt", "pt-PT" = "pt",
+    "fr" = "fr", "fr-FR" = "fr", "fr-CA" = "fr", "fr-CH" = "fr"
+  )
+
+  # user_language follows the selectInput; browser detection pre-selects it
+  user_language <- reactive({
+    lang <- input$language
+    if (is.null(lang) || !lang %in% available_languages) "en" else lang
+  })
+
+  # Pre-select the language selectInput from the browser's detected language
+  observeEvent(input$client_language, ignoreNULL = TRUE, ignoreInit = TRUE, {
+    detected <- input$client_language
+    chosen <- if (!is.null(detected)) {
+      if (detected %in% available_languages) {
+        detected
+      } else if (detected %in% names(language_mapping)) {
+        language_mapping[[detected]]
+      } else {
+        prefix <- substr(detected, 1, 2)
+        if (prefix %in% available_languages) prefix else "en"
+      }
+    } else "en"
+    updateSelectInput(session, "language", selected = chosen)
+  })
+
+  # Convenience: reactive translation helper
+  trans_r <- function(keyword) trans(keyword, user_language())
+
+  # ---- timezone ---------------------------------------------------------------
+  client_timezone <- reactiveVal(NULL)
+
+  time_zone <- reactive({
+    tz <- input$timezone
+    if (is.null(tz) || !nzchar(tz) || !tz %in% OlsonNames()) "Europe/Paris" else tz
+  })
+
+  # Populate timezone choices once on session start
+  updateSelectizeInput(session, "timezone",
+    choices  = OlsonNames(),
+    selected = "Europe/Paris",
+    server   = TRUE
+  )
+
+  # Pre-select from browser-detected timezone
+  observeEvent(input$client_timezone, ignoreNULL = TRUE, ignoreInit = TRUE, {
+    detected <- input$client_timezone
+    chosen <- if (!is.null(detected) && nzchar(detected) && detected %in% OlsonNames()) {
+      detected
+    } else {
+      "Europe/Paris"
+    }
+    client_timezone(chosen)
+    updateSelectizeInput(session, "timezone", selected = chosen, server = TRUE)
+  })
+
+  # ---- sidebar dynamic content ------------------------------------------------
+  # Update the timezone selectize label reactively
+  observe({
+    tl <- user_language()
+    updateSelectizeInput(session, "timezone", label = trans("timezone", tl))
+  })
+
+  output$sidebar_content <- renderUI({
+    tl <- user_language()
+    list(
+      radioButtons(
+        "tournament",
+        label = paste0(trans("select", tl), ":"),
+        choices = getTournament()
+      ),
+      hr(),
+      {
+        myChoice <- c("human", "human_bot", "bot")
+        names(myChoice) <- c(
+          trans("human", tl),
+          paste(trans("human", tl), "+", trans("bot", tl)),
+          trans("bot", tl)
+        )
+        radioButtons("showplayers", paste0(trans("show", tl), ":"), myChoice)
+      },
+      hr(),
+      h5(textOutput("user")),
+      uiOutput("status")
+    )
+  })
+
+  # Update the refresh button label reactively
+  observe({
+    updateActionButton(session, "refresh", label = trans_r("refresh"))
+  })
+
+  # ---- main tab panel ---------------------------------------------------------
+  output$main_tabs <- renderUI({
+    tl <- user_language()
+    navset_tab(
+      nav_panel(
+        trans("overallranking", tl),
+        card(
+          full_screen = TRUE,
+          card_body(DTOutput("ranking"))
+        )
+      ),
+      nav_panel(trans("placebets", tl),     uiOutput("placebets")),
+      nav_panel(trans("checkyourresults", tl), uiOutput("yourresults")),
+      nav_panel(
+        trans("player_comparison", tl),
+        navset_card_tab(
+          nav_panel(
+            trans("heatmap", tl),
+            card(
+              full_screen = TRUE,
+              plotOutput("heatmap", height = "75vh")
+            )
+          ),
+          nav_panel(trans("lineranking", tl),  uiOutput("rankingTab")),
+          nav_panel(trans("latestgames", tl),  uiOutput("latestGames")),
+          nav_panel(
+            trans("gamebet", tl),
+            selectInput("tipgame2show", "Select Game:", NULL),
+            layout_columns(
+              col_widths = c(6, 6),
+              DTOutput("gamebet"),
+              plotOutput("gamebetgraph", height = "60vh")
+            )
+          ),
+          nav_panel(trans("pcapoints", tl), uiOutput("pcaPoints")),
+          nav_panel(trans("pcatips", tl),   uiOutput("pcaTips")),
+          nav_panel(trans("missingbets", tl), DTOutput("missingbets"))
+        )
+      ),
+      nav_panel(
+        trans("summary_statistics", tl),
+        navset_card_tab(
+          nav_panel(trans("nationality", tl), uiOutput("nationplot")),
+          nav_panel(trans("expertstatus", tl), uiOutput("expertplot"))
+        )
+      ),
+      nav_panel(
+        trans("game_statistics", tl),
+        navset_card_tab(
+          nav_panel(trans("gameresult", tl), DTOutput("gameresult")),
+          nav_panel(
+            trans("teamranking", tl),
+            card(
+              height = "calc(100vh - 140px)",
+              DTOutput("teamranking", height = "100%")
+            )
+          ),
+          nav_panel(
+            trans("pointsperteam", tl),
+            plotOutput("pointsperteam", height = "60vh"),
+            textOutput("pointsperteamdesc")
+          )
+        )
+      ),
+      nav_panel(
+        trans("help", tl),
+        card(
+          card_body(
+            p(trans("helptext", tl)),
+            hr(),
+            a("Registration help & legal disclaimer",
+              href   = "register_help.html",
+              target = "_blank"
+            ),
+            hr(),
+            p(R.Version()$version.string)
+          )
+        )
+      )
+    )
+  })
+
+  # ---- data reactives ---------------------------------------------------------
   ranking <- reactive({
     input$refresh
     getRanking(input$showplayers, input$tournament)
   })
 
-  output$timezone <- renderText({
-    paste("Timezone:", time_zone())
-  })
-
-  observeEvent(input$reload, {
-    # Get current timezone and switch between allowed ones
-    current_tz <- time_zone()
-    if (current_tz == "Europe/Paris") {
-      time_zone("America/Sao_Paulo")
-    } else {
-      time_zone("Europe/Paris")
-    }
-  })
-
   output$ranking <- DT::renderDataTable({
-      my_rank <- ranking()
-      validate(need(my_rank, "no ranking available"))
-      my_rank |> select(-`Expert-Status`)
-    },  rownames = FALSE, selection = "none", options = list(pageLength = 15)
-  )
+    my_rank <- ranking()
+    validate(need(my_rank, "no ranking available"))
+    my_rank |> select(-`Expert-Status`)
+  }, rownames = FALSE, selection = "none", options = list(pageLength = 15))
 
   teamranking <- reactive({
     input$refresh
@@ -57,7 +223,7 @@ function(input, output, session) {
 
   missingTips <- reactive({
     input$refresh
-    getMissingTips(input$tournament)
+    getMissingTips(input$tournament, time_zone())
   })
 
   tips <- reactive({
@@ -67,22 +233,18 @@ function(input, output, session) {
 
   output$missingbets <- DT::renderDataTable({
     mt <- missingTips()
-    if (nrow(mt) > 0) mt |> mutate(starttime = format(starttime,'%Y-%m-%d %H:%M'))
-  },rownames = FALSE, selection = "none", options = list(pageLength = 10))
+    if (nrow(mt) > 0) mt |> mutate(starttime = format(starttime, '%Y-%m-%d %H:%M'))
+  }, rownames = FALSE, selection = "none", options = list(pageLength = 10))
 
   output$gameresult <- DT::renderDataTable({
     input$refresh
-    gr <- getGameResults(input$showplayers, input$tournament)
+    gr <- getGameResults(input$showplayers, input$tournament, time_zone())
     validate(need(gr, "no game result available"))
-    gr |> mutate(`Start time` = format(`Start time`,'%Y-%m-%d %H:%M'), `Avg points` = round(`Avg points`, 2))
+    gr |> mutate(`Start time` = format(`Start time`, '%Y-%m-%d %H:%M'), `Avg points` = round(`Avg points`, 2))
   }, rownames = FALSE, selection = "none", options = list(pageLength = 15))
 
-  # ---- user handling -------
-  #user <- reactiveValues(name = "wernitzn", registered = TRUE, knownuser = TRUE, fullname = getName("wernitzn"))
+  # ---- user handling ----------------------------------------------------------
   user <- reactiveValues(name = "", registered = TRUE, knownuser = TRUE, fullname = "")
-  client_timezone <- reactiveVal(NULL)
-  language <- reactiveVal("en", label = "language")
-  time_zone <- reactiveVal("Europe/Paris", label = "time_zone")
 
   observeEvent(input$login, {
     u <- isolate(input$username)
@@ -90,153 +252,153 @@ function(input, output, session) {
     updateTextInput(session, "username", value = "")
     updateTextInput(session, "password", value = "")
     cLog <- checkLogin(u, p)
-    user$name <- cLog$name
+    user$name       <- cLog$name
     user$registered <- cLog$registered
-    user$knownuser <- cLog$knownuser
-    user$fullname <- getName(user$name)
-  })
+    user$knownuser  <- cLog$knownuser
+    user$fullname   <- getName(user$name)
 
-  observeEvent(input$logout, {
-    user$name <- ""
-    user$fullname <- ""
-    user$registered <- TRUE
-    user$knownuser <- TRUE
-  })
-
-  observeEvent(input$register, {
-    user$registered <-registerUser(user$name, input$firstname, input$surname, input$nationality, input$expertstatus)
-    if (user$registered) user$fullname <- paste(input$firstname, input$surname)
-  })
-
-  # Observe client timezone
-  observeEvent(input$client_timezone, {
-    # Validate the timezone
-    allowed_timezones <- c("Europe/Paris", "America/Sao_Paulo") # Add more as needed
-    
-    if (!is.null(input$client_timezone)) {
-      # Check if it's a valid timezone
-      if (input$client_timezone %in% allowed_timezones) {
-        time_zone(input$client_timezone)
-        client_timezone(input$client_timezone)
-      } else {
-        # Fallback to default or try to map to closest allowed timezone
-        # For example, map America timezones to Sao_Paulo
-        if (grepl("America/", input$client_timezone)) {
-          time_zone("America/Sao_Paulo")
-          client_timezone("America/Sao_Paulo")
-        } else {
-          time_zone("Europe/Paris")  # Default fallback
-          client_timezone("Europe/Paris")
+    # Restore stored language and timezone preferences
+    if (cLog$name != "") {
+      prefs <- getUserPreferences(cLog$name)
+      if (nrow(prefs) > 0) {
+        stored_lang <- prefs$language[1]
+        stored_tz   <- prefs$timezone[1]
+        if (!is.na(stored_lang) && nzchar(stored_lang) && stored_lang %in% available_languages) {
+          updateSelectInput(session, "language", selected = stored_lang)
+        }
+        if (!is.na(stored_tz) && nzchar(stored_tz) && stored_tz %in% OlsonNames()) {
+          updateSelectizeInput(session, "timezone",
+            choices  = OlsonNames(),
+            selected = stored_tz,
+            server   = TRUE
+          )
         }
       }
     }
   })
 
+  observeEvent(input$logout, {
+    user$name       <- ""
+    user$fullname   <- ""
+    user$registered <- TRUE
+    user$knownuser  <- TRUE
+  })
+
+  observeEvent(input$register, {
+    user$registered <- registerUser(user$name, input$firstname, input$surname,
+                                    input$nationality, input$expertstatus)
+    if (user$registered) user$fullname <- paste(input$firstname, input$surname)
+  })
+
   output$status <- renderUI({
+    tl <- user_language()
     if (user$name == "") {
       list(
-        textInput("username", trans("username")),
-        passwordInput("password", trans("password")),
-        actionButton("login", label = trans("login"))
+        textInput("username", trans("username", tl)),
+        passwordInput("password", trans("password", tl)),
+        actionButton("login", label = trans("login", tl))
       )
     } else {
       if (user$registered) {
-        actionButton("logout", label = trans("logout"))
+        actionButton("logout", label = trans("logout", tl))
       } else {
         list(
-          a("registration help", href="register_help.html", target="_blank"),
-          textInput("firstname", trans("firstname")),
-          textInput("surname", trans("surname")),
-          textInput("nationality", paste(trans("nationality"), ":")),
-          radioButtons("expertstatus", "expert status", c("beginner" = 1, "intermediate" = 2, "expert" = 3), selected = 2),
-          actionButton("register", label = trans("register")),
-          actionButton("logout", label = trans("logout"))
+          a("registration help", href = "register_help.html", target = "_blank"),
+          textInput("firstname",   trans("firstname", tl)),
+          textInput("surname",     trans("surname", tl)),
+          textInput("nationality", paste0(trans("nationality", tl), ":")),
+          radioButtons("expertstatus", "expert status",
+                       c("beginner" = 1, "intermediate" = 2, "expert" = 3), selected = 2),
+          actionButton("register", label = trans("register", tl)),
+          actionButton("logout",   label = trans("logout", tl))
         )
       }
     }
   })
 
   output$user <- renderText({
+    tl <- user_language()
     validate(
-      need(user$registered, trans("usernotregistered")),
-      need(user$knownuser, trans("wrongpassword"))
+      need(user$registered, trans("usernotregistered", tl)),
+      need(user$knownuser,  trans("wrongpassword", tl))
     )
     user$fullname
   })
 
-  # ------- place bets -----------
+  # ---- place bets -------------------------------------------------------------
   output$placebets <- renderUI({
+    tl <- user_language()
     if (user$name != "") {
       input$refresh
       list(
         tableOutput("bet"),
-        actionButton("save", trans("save"))
+        actionButton("save", trans("save", tl))
       )
     } else {
-      list(h2(trans("loginText")))
+      list(h2(trans("loginText", tl)))
     }
   })
 
   output$bet <- renderTable({
-      input$refresh
-      getAllTips(input$tournament, user$name)
-    }, include.rownames = FALSE, sanitize.text.function = function(x) x)
+    input$refresh
+    getAllTips(input$tournament, user$name, time_zone())
+  }, include.rownames = FALSE, sanitize.text.function = function(x) x)
 
   observeEvent(input$save, {
+    tl <- isolate(user_language())
     games <- getFutureGames(input$tournament)
     if (nrow(games) == 0) {
-      session$sendCustomMessage(type = 'savemessage',
-                                message = "nothing to save")
+      showModal(modalDialog(title = trans("save", tl), "nothing to save"))
       return()
     }
-    fb <- 0
-    n <- as.numeric(NA)
     tiptable <- lapply(1:nrow(games), function(n) {
-        g <- games[n, "gameid"]
-        k <- games[n, "kogame"]
-        g1 <- input[[paste0("g", g, "t1")]]
-        g2 <- input[[paste0("g", g, "t2")]]
-        kow <- ifelse(k, input[[paste0("g", g, "w")]], NA)
-        if (!is.na(g1) & !is.na(g2)) c(g = g, g1 = g1, g2 = g2, kowinner = kow)
-        else NULL
-      }
-    )
+      g   <- games[n, "gameid"]
+      k   <- games[n, "kogame"]
+      g1  <- input[[paste0("g", g, "t1")]]
+      g2  <- input[[paste0("g", g, "t2")]]
+      kow <- ifelse(k, input[[paste0("g", g, "w")]], NA)
+      if (!is.na(g1) & !is.na(g2)) c(g = g, g1 = g1, g2 = g2, kowinner = kow)
+      else NULL
+    })
     tiptable <- tiptable[!sapply(tiptable, is.null)]
 
     if (length(tiptable) > 0) {
-      fb <- upsertTip2(user$name, tiptable, input$tournament)
-      mytext <- paste(if(fb == 1) paste(fb, trans("bet")) else paste(fb, trans("bets")), trans("saved"))
-    } else mytext <- trans("missingbets")
+      fb     <- upsertTip2(user$name, tiptable, input$tournament)
+      mytext <- paste(
+        if (fb == 1) paste(fb, trans("bet", tl)) else paste(fb, trans("bets", tl)),
+        trans("saved", tl)
+      )
+    } else {
+      mytext <- trans("missingbets", tl)
+    }
 
-    showModal(modalDialog(
-      title = "Save bets",
-      mytext
-    ))
-
-    # session$sendCustomMessage(type = 'savemessage',
-    #                           message = mytext)
+    showModal(modalDialog(title = trans("save", tl), mytext))
   })
 
+  # ---- check your results -----------------------------------------------------
   output$yourresults <- renderUI({
+    tl <- user_language()
     if (user$name != "") {
       list(
-        sliderInput("lastgame", "Number of games to display:", min = 1, max = getNumberOfGames(input$tournament), value = 10),
+        sliderInput("lastgame", "Number of games to display:",
+                    min = 1, max = getNumberOfGames(input$tournament), value = 10),
         plotOutput("yourbarplot", width = "80%", height = "600px")
       )
     } else {
-      list(h2(trans("loginText")))
+      list(h2(trans("loginText", tl)))
     }
   })
 
   playerResult <- reactive({
     input$refresh
-    getPlayerResult(user$name, input$tournament)
+    getPlayerResult(user$name, input$tournament, time_zone())
   })
 
   output$yourbarplot <- renderPlot({
     getPlayerBarplot(playerResult(), input$lastgame)
   })
 
+  # ---- player comparison ------------------------------------------------------
   resultCross <- reactive({
     input$refresh
     getResultCross(input$showplayers, input$tournament)
@@ -249,9 +411,7 @@ function(input, output, session) {
 
   output$heatmap <- renderPlot({
     rc <- resultCross()
-    validate(
-      need(rc$n, "no data available")
-    )
+    validate(need(rc$n, "no data available"))
     getHeatmap(rc)
   })
 
@@ -259,7 +419,8 @@ function(input, output, session) {
     list(
       br(),
       fluidRow(
-        column(6, sliderInput("numberOfTopPlayer", "Number of players to display:", min = 1, max = getNumberOfPlayers(), value = 10)),
+        column(6, sliderInput("numberOfTopPlayer", "Number of players to display:",
+                              min = 1, max = getNumberOfPlayers(), value = 10)),
         column(6, checkboxInput("showMe", "show me", TRUE))
       ),
       plotOutput("topPlayer", width = "100%", height = "700px")
@@ -300,7 +461,7 @@ function(input, output, session) {
   })
 
   output$topPCA <- renderPlot({
-    getPCA(resultCross(), trans("pca_point_similarity"))
+    getPCA(resultCross(), trans_r("pca_point_similarity"))
   })
 
   output$pcaTips <- renderUI({
@@ -308,69 +469,50 @@ function(input, output, session) {
   })
 
   output$tipPCA <- renderPlot({
-    getPCA(tipCross(), trans("pca_tip_similarity"))
+    getPCA(tipCross(), trans_r("pca_tip_similarity"))
   })
 
   output$latestGames <- renderUI({
     input$refresh
     n_games <- getReadyGames(input$tournament)
-    validate(
-      need(n_games, "no game finished yet")
-    )
+    validate(need(n_games, "no game finished yet"))
     list(
-      sliderInput("numberOfGames", "Show n latest games:", min = 1, max = n_games, step = 1, value = 1),
+      sliderInput("numberOfGames", "Show n latest games:",
+                  min = 1, max = n_games, step = 1, value = 1),
       DT::dataTableOutput("lastGames", width = "100%", height = "500px")
     )
   })
 
   output$lastGames <- DT::renderDataTable({
     getRankingLastGames(input$numberOfGames, input$showplayers, input$tournament)
-    }, rownames = FALSE, selection = "none", options = list(pageLength = 15)
-  )
+  }, rownames = FALSE, selection = "none", options = list(pageLength = 15))
 
   output$gamebet <- DT::renderDataTable({
     input$refresh
-    validate(
-      need(input$tipgame2show, "no game running or finished yet")
-    )
+    validate(need(input$tipgame2show, "no game running or finished yet"))
     myTips <- tips()
-    validate(
-      need(myTips, "no valid tip")
-    )
-    myTips <- myTips |> mutate(Time = format(Time,'%Y-%m-%d %H:%M'), Tip = paste0(goals1, ":", goals2))
+    validate(need(myTips, "no valid tip"))
+    myTips <- myTips |> mutate(Time = format(Time, '%Y-%m-%d %H:%M'),
+                               Tip  = paste0(goals1, ":", goals2))
     if (!myTips |> select(kowinner) |> is.na() |> all()) {
-      myTips <- myTips |> mutate(Tip = ifelse(goals1 == goals2 & !is.na(kowinner), paste0(Tip, " (", kowinner, ")"), Tip))
+      myTips <- myTips |> mutate(
+        Tip = ifelse(goals1 == goals2 & !is.na(kowinner), paste0(Tip, " (", kowinner, ")"), Tip)
+      )
     }
     myTips |> select(-goals1, -goals2, -winner, -kowinner)
   }, rownames = FALSE, selection = "none", options = list(pageLength = 15))
 
   output$gamebetgraph <- renderPlot({
     input$refresh
-    validate(
-      need(input$tipgame2show, "no game running or finished yet")
-    )
-    myTips <- tips()
+    validate(need(input$tipgame2show, "no game running or finished yet"))
+    myTips  <- tips()
     myTeams <- getTeams(input$tournament, input$tipgame2show)
-    validate(
-      need(myTips, "no valid tip")
-    )
+    validate(need(myTips, "no valid tip"))
     getGameBetPlot(myTips, myTeams)
   })
 
-  # observeEvent(input$refresh, {
-  #   pg <- getPastGames(input$tournament)
-  #   validate(need(pg, "no past games available"))
-  #   updateSelectInput(session, "tipgame2show", choices = pg, selected = input$tipgame2show)
-  # })
-
-  # observeEvent(input$tournament, {
-  #   pg <- getPastGames(input$tournament)
-  #   validate(need(pg, "no past games available"))
-  #   updateSelectInput(session, "tipgame2show", choices = pg, selected = input$tipgame2show)
-  # })
-
-  observeEvent(input$tournament, {
-    pg <- getPastGames(input$tournament)
+  observeEvent(list(input$tournament, time_zone()), {
+    pg <- getPastGames(input$tournament, time_zone())
     if (is.null(pg)) {
       updateSelectInput(session, "tipgame2show", choices = NULL, selected = NULL)
     } else {
@@ -379,12 +521,21 @@ function(input, output, session) {
     validate(need(pg, "no past games available"))
   })
 
-  output$pointsperteamdesc <- renderText(trans("pointsperteamdesc"))
+  # ---- persist user preferences -----------------------------------------------
+  observeEvent(list(input$language, input$timezone), {
+    req(user$name != "")
+    lang <- input$language
+    tz   <- input$timezone
+    if (!is.null(lang) && !is.null(tz) && nzchar(lang) && nzchar(tz)) {
+      saveUserPreferences(user$name, lang, tz)
+    }
+  }, ignoreInit = TRUE)
+
+  # ---- game statistics --------------------------------------------------------
+  output$pointsperteamdesc <- renderText(trans_r("pointsperteamdesc"))
+
   output$pointsperteam <- renderPlot({
     getTeamBetPoints(input$showplayers, input$tournament)
   })
 
-  onStop(function() {
-    poolClose(pool)
-  })
 }
