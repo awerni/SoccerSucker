@@ -20,10 +20,9 @@ pool <- dbPool(
   bigint   = "numeric"
 )
 
-time_zone_clause <- {
-  allowed <- c("Europe/Paris", "America/Sao_Paulo")
-  if (!time_zone %in% allowed) stop("Invalid timezone")
-  paste0("AT TIME ZONE '", time_zone, "'")
+make_tz_clause <- function(tz) {
+  if (!tz %in% OlsonNames()) stop("Invalid timezone: ", tz)
+  paste0("AT TIME ZONE '", tz, "'")
 }
 
 connectPostgresql <- function() {
@@ -125,12 +124,13 @@ getTeamRanking <- function(tournamentid) {
   return(teamrank)
 }
 
-getMissingTips <- function(tournamentid) {
-  sql <- paste0("SELECT firstname, name, gameid, team1, team2, starttime ", time_zone_clause, " AS starttime ",
+getMissingTips <- function(tournamentid, tz = time_zone) {
+  tzc <- make_tz_clause(tz)
+  sql <- paste0("SELECT firstname, name, gameid, team1, team2, starttime ", tzc, " AS starttime ",
                 "FROM player p, game g WHERE ",
                 "tournamentid = $1 AND NOT artificial AND ",
                 "(select count(*) FROM tipview t WHERE t.username = p.username AND t.gameid = g.gameid AND g.tournamentid = t.tournamentid) = 0 ",
-                "AND gametime(starttime ", time_zone_clause, ") = 'soon' ORDER BY starttime, gameid DESC")
+                "AND gametime(starttime ", tzc, ") = 'soon' ORDER BY starttime, gameid DESC")
   getPostgresql(sql, params = list(tournamentid))
 }
 
@@ -202,10 +202,24 @@ getName <- function(user) {
   getPostgresql(sql, params = user)$name
 }
 
-getAllTips <- function(tournamentid, username) {
+getUserPreferences <- function(user) {
+  sql <- "SELECT language, timezone FROM player WHERE username = $1"
+  getPostgresql(sql, params = user)
+}
+
+saveUserPreferences <- function(user, language, timezone) {
+  if (is.null(user) || user == "") return(invisible(NULL))
+  if (!timezone %in% OlsonNames()) return(invisible(NULL))
+  sql <- "UPDATE player SET language = $1, timezone = $2 WHERE username = $3"
+  DBI::dbExecute(pool, sql, params = list(language, timezone, user))
+  invisible(NULL)
+}
+
+getAllTips <- function(tournamentid, username, tz = time_zone) {
+  tzc <- make_tz_clause(tz)
   sql <- paste0("SELECT g.gameid, g.team1, g.team2, g.kogame, ",
                "tv.goals1 as tipgoals1, tv.goals2 as tipgoals2, tv.kowinner, ",
-               "city, starttime ", time_zone_clause, " AS starttime ",
+               "city, starttime ", tzc, " AS starttime ",
                "FROM gameview g LEFT OUTER JOIN (SELECT * FROM tipview WHERE username = $1 ",
                "AND tournamentid = $2) tv ON tv.gameid = g.gameid ",
                "AND tv.tournamentid = g.tournamentid ",
@@ -336,9 +350,10 @@ getExpertPlot <- function(data) {
     coord_flip() + theme(text = element_text(size = 20))
 }
 
-getPlayerResult <- function(username, tournamentid) {
+getPlayerResult <- function(username, tournamentid, tz = time_zone) {
+  tzc <- make_tz_clause(tz)
   sql <- paste0("SELECT tv.gameid as game, team1 || '-' || team2 AS teams, ",
-                "starttime ", time_zone_clause, " AS time, ",
+                "starttime ", tzc, " AS time, ",
                 "tv.goals1 || ':' || tv.goals2 as tip, ",
                 "COALESCE(g.overtimegoals1, g.regulartimegoals1) || ':' || ",
                 "COALESCE(g.overtimegoals2, g.regulartimegoals2) AS result, ",
@@ -357,18 +372,18 @@ getResultCol <- function(ret) {
     ))
 }
 
-getGameResults <- function(showplayers, tournamentid) {
-
+getGameResults <- function(showplayers, tournamentid, tz = time_zone) {
+  tzc <- make_tz_clause(tz)
   sql_filter <-  getShowPlayersClause(showplayers)
 
-  sql <- paste0("SELECT gameid, team1, team2, city, starttime ", time_zone_clause, " AS starttime, ",
+  sql <- paste0("SELECT gameid, team1, team2, city, starttime ", tzc, " AS starttime, ",
                 "regulartimegoals1 || ':' || regulartimegoals2 || ' (' || halftimegoals1 || ':' || halftimegoals2 || ')' AS result, ",
                 "overtimegoals1 || ':' || overtimegoals2 AS overtimeresult, ",
                 "penaltygoals1 || ':' || penaltygoals2 AS penaltyresult, ",
                 "(SELECT avg(points) FROM tipview WHERE gameid = gv.gameid AND tournamentid = gv.tournamentid ",
                 sql_filter, ") AS avg_points ",
                 "FROM gameview gv WHERE tournamentid = $1 AND (starttime < now() OR ",
-                "gametime(starttime ", time_zone_clause, ") = 'soon') ORDER BY starttime DESC, gameid")
+                "gametime(starttime ", tzc, ") = 'soon') ORDER BY starttime DESC, gameid")
 
   ret <- getPostgresql(sql, params = tournamentid) |>
     getResultCol() |>
@@ -378,15 +393,16 @@ getGameResults <- function(showplayers, tournamentid) {
   return(ret)
 }
 
-getPastGames <- function(tournamentid = NULL) {
+getPastGames <- function(tournamentid = NULL, tz = time_zone) {
   if (is.null(tournamentid)) return()
+  tzc <- make_tz_clause(tz)
   sql <- paste0("SELECT gameid, team1 || ':' || team2 as teams, ",
                 "COALESCE(regulartimegoals1::TEXT, '?') || ':' || COALESCE(regulartimegoals2::TEXT, '?') || ",
                 "' (' || halftimegoals1 || ':' || halftimegoals2 || ')' AS result, ",
                 "overtimegoals1 || ':' || overtimegoals2 AS overtimeresult, ",
                 "penaltygoals1 || ':' || penaltygoals2 AS penaltyresult ",
-                "FROM gameview gv WHERE tournamentid = $1 AND starttime ", time_zone_clause, " < ",
-                "now() ", time_zone_clause, " ORDER BY starttime DESC, gameid")
+                "FROM gameview gv WHERE tournamentid = $1 AND starttime ", tzc, " < ",
+                "now() ", tzc, " ORDER BY starttime DESC, gameid")
 
   g <- getPostgresql(sql, params = tournamentid)
   if (nrow(g) == 0) return()
