@@ -47,6 +47,8 @@ NATIONALITY          TEXT                 null,
 EXPERTSTATUS         INT2                 null,
 ARTIFICIAL           BOOL                 null,
 PASS                 TEXT                 null,
+LANGUAGE             TEXT                 null,
+TIMEZONE             TEXT                 null,
 constraint PK_PLAYER primary key (USERNAME)
 );
 
