@@ -140,5 +140,7 @@ labeltrans <- list(
                             de = "Hauptkomponentenanalalyse basierend auf der Ähnlichkeit der Tipps",
                             pt = "Análise de Componentes Principais baseada na similaridade de dicas",
                             fr = "Analyse en Composantes Principales basée sur la similarité des conseils"),
-  helptext = list(en = helpEng, de = helpGer, pt = helpPor, fr = helpFra)
+  helptext = list(en = helpEng, de = helpGer, pt = helpPor, fr = helpFra),
+  timezone = list(en = "Timezone:", de = "Zeitzone:", pt = "Fuso horário:", fr = "Fuseau horaire:"),
+  language = list(en = "Language:", de = "Sprache:", pt = "Idioma:", fr = "Langue:")
 )
