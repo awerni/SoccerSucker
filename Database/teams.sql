@@ -1,7 +1,7 @@
 INSERT INTO team(team, initialgroup) VALUES('Mexico', 'A');
 INSERT INTO team(team, initialgroup) VALUES('South Africa', 'A');
 INSERT INTO team(team, initialgroup) VALUES('South Korea', 'A');
-INSERT INTO team(team, initialgroup) VALUES('Chech Republic', 'A');
+INSERT INTO team(team, initialgroup) VALUES('Czech Republic', 'A');
 	
 INSERT INTO team(team, initialgroup) VALUES('Canada', 'B');
 INSERT INTO team(team, initialgroup) VALUES('Bosnia and Herzegovina', 'B');
