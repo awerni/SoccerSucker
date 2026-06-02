@@ -6,6 +6,46 @@ library(DT)
 source("function.R")
 
 function(input, output, session) {
+  tz_choices <- OlsonNames()  # at top of server function, computed once
+  
+  # ---- settings modal ---------------------------------------------------------
+  settings_modal <- function(current_lang = "en", current_tz = "Europe/Paris") {
+    modalDialog(
+      title = trans("settings", current_lang),
+      selectInput(
+        "language",
+        label = trans("language", current_lang),
+        choices = c("English" = "en", "Deutsch" = "de",
+                    "Português" = "pt", "Français" = "fr"),
+        selected = current_lang
+      ),
+      selectizeInput(
+        "timezone",
+        label = trans("timezone", current_lang),
+        choices = NULL,
+        options = list(placeholder = "Select timezone...")
+      ),
+      footer = modalButton(trans("close", current_lang)),
+      easyClose = TRUE,
+      size = "s"
+    )
+  }
+  
+  # Track last-known values so the modal can restore them on reopen
+  last_lang <- reactiveVal("en")
+  last_tz   <- reactiveVal("Europe/Paris")
+  
+  observeEvent(input$language, ignoreNULL = TRUE, last_lang(input$language))
+  observeEvent(input$timezone, ignoreNULL = TRUE, last_tz(input$timezone))
+  
+  observeEvent(input$open_settings, {
+    showModal(settings_modal(last_lang(), last_tz()))
+    updateSelectizeInput(session, "timezone",
+      choices  = tz_choices,
+      selected = last_tz(),
+      server   = TRUE
+    )
+  })
 
   # ---- language ---------------------------------------------------------------
   available_languages <- c("en", "de", "pt", "fr")
@@ -19,7 +59,7 @@ function(input, output, session) {
 
   # user_language follows the selectInput; browser detection pre-selects it
   user_language <- reactive({
-    lang <- input$language
+    lang <- input$language %||% last_lang()
     if (is.null(lang) || !lang %in% available_languages) "en" else lang
   })
 
@@ -36,46 +76,32 @@ function(input, output, session) {
         if (prefix %in% available_languages) prefix else "en"
       }
     } else "en"
-    updateSelectInput(session, "language", selected = chosen)
+    last_lang(chosen)
+    # If modal happens to be open, update the live input too
+    if (!is.null(input$language)) updateSelectInput(session, "language", selected = chosen)
   })
+  
+
 
   # Convenience: reactive translation helper
   trans_r <- function(keyword) trans(keyword, user_language())
 
   # ---- timezone ---------------------------------------------------------------
-  client_timezone <- reactiveVal(NULL)
-
   time_zone <- reactive({
-    tz <- input$timezone
-    if (is.null(tz) || !nzchar(tz) || !tz %in% OlsonNames()) "Europe/Paris" else tz
+    tz <- input$timezone %||% last_tz()
+    if (is.null(tz) || !nzchar(tz) || !tz %in% tz_choices) "Europe/Paris" else tz
   })
 
-  # Populate timezone choices once on session start
-  updateSelectizeInput(session, "timezone",
-    choices  = OlsonNames(),
-    selected = "Europe/Paris",
-    server   = TRUE
-  )
-
-  # Pre-select from browser-detected timezone
   observeEvent(input$client_timezone, ignoreNULL = TRUE, ignoreInit = TRUE, {
     detected <- input$client_timezone
-    chosen <- if (!is.null(detected) && nzchar(detected) && detected %in% OlsonNames()) {
+    chosen <- if (!is.null(detected) && nzchar(detected) && detected %in% tz_choices) {
       detected
-    } else {
-      "Europe/Paris"
-    }
-    client_timezone(chosen)
-    updateSelectizeInput(session, "timezone", selected = chosen, server = TRUE)
+    } else "Europe/Paris"
+    last_tz(chosen)
+    if (!is.null(input$timezone)) updateSelectizeInput(session, "timezone", selected = chosen, server = TRUE)
   })
 
   # ---- sidebar dynamic content ------------------------------------------------
-  # Update the timezone selectize label reactively
-  observe({
-    tl <- user_language()
-    updateSelectizeInput(session, "timezone", label = trans("timezone", tl))
-  })
-
   output$sidebar_content <- renderUI({
     tl <- user_language()
     list(
@@ -264,11 +290,13 @@ function(input, output, session) {
         stored_lang <- prefs$language[1]
         stored_tz   <- prefs$timezone[1]
         if (!is.na(stored_lang) && nzchar(stored_lang) && stored_lang %in% available_languages) {
+          last_lang(stored_lang)
           updateSelectInput(session, "language", selected = stored_lang)
         }
-        if (!is.na(stored_tz) && nzchar(stored_tz) && stored_tz %in% OlsonNames()) {
+        if (!is.na(stored_tz) && nzchar(stored_tz) && stored_tz %in% tz_choices) {
+          last_tz(stored_tz)
           updateSelectizeInput(session, "timezone",
-            choices  = OlsonNames(),
+            choices  = tz_choices,
             selected = stored_tz,
             server   = TRUE
           )

@@ -27,26 +27,17 @@ page_sidebar(
   sidebar = sidebar(
     width = 300,
     div(
-      class = "text-center",
-      img(src = logo_file, width = "180px")
+      class = "d-flex justify-content-between align-items-center",
+      img(src = logo_file, width = "180px"),
+      actionButton(
+        "open_settings",
+        label = NULL,
+        icon  = icon("gear"),
+        class = "btn-sm btn-outline-secondary",
+        title = "Settings"
+      )
     ),
     hr(),
-    # Language selector — static so the server can read it from the very first tick
-    selectInput(
-      "language",
-      label = NULL,
-      choices = c("English" = "en", "Deutsch" = "de", "Português" = "pt", "Français" = "fr"),
-      selected = "en"
-    ),
-    # Timezone selector — static input, choices populated server-side for performance
-    selectizeInput(
-      "timezone",
-      label = NULL,
-      choices = NULL,
-      options = list(placeholder = "Select timezone...")
-    ),
-    hr(),
-    # Dynamic sidebar content: tournament picker, player filter, user section
     uiOutput("sidebar_content"),
     hr(),
     actionButton("refresh", "...", class = "btn-primary w-100")
