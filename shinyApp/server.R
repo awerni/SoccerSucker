@@ -138,8 +138,9 @@ function(input, output, session) {
       nav_panel(
         trans("overallranking", tl),
         card(
+          height = "calc(100vh - 140px)",
           full_screen = TRUE,
-          card_body(DTOutput("ranking"))
+          DTOutput("ranking", height = "100%")
         )
       ),
       nav_panel(trans("placebets", tl),     uiOutput("placebets")),
@@ -223,7 +224,14 @@ function(input, output, session) {
     my_rank <- ranking()
     validate(need(my_rank, "no ranking available"))
     my_rank |> select(-`Expert-Status`)
-  }, rownames = FALSE, selection = "none", options = list(pageLength = 15))
+  }, rownames = FALSE, selection = "none", 
+  options = list(
+    pageLength = 100,  # Show more rows
+    scrollY = "calc(100vh - 250px)",  # Fill available height
+    scrollCollapse = TRUE,
+    paging = FALSE,  # Remove pagination to show all rows
+    info = FALSE
+  ))
 
   teamranking <- reactive({
     input$refresh
