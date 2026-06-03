@@ -224,7 +224,7 @@ function(input, output, session) {
     my_rank <- ranking()
     validate(need(my_rank, "no ranking available"))
     my_rank |> select(-`Expert-Status`)
-  }, rownames = FALSE, selection = "none", 
+  }, rownames = FALSE, selection = "none",
   options = list(
     pageLength = 100,  # Show more rows
     scrollY = "calc(100vh - 250px)",  # Fill available height
