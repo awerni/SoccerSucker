@@ -74,6 +74,13 @@ getNumberOfGames <- function(tournamentid) {
   getPostgresql(sql, params = tournamentid)$num
 }
 
+
+logLogin <- function(username, success) {
+  dbExecute(pool,
+    "INSERT INTO login_log (username, login_time, success) VALUES ($1, now(), $2)",
+    params = list(username, success)
+  )
+}
 getNumberOfPlayers <- function() {
   getPostgresql("SELECT count(*) AS num FROM player")$num
 }
@@ -218,13 +225,13 @@ saveUserPreferences <- function(user, language, timezone) {
 getAllTips <- function(tournamentid, username, tz = time_zone) {
   tzc <- make_tz_clause(tz)
   sql <- paste0("SELECT g.gameid, g.team1, g.team2, g.kogame, ",
-               "tv.goals1 as tipgoals1, tv.goals2 as tipgoals2, tv.kowinner, ",
-               "city, starttime ", tzc, " AS starttime ",
-               "FROM gameview g LEFT OUTER JOIN (SELECT * FROM tipview WHERE username = $1 ",
-               "AND tournamentid = $2) tv ON tv.gameid = g.gameid ",
-               "AND tv.tournamentid = g.tournamentid ",
-               "WHERE starttime > now() and g.tournamentid = $2 ",
-               "ORDER BY starttime, gameid DESC")
+                "tv.goals1 as tipgoals1, tv.goals2 as tipgoals2, tv.kowinner, ",
+                "city, starttime ", tzc, " AS starttime ",
+                "FROM gameview g LEFT OUTER JOIN (SELECT * FROM tipview WHERE username = $1 ",
+                "AND tournamentid = $2) tv ON tv.gameid = g.gameid ",
+                "AND tv.tournamentid = g.tournamentid ",
+                "WHERE starttime > now() and g.tournamentid = $2 ",
+                "ORDER BY starttime, gameid DESC")
   res <- getPostgresql(sql, params = list(username, tournamentid))
   if (nrow(res) == 0) return()
   res |>
