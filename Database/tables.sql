@@ -105,6 +105,16 @@ create table audit_log (
   timestamp timestamptz DEFAULT now()
 );
 
+/*==============================================================*/
+/* Table: LOGIN_LOG                                             */
+/*==============================================================*/
+CREATE TABLE login_log (
+  logid       SERIAL PRIMARY KEY,
+  username    TEXT NOT NULL,
+  login_time  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  success     BOOLEAN NOT NULL
+);
+
 alter table GAME
    add constraint FK_GAME_TOURNAMENT foreign key (TOURNAMENTID)
       references TOURNAMENT (TOURNAMENTID)
