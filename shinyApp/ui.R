@@ -21,6 +21,17 @@ page_sidebar(
         var userLang = navigator.language || navigator.userLanguage || "en";
         Shiny.setInputValue("client_language", userLang, {priority: "event"});
       });
+    ')),
+    tags$style(HTML('
+      .sticky-save-bar {
+        position: sticky;
+        bottom: 0;
+        background-color: white;
+        padding: 10px 0;
+        border-top: 2px solid #dee2e6;
+        z-index: 999;
+        text-align: center;
+      }
     '))
   ),
   window_title = "Soccer Sucker",
