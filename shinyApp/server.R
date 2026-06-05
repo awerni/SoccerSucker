@@ -81,8 +81,6 @@ function(input, output, session) {
     if (!is.null(input$language)) updateSelectInput(session, "language", selected = chosen)
   })
   
-
-
   # Convenience: reactive translation helper
   trans_r <- function(keyword) trans(keyword, user_language())
 
@@ -286,11 +284,12 @@ function(input, output, session) {
     updateTextInput(session, "username", value = "")
     updateTextInput(session, "password", value = "")
     cLog <- checkLogin(u, p)
+
     user$name       <- cLog$name
     user$registered <- cLog$registered
     user$knownuser  <- cLog$knownuser
     user$fullname   <- getName(user$name)
-
+    logLogin(u, cLog$name != "")
     # Restore stored language and timezone preferences
     if (cLog$name != "") {
       prefs <- getUserPreferences(cLog$name)
@@ -362,13 +361,43 @@ function(input, output, session) {
   })
 
   # ---- place bets -------------------------------------------------------------
+  # Track unsaved changes
+  has_unsaved <- reactiveVal(FALSE)
+
+  observe({
+    req(input$tournament)
+    games <- getFutureGames(input$tournament)
+    if (is.null(games) || nrow(games) == 0) return()
+    lapply(1:nrow(games), function(n) {
+      g <- games[n, "gameid"]
+      input[[paste0("g", g, "t1")]]
+      input[[paste0("g", g, "t2")]]
+    })
+    if (!is.null(isolate(user$name)) && isolate(user$name) != "") {
+      has_unsaved(TRUE)
+    }
+  })
+
+  output$unsaved_warning <- renderUI({
+    if (has_unsaved()) {
+      span(
+        style = "color: orange; margin-left: 15px; font-weight: bold;",
+        icon("triangle-exclamation"), " Unsaved changes!"
+      )
+    }
+  })
+
   output$placebets <- renderUI({
     tl <- user_language()
     if (user$name != "") {
       input$refresh
       list(
         tableOutput("bet"),
-        actionButton("save", trans("save", tl))
+        div(
+          class = "sticky-save-bar",
+          actionButton("save", trans("save", tl), class = "btn-success btn-lg"),
+          uiOutput("unsaved_warning")
+        )
       )
     } else {
       list(h2(trans("loginText", tl)))
@@ -381,6 +410,7 @@ function(input, output, session) {
   }, include.rownames = FALSE, sanitize.text.function = function(x) x)
 
   observeEvent(input$save, {
+    has_unsaved(FALSE)
     tl <- isolate(user_language())
     games <- getFutureGames(input$tournament)
     if (nrow(games) == 0) {
