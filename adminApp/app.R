@@ -90,9 +90,7 @@ server <- function(input, output, session) {
 
   observeEvent(input$login, {
 
-    sql <- paste("SELECT username, role FROM admin_user",
-                 "WHERE username = $1  AND password = md5($2)")
-
+    sql <- "SELECT username, role FROM admin_user WHERE username = $1 AND password = md5($2)"
     res <- dbGetQuery(pool, sql, params = list(input$user, input$pw))
 
     if (nrow(res) == 1) {
