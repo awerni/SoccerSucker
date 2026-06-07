@@ -13,6 +13,7 @@ source("mod_results.R")
 source("mod_settings.R")
 source("mod_users.R")
 source("mod_fifa.R")
+source("mod_activity.R") 
 source("function.R")
 
 # ---------------------------
@@ -77,6 +78,7 @@ server <- function(input, output, session) {
 
       nav_panel("Results",  mod_results_ui("results")),
       nav_panel("Users",    mod_users_ui("users")),
+      nav_panel("User Activities", mod_activity_ui("activity")),
       nav_panel("Settings", mod_settings_ui("settings")),
       nav_panel("Update FIFA Ranking", mod_fifa_ui("fifa")),
 
@@ -88,12 +90,8 @@ server <- function(input, output, session) {
 
   observeEvent(input$login, {
 
-    sql <- "
-      SELECT username, role
-      FROM admin_user
-      WHERE username = $1
-        AND password = md5($2)
-    "
+    sql <- paste("SELECT username, role FROM admin_user",
+                 "WHERE username = $1  AND password = md5($2)")
 
     res <- dbGetQuery(pool, sql, params = list(input$user, input$pw))
 
@@ -136,7 +134,19 @@ server <- function(input, output, session) {
       user = user_name
     )
 
-    mod_users_server("users", pool, user_role, user_name)
+    mod_users_server(
+      "users",
+      pool = pool,
+      role = user_role,
+      user = user_name
+    )
+
+    mod_activity_server(
+      "activity",
+      pool = pool,
+      role = user_role,
+      user = user_name
+    )
   })
 }
 
