@@ -6,9 +6,11 @@ mod_users_ui <- function(id) {
     br(),
 
     textInput(ns("username"), "Username"),
+    textInput(ns("firstname"), "First Name"),
+    textInput(ns("name"), "Surname"),
     passwordInput(ns("password"), "Password"),
     textInput(ns("nationality"), "Nationality"),
-    checkboxInput(ns("expertstatus"), "Expert Status", value = FALSE),
+    textInput(ns("expertstatus"), "Expert Status"),
     checkboxInput(ns("artificial"), "Artificial User", value = FALSE),
 
     selectInput(
@@ -86,13 +88,25 @@ mod_users_server <- function(id, pool, role, user) {
         # NEW: Insert player information
         dbExecute(
           conn,
-          "INSERT INTO player (username, nationality, expertstatus, artificial)
-          VALUES ($1, $2, $3, $4)",
+          "INSERT INTO player (username, name, firstname, nationality, expertstatus, artificial)
+          VALUES ($1, $2, $3, $4, $5, $6)",
           params = list(
             input$username,
+            input$name,
+            input$firstname,
             input$nationality,
             input$expertstatus,
             input$artificial
+          )
+        )
+
+        dbExecute(
+          conn,
+          "INSERT INTO gameuser (username, password)
+          VALUES ($1, md5($2))",
+          params = list(
+            input$username,
+            input$password
           )
         )
 
