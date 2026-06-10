@@ -141,7 +141,7 @@ function(input, output, session) {
           DTOutput("ranking", height = "100%")
         )
       ),
-      nav_panel(trans("placebets", tl),     uiOutput("placebets")),
+      nav_panel(trans("placebets", tl), uiOutput("placebets")),
       nav_panel(trans("checkyourresults", tl), uiOutput("yourresults")),
       nav_panel(
         trans("player_comparison", tl),
@@ -166,7 +166,14 @@ function(input, output, session) {
           ),
           nav_panel(trans("pcapoints", tl), uiOutput("pcaPoints")),
           nav_panel(trans("pcatips", tl),   uiOutput("pcaTips")),
-          nav_panel(trans("missingbets", tl), DTOutput("missingbets"))
+          nav_panel(
+            trans("missingbets", tl),
+            card(
+              height = "calc(100vh - 140px)",
+              full_screen = TRUE,
+              DTOutput("missingbets")
+            )
+          )
         )
       ),
       nav_panel(
@@ -179,7 +186,13 @@ function(input, output, session) {
       nav_panel(
         trans("game_statistics", tl),
         navset_card_tab(
-          nav_panel(trans("gameresult", tl), DTOutput("gameresult")),
+          nav_panel(
+            trans("gameresult", tl),
+            card(
+              height = "calc(100vh - 140px)",
+              DTOutput("gameresult", height = "100%")
+            )
+          ),
           nav_panel(
             trans("teamranking", tl),
             card(
@@ -266,7 +279,7 @@ function(input, output, session) {
   output$missingbets <- DT::renderDataTable({
     mt <- missingTips()
     if (nrow(mt) > 0) mt |> mutate(starttime = format(starttime, '%Y-%m-%d %H:%M'))
-  }, rownames = FALSE, selection = "none", options = list(pageLength = 10))
+  }, rownames = FALSE, selection = "none", options = list(pageLength = 20))
 
   output$gameresult <- DT::renderDataTable({
     input$refresh
