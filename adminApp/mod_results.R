@@ -211,6 +211,7 @@ mod_results_server <- function(id, pool, role, user) {
 
       # ── Write to DB ───────────────────────────────────────────────────
       poolWithTransaction(pool, function(conn) {
+        dbExecute(conn, "DROP TRIGGER checkTip ON tip")
         dbExecute(conn,
           "UPDATE game
            SET halftimegoals1    = $1,  halftimegoals2    = $2,
@@ -224,6 +225,7 @@ mod_results_server <- function(id, pool, role, user) {
             g$gameid
           )
         )
+        dbExecute(conn, "CREATE TRIGGER checkTip BEFORE INSERT OR UPDATE ON tip FOR EACH ROW EXECUTE FUNCTION checktip()")
         dbExecute(conn,
           "INSERT INTO audit_log(action, user_name) VALUES ($1, $2)",
           params = list(
