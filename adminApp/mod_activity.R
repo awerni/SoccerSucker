@@ -31,7 +31,16 @@ mod_activity_server <- function(id, pool, role, user) {
 
     # Login logs
     login_logs <- reactive({
-      dbGetQuery(pool, "SELECT username, login_time, success FROM login_log ORDER BY login_time DESC")
+      sql <- paste(
+        "SELECT p.username,
+         COUNT(l.logid) FILTER (WHERE l.success = TRUE) AS successful_logins,
+         COUNT(l.logid) FILTER (WHERE l.success = FALSE) AS unsuccessful_logins,
+         MAX(l.login_time) AS last_login
+         FROM player p LEFT JOIN login_log l ON p.username = l.username
+         GROUP BY p.username HAVING NOT p.artificial
+         ORDER BY last_login DESC"
+      )
+      dbGetQuery(pool, sql)
     })
 
     output$login_logs <- renderDT({
