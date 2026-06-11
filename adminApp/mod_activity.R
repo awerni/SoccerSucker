@@ -15,7 +15,14 @@ mod_activity_server <- function(id, pool, role, user) {
   moduleServer(id, function(input, output, session) {
     # Tip counts by user
     tip_counts <- reactive({
-      dbGetQuery(pool, "SELECT count(*) as tip_count, username FROM tip GROUP BY username")
+      sql <- paste(
+        "SELECT tip_count, STRING_AGG(username, ', ' ORDER BY username) AS usernames",
+        "FROM (SELECT p.username, COUNT(t.gameid) AS tip_count FROM player p",
+        "LEFT JOIN tip t ON p.username = t.username GROUP BY p.username",
+        "HAVING NOT p.artificial) AS user_tips",
+        "GROUP BY tip_count ORDER BY tip_count DESC"
+      )
+      dbGetQuery(pool, sql)
     })
 
     output$tip_counts <- renderDT({
