@@ -11,6 +11,7 @@ library(tidyverse)
 source("settings_admin.R")
 source("mod_results.R")
 source("mod_settings.R")
+source("mod_games.R")
 source("mod_users.R")
 source("mod_fifa.R")
 source("mod_activity.R") 
@@ -76,12 +77,12 @@ server <- function(input, output, session) {
 
       title = paste("Admin (", user_role(), ")", sep = ""),
 
-      nav_panel("Results",  mod_results_ui("results")),
-      nav_panel("Users",    mod_users_ui("users")),
+      nav_panel("Results", mod_results_ui("results")),
+      nav_panel("Games", mod_games_ui("games")),
+      nav_panel("Users", mod_users_ui("users")),
       nav_panel("User Activities", mod_activity_ui("activity")),
-      nav_panel("Settings", mod_settings_ui("settings")),
       nav_panel("Update FIFA Ranking", mod_fifa_ui("fifa")),
-
+      nav_panel("Settings", mod_settings_ui("settings")),
       nav_spacer(),
       nav_item(actionButton("logout", "Logout", class = "btn-danger"))
     )
@@ -134,6 +135,13 @@ server <- function(input, output, session) {
 
     mod_users_server(
       "users",
+      pool = pool,
+      role = user_role,
+      user = user_name
+    )
+
+    mod_games_server(
+      "games",
       pool = pool,
       role = user_role,
       user = user_name
