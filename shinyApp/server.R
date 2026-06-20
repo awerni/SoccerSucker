@@ -22,7 +22,8 @@ function(input, output, session) {
       selectizeInput(
         "timezone",
         label = trans("timezone", current_lang),
-        choices = NULL,
+        choices = tz_choices,
+        selected = current_tz,
         options = list(placeholder = "Select timezone...")
       ),
       footer = modalButton(trans("close", current_lang)),
@@ -40,11 +41,6 @@ function(input, output, session) {
   
   observeEvent(input$open_settings, {
     showModal(settings_modal(last_lang(), last_tz()))
-    updateSelectizeInput(session, "timezone",
-      choices  = tz_choices,
-      selected = last_tz(),
-      server   = TRUE
-    )
   })
 
   # ---- language ---------------------------------------------------------------
@@ -96,7 +92,7 @@ function(input, output, session) {
       detected
     } else "Europe/Paris"
     last_tz(chosen)
-    if (!is.null(input$timezone)) updateSelectizeInput(session, "timezone", selected = chosen, server = TRUE)
+    if (!is.null(input$timezone)) updateSelectizeInput(session, "timezone", selected = chosen)
   })
 
   # ---- sidebar dynamic content ------------------------------------------------
@@ -273,7 +269,7 @@ function(input, output, session) {
 
   tips <- reactive({
     input$refresh
-    getTips(input$tournament, input$tipgame2show, input$showplayers)
+    getTips(input$tournament, input$tipgame2show, input$showplayers, time_zone())
   })
 
   output$missingbets <- DT::renderDataTable({
@@ -315,11 +311,6 @@ function(input, output, session) {
         }
         if (!is.na(stored_tz) && nzchar(stored_tz) && stored_tz %in% tz_choices) {
           last_tz(stored_tz)
-          updateSelectizeInput(session, "timezone",
-            choices  = tz_choices,
-            selected = stored_tz,
-            server   = TRUE
-          )
         }
       }
     }
@@ -591,7 +582,7 @@ function(input, output, session) {
   })
 
   observeEvent(list(input$tournament, time_zone()), {
-    pg <- getPastGames(input$tournament, time_zone())
+    pg <- getPastGames(input$tournament)
     if (is.null(pg)) {
       updateSelectInput(session, "tipgame2show", choices = NULL, selected = NULL)
     } else {
