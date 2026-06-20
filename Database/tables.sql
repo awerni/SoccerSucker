@@ -10,7 +10,7 @@
 create table TOURNAMENT (
 TOURNAMENTID         INT2                     not null,
 TOURNAMENTNAME       TEXT                     not null,
-LOOCKED              BOOL                     not null DEFAULT FALSE,
+LOCKED                BOOL                     not null DEFAULT FALSE,
 constraint PK_TOURNAMENT primary key (TOURNAMENTID)
 );
 
