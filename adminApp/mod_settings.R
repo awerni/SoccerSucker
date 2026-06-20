@@ -13,6 +13,7 @@ mod_settings_server <- function(id, pool, role, user) {
   moduleServer(id, function(input, output, session) {
 
     observe({
+      req(role())
       tournaments <- dbGetQuery(pool,
         "SELECT tournamentid,tournamentname FROM tournament")
       updateSelectInput(session,"tournament",
@@ -21,6 +22,7 @@ mod_settings_server <- function(id, pool, role, user) {
     })
 
     observeEvent(input$tournament,{
+      req(input$tournament)
       res <- dbGetQuery(pool,
         "SELECT locked FROM tournament WHERE tournamentid=$1",
         params=list(input$tournament))
