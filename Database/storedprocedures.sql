@@ -126,7 +126,7 @@ DECLARE
   rec record;
   gameover bool;
 BEGIN
-  SELECT starttime AT TIME ZONE 'Europe/Paris' < now() AT TIME ZONE 'Europe/Paris' INTO gameover FROM game WHERE gameid = mygame AND tournamentid = mytournament;
+  SELECT starttime < now() INTO gameover FROM game WHERE gameid = mygame AND tournamentid = mytournament;
   IF gameover THEN
     RAISE EXCEPTION 'game % started already. You cannot place tips anymore', mygame;
   END IF;
@@ -139,14 +139,14 @@ BEGIN
   END IF;
 
   LOOP
-    UPDATE tip SET tiptime = now() AT TIME ZONE 'Europe/Paris', goals1 = tipgoals1, goals2 = tipgoals2, kowinner = kowin 
+    UPDATE tip SET tiptime = now(), goals1 = tipgoals1, goals2 = tipgoals2, kowinner = kowin 
       WHERE gameid = mygame AND tournamentid = mytournament AND username = myuser;
     IF found THEN
       RETURN TRUE;
     END IF;
     BEGIN
       INSERT INTO tip (gameid, tournamentid, username, tiptime, goals1, goals2, kowinner) 
-        VALUES (mygame, mytournament, myuser, now() AT TIME ZONE 'Europe/Paris', tipgoals1, tipgoals2, kowin);
+        VALUES (mygame, mytournament, myuser, now(), tipgoals1, tipgoals2, kowin);
       RETURN TRUE;
     EXCEPTION WHEN unique_violation THEN
     -- do nothing, and loop to try the UPDATE again
@@ -204,7 +204,7 @@ CREATE OR REPLACE FUNCTION gameTime(t timestamp with time zone) RETURNS text AS 
 DECLARE
   n timestamp;
 BEGIN
-  SELECT INTO n now() AT TIME ZONE 'Europe/Paris';
+  SELECT INTO n now();
   IF t < n THEN
     return('past');
   END IF;
@@ -251,7 +251,7 @@ BEGIN
   END IF;
 
   INSERT INTO tip (goals1, goals2, kowinner, gameid, tournamentid, username, tiptime) 
-    VALUES (rsAvg.goals1, rsAvg.goals2, winner, theGame, theTournament, 'average', now() AT TIME ZONE 'Europe/Paris');
+    VALUES (rsAvg.goals1, rsAvg.goals2, winner, theGame, theTournament, 'average', now());
   RETURN(TRUE);
 END;
 $$
@@ -297,7 +297,7 @@ BEGIN
   END IF;
 
   INSERT INTO tip (goals1, goals2, kowinner, gameid, tournamentid, username, tiptime)
-    VALUES (rsAvg.goals1, rsAvg.goals2, winner, theGameID, theTournament, curr_user, now() AT TIME ZONE 'Europe/Paris');
+    VALUES (rsAvg.goals1, rsAvg.goals2, winner, theGameID, theTournament, curr_user, now());
   RETURN(TRUE);
 END;
 $$
@@ -343,7 +343,7 @@ BEGIN
   END IF;
 
   INSERT INTO tip (goals1, goals2, kowinner, gameid, tournamentid, username, tiptime)
-    VALUES (goal1, goal2, winner, theGameID, theTournament, 'rational', now() AT TIME ZONE 'Europe/Paris');
+    VALUES (goal1, goal2, winner, theGameID, theTournament, 'rational', now());
   RETURN(TRUE);
 END;
 $$
@@ -368,7 +368,7 @@ CREATE OR REPLACE FUNCTION usertimestat(interval) RETURNS SETOF usertimestat AS 
 SELECT rank() OVER (ORDER BY points DESC), *, points::REAL/evalgames::REAL as avgpoints FROM 
               (SELECT t.username, t.tournamentid, name, firstname, nationality, sum(points) AS points, count(points) AS evalgames 
               FROM tip t JOIN player p ON p.username = t.username WHERE gameid IN 
-                (SELECT gameid FROM game WHERE starttime AT TIME ZONE 'Europe/Paris'> now() AT TIME ZONE 'Europe/Paris' - $1 AND starttime AT TIME ZONE 'Europe/Paris'< now() AT TIME ZONE 'Europe/Paris')
+                (SELECT gameid FROM game WHERE starttime > now() - $1 AND starttime < now())
               GROUP BY t.username, t.tournamentid, name, firstname, nationality ORDER BY points DESC) AS r;
 $$
 LANGUAGE sql;
