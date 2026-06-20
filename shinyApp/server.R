@@ -549,7 +549,7 @@ function(input, output, session) {
     list(
       sliderInput("numberOfGames", "Show n latest games:",
                   min = 1, max = n_games, step = 1, value = 1),
-      DT::dataTableOutput("lastGames", width = "100%", height = "500px")
+      DT::dataTableOutput("lastGames", width = "100%")
     )
   })
 
