@@ -1,7 +1,10 @@
 update_FIFA_ranking <- function(pool) {
 
-  url <- "http://api.qa.fifa.com/api/v1/rankings?gender=1&count=100&language=en-GB"
-  document <- jsonlite::fromJSON(url)
+  url <- "https://api.fifa.com/api/v1/rankings?gender=1&count=100&language=en-GB"
+  document <- tryCatch(
+    jsonlite::fromJSON(url),
+    error = function(e) stop("Failed to fetch FIFA ranking data: ", conditionMessage(e))
+  )
 
   fifa_data <- data.frame(
     team = sapply(document$Results$TeamName, function(x) x$Description),
