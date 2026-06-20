@@ -46,6 +46,7 @@ mod_users_server <- function(id, pool, role, user) {
     # -------------------------
 
     observe({
+      req(role())
       tournaments <- dbGetQuery(
         pool,
         "SELECT tournamentid, tournamentname FROM tournament"
