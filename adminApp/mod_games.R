@@ -38,10 +38,6 @@ mod_games_server <- function(id, pool, role, user) {
 
     shinyjs::disable(ns("update_game"))
 
-    observe({
-      req(role() == "admin")
-    })
-
     # -------------------------
     # Load tournaments & teams
     # -------------------------
@@ -144,6 +140,11 @@ mod_games_server <- function(id, pool, role, user) {
       req(role() == "admin")
       req(input$gameid, input$tournament, input$team1, input$team2)
 
+      if (input$team1 == input$team2) {
+        showNotification("Team 1 and Team 2 must be different.", type = "error")
+        return()
+      }
+
       poolWithTransaction(pool, function(conn) {
 
         dbExecute(
@@ -190,6 +191,11 @@ mod_games_server <- function(id, pool, role, user) {
 
       req(role() == "admin")
       req(length(input$game_table_rows_selected) > 0)
+
+      if (input$team1 == input$team2) {
+        showNotification("Team 1 and Team 2 must be different.", type = "error")
+        return()
+      }
 
       g <- games()[input$game_table_rows_selected, ]
 
