@@ -2,16 +2,23 @@ DROP TRIGGER checkTip ON tip;
 CREATE OR REPLACE FUNCTION checkTip() RETURNS "trigger" AS $$
 DECLARE
   rsGame record;
-  isKogame BOOL;
+  tipChanged BOOL;
+  playerArtificial BOOL;
 BEGIN
-  SELECT INTO rsGame kogame, starttime AT TIME ZONE 'Europe/Paris' < now() AT TIME ZONE 'Europe/Paris' as started 
+  SELECT INTO rsGame kogame, starttime < now() as started
     FROM game WHERE gameid = NEW.gameid AND tournamentid = NEW.tournamentid;
 
-  IF rsGame.started THEN
-    RETURN OLD;
+  tipChanged := (NEW.goals1 IS DISTINCT FROM OLD.goals1 OR NEW.goals2 IS DISTINCT FROM OLD.goals2 OR NEW.kowinner IS DISTINCT FROM OLD.kowinner);
+  playerArtificial := (SELECT artificial FROM player WHERE username = NEW.username);
+
+  IF rsGame.started AND tipChanged AND NOT playerArtificial THEN
+    --RETURN OLD;
+    RAISE EXCEPTION 'Cannot change tip after game has started';
   END IF;
 
-  SELECT INTO NEW.tiptime now() AT TIME ZONE 'Europe/Paris'; 
+  IF tipChanged OR TG_OP = 'INSERT' THEN
+    SELECT INTO NEW.tiptime now();
+  END IF;
 
   IF rsGame.kogame THEN
     IF (NEW.goals1 > NEW.goals2) THEN
