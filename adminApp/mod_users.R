@@ -126,9 +126,11 @@ mod_users_server <- function(id, pool, role, user) {
 
       # Clear all input fields
       updateTextInput(session, "username", value = "")
+      updateTextInput(session, "firstname", value = "")
+      updateTextInput(session, "name", value = "")
       updateTextInput(session, "password", value = "")
       updateTextInput(session, "nationality", value = "")
-      updateCheckboxInput(session, "expertstatus", value = FALSE)
+      updateTextInput(session, "expertstatus", value = "")
       updateCheckboxInput(session, "artificial", value = FALSE)
     })
   })
