@@ -109,51 +109,47 @@ server <- function(input, output, session) {
 
   # ---------------- Modules ----------------
 
-  observe({
-    req(user_role())
+  mod_results_server(
+    "results",
+    pool = pool,
+    role = user_role,
+    user = user_name
+  )
 
-    mod_results_server(
-      "results",
-      pool = pool,
-      role = user_role,
-      user = user_name
-    )
+  mod_fifa_server(
+    "fifa",
+    pool = pool,
+    role = user_role,
+    user = user_name
+  )
 
-    mod_fifa_server(
-      "fifa",
-      pool = pool,
-      role = user_role,
-      user = user_name
-    )
+  mod_settings_server(
+    "settings",
+    pool = pool,
+    role = user_role,
+    user = user_name
+  )
 
-    mod_settings_server(
-      "settings",
-      pool = pool,
-      role = user_role,
-      user = user_name
-    )
+  mod_users_server(
+    "users",
+    pool = pool,
+    role = user_role,
+    user = user_name
+  )
 
-    mod_users_server(
-      "users",
-      pool = pool,
-      role = user_role,
-      user = user_name
-    )
+  mod_games_server(
+    "games",
+    pool = pool,
+    role = user_role,
+    user = user_name
+  )
 
-    mod_games_server(
-      "games",
-      pool = pool,
-      role = user_role,
-      user = user_name
-    )
-
-    mod_activity_server(
-      "activity",
-      pool = pool,
-      role = user_role,
-      user = user_name
-    )
-  })
+  mod_activity_server(
+    "activity",
+    pool = pool,
+    role = user_role,
+    user = user_name
+  )
 }
 
 shinyApp(ui, server)
