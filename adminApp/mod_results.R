@@ -20,6 +20,7 @@ mod_results_server <- function(id, pool, role, user) {
 
     # ── Tournaments ──────────────────────────────────────────────────────────
     observe({
+      req(role())
       tournaments <- dbGetQuery(pool,
         "SELECT tournamentid, tournamentname FROM tournament")
       updateSelectInput(session, "tournament",
