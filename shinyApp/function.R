@@ -122,11 +122,12 @@ getRankingLastGames <- function(nGames, showplayers, tournamentid) {
 
 getTeamRanking <- function(tournamentid) {
   sql <- paste0("SELECT rank() OVER (partition BY initialgroup ORDER BY ",
-                "points desc, goalsfor-goalsagainst desc, goalsfor desc, goalsagainst), ",
+                "points desc, goalsfor-goalsagainst desc, goalsfor desc, goalsagainst) AS rank, ",
                 "team, fifaranking, initialgroup, played, won, draw, loss, ",
                 "goalsfor, goalsagainst, goalsfor - goalsagainst as goaldiff, points FROM groupphasetable ",
                 "WHERE tournamentid = $1")
-  teamrank <- getPostgresql(sql, params = tournamentid)
+  teamrank <- tryCatch(getPostgresql(sql, params = tournamentid), error = function(e) NULL)
+  if (is.null(teamrank) || nrow(teamrank) == 0) return()
   colnames(teamrank) <- c("Rank", "Team", "FIFA-Rank", "Group", "Games", "Won", "Draw", "Loss", "GF", "GA", "GD", "PTS")
   return(teamrank)
 }
