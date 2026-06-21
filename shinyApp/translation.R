@@ -147,5 +147,9 @@ labeltrans <- list(
   language = list(en = "Language", de = "Sprache",
                   pt = "Idioma", fr = "Langue"),
   close    = list(en = "Close", de = "Schließen",
-                  pt = "Fechar", fr = "Fermer")
+                   pt = "Fechar", fr = "Fermer"),
+  mybets   = list(en = "My Bets", de = "Meine Wetten", pt = "Minhas Apostas", fr = "Mes Mises"),
+  myresults = list(en = "My Results", de = "Meine Ergebnisse", pt = "Meus Resultados", fr = "Mes Résultats"),
+  tournament = list(en = "Tournament", de = "Turnier", pt = "Torneio", fr = "Tournoi"),
+  analysis  = list(en = "Analysis", de = "Analyse", pt = "Análise", fr = "Analyse")
 )
