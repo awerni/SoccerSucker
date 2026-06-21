@@ -137,31 +137,11 @@ function(input, output, session) {
           DTOutput("ranking", height = "100%")
         )
       ),
-      nav_panel(trans("placebets", tl), uiOutput("placebets")),
-      nav_panel(trans("checkyourresults", tl), uiOutput("yourresults")),
       nav_panel(
-        trans("player_comparison", tl),
+        trans("mybets", tl),
         navset_card_tab(
-          nav_panel(
-            trans("heatmap", tl),
-            card(
-              full_screen = TRUE,
-              plotOutput("heatmap", height = "75vh")
-            )
-          ),
-          nav_panel(trans("lineranking", tl),  uiOutput("rankingTab")),
-          nav_panel(trans("latestgames", tl),  uiOutput("latestGames")),
-          nav_panel(
-            trans("gamebet", tl),
-            selectInput("tipgame2show", "Select Game:", NULL),
-            layout_columns(
-              col_widths = c(6, 6),
-              DTOutput("gamebet"),
-              plotOutput("gamebetgraph", height = "60vh")
-            )
-          ),
-          nav_panel(trans("pcapoints", tl), uiOutput("pcaPoints")),
-          nav_panel(trans("pcatips", tl),   uiOutput("pcaTips")),
+          nav_panel(trans("placebets", tl), uiOutput("placebets")),
+          nav_panel(trans("myresults", tl), uiOutput("yourresults")),
           nav_panel(
             trans("missingbets", tl),
             card(
@@ -173,14 +153,44 @@ function(input, output, session) {
         )
       ),
       nav_panel(
-        trans("summary_statistics", tl),
+        trans("player_comparison", tl),
         navset_card_tab(
+          nav_panel(trans("lineranking", tl), uiOutput("rankingTab")),
+          nav_panel(
+            trans("heatmap", tl),
+            card(
+              full_screen = TRUE,
+              plotOutput("heatmap", height = "75vh")
+            )
+          ),
+          nav_panel(trans("pcapoints", tl), uiOutput("pcaPoints")),
+          nav_panel(trans("pcatips", tl), uiOutput("pcaTips")),
           nav_panel(trans("nationality", tl), uiOutput("nationplot")),
           nav_panel(trans("expertstatus", tl), uiOutput("expertplot"))
         )
       ),
       nav_panel(
-        trans("game_statistics", tl),
+        trans("analysis", tl),
+        navset_card_tab(
+          nav_panel(trans("latestgames", tl), uiOutput("latestGames")),
+          nav_panel(
+            trans("gamebet", tl),
+            selectInput("tipgame2show", "Select Game:", NULL),
+            layout_columns(
+              col_widths = c(6, 6),
+              DTOutput("gamebet"),
+              plotOutput("gamebetgraph", height = "60vh")
+            )
+          ),
+          nav_panel(
+            trans("pointsperteam", tl),
+            plotOutput("pointsperteam", height = "60vh"),
+            textOutput("pointsperteamdesc")
+          )
+        )
+      ),
+      nav_panel(
+        trans("tournament", tl),
         navset_card_tab(
           nav_panel(
             trans("gameresult", tl),
@@ -195,14 +205,10 @@ function(input, output, session) {
               height = "calc(100vh - 140px)",
               DTOutput("teamranking", height = "100%")
             )
-          ),
-          nav_panel(
-            trans("pointsperteam", tl),
-            plotOutput("pointsperteam", height = "60vh"),
-            textOutput("pointsperteamdesc")
           )
         )
       ),
+
       nav_panel(
         trans("help", tl),
         card(
@@ -246,8 +252,10 @@ function(input, output, session) {
   })
 
   output$teamranking <- DT::renderDataTable({
+    tr <- teamranking()
+    validate(need(tr, "no team ranking available"))
     datatable(
-      teamranking(),
+      tr,
       rownames = FALSE,
       selection = "none",
       options = list(pageLength = 24, lengthChange = FALSE)
