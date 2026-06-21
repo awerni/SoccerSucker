@@ -59,7 +59,17 @@ create table TEAM (
 TEAM                 TEXT                 not null,
 FIFARANKING          INT2                 null,
 INITIALGROUP         TEXT                 null,
+FIFASECTION          TEXT                 null,
 constraint PK_TEAM primary key (TEAM)
+);
+
+/*==============================================================*/
+/* Table: FIFASECTION                                           */
+/*==============================================================*/
+create table FIFASECTION (
+FIFASECTION          TEXT                 not null,
+CONTINENT            TEXT                 null,
+constraint PK_FIFASECTION primary key (FIFASECTION)
 );
 
 /*==============================================================*/
@@ -140,3 +150,7 @@ alter table TIP
       references PLAYER (USERNAME)
       on delete restrict on update restrict;
 
+alter table TEAM
+   add constraint FK_TEAM_REFERENCE_FIFASECTION foreign key (FIFASECTION)
+      references FIFASECTION (FIFASECTION)
+      on delete restrict on update restrict;
