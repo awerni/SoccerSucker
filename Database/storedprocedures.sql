@@ -42,7 +42,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 -----------------------------------------------------
-DROP FUNCTION getGamePoints(TEXT) CASCADE;
+DROP FUNCTION getGamePoints(TEXT, INT2, BOOL) CASCADE;
 DROP TYPE teamResult CASCADE;
 CREATE TYPE teamResult AS (
   tournamentid INT2,
@@ -56,7 +56,7 @@ CREATE TYPE teamResult AS (
   points INT2
 );
 
-CREATE OR REPLACE FUNCTION getGamePoints(theTeam TEXT, theTournament INT2) RETURNS teamResult AS $$
+CREATE OR REPLACE FUNCTION getGamePoints(theTeam TEXT, theTournament INT2, only_group_phase BOOL DEFAULT FALSE) RETURNS teamResult AS $$
 DECLARE
   tr teamResult;
   rsGame record;
@@ -72,7 +72,8 @@ BEGIN
   tr.points = 0;
 
   FOR rsGame IN SELECT team1, team2, regulartimegoals1, regulartimegoals2, winner FROM gameview 
-    WHERE tournamentid = theTournament AND NOT kogame AND (team1 = theTeam OR team2 = theTeam) AND regulartimegoals1 IS NOT NULL AND regulartimegoals2 IS NOT NULL
+    WHERE tournamentid = theTournament AND (NOT only_group_phase OR NOT kogame)
+    AND (team1 = theTeam OR team2 = theTeam) AND regulartimegoals1 IS NOT NULL AND regulartimegoals2 IS NOT NULL
   LOOP
     tr.played := tr.played + 1;
     IF (rsGame.winner = '1' AND rsGame.team1 = theTeam) OR (rsGame.winner = '2' AND rsGame.team2 = theTeam) THEN 
@@ -83,7 +84,6 @@ BEGIN
       tr.draw := tr.draw + 1;
       tr.points := tr.points + 1;
     END IF;
-    
     IF rsGame.team1 = theTeam THEN
       tr.goalsfor := tr.goalsfor + rsGame.regulartimegoals1;
       tr.goalsagainst := tr.goalsagainst + rsGame.regulartimegoals2;
@@ -92,11 +92,8 @@ BEGIN
       tr.goalsagainst := tr.goalsagainst + rsGame.regulartimegoals1;
     END IF;
   END LOOP;
- 
   tr.loss := tr.played - tr.won - tr.draw;
-
   RETURN tr;
-
 END;
 $$ LANGUAGE plpgsql;
 
