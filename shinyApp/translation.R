@@ -144,12 +144,15 @@ labeltrans <- list(
   timezone = list(en = "Timezone:", de = "Zeitzone:", pt = "Fuso horário:", fr = "Fuseau horaire:"),
   settings = list(en = "Settings", de = "Einstellungen",
                   pt = "Configurações", fr = "Paramètres"),
-  language = list(en = "Language", de = "Sprache",
-                  pt = "Idioma", fr = "Langue"),
-  close    = list(en = "Close", de = "Schließen",
-                   pt = "Fechar", fr = "Fermer"),
+  language = list(en = "Language", de = "Sprache", pt = "Idioma", fr = "Langue"),
+  close    = list(en = "Close", de = "Schließen", pt = "Fechar", fr = "Fermer"),
   mybets   = list(en = "My Bets", de = "Meine Wetten", pt = "Minhas Apostas", fr = "Mes Mises"),
   myresults = list(en = "My Results", de = "Meine Ergebnisse", pt = "Meus Resultados", fr = "Mes Résultats"),
   tournament = list(en = "Tournament", de = "Turnier", pt = "Torneio", fr = "Tournoi"),
-  analysis  = list(en = "Analysis", de = "Analyse", pt = "Análise", fr = "Analyse")
+  analysis  = list(en = "Analysis", de = "Analyse", pt = "Análise", fr = "Analyse"),
+  fifasectionranking = list(en = "FIFA Section Ranking", de = "FIFA-Sektionsrangliste", pt = "Classificação da Seção da FIFA", fr = "Classement de la Section FIFA"),
+  distributionfifasection = list(en = "Avg. Points by Continent/Section (SEM)",
+                                 de = "Durchschnittspunkte nach Kontinent/Sektion (SEM)",
+                                 pt = "Pontos Médios por Continente/Seção (SEM)",
+                                 fr = "Points Moyens par Continent/Section (SEM)")
 )
