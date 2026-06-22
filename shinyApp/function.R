@@ -580,6 +580,40 @@ getTeamBetPoints <- function(showplayers, tournamentid) {
               vjust = 1.5, position = position_dodge(.9), size = 4)
 }
 
+getFIFASection <- function(tournamentid, mainTitle) {
+  team_data <- getPostgresql("SELECT * FROM teamstat WHERE tournamentid = $1", params = list(tournamentid)) |>
+    mutate(continent_section = paste(continent, " (", fifasection, ")", sep = "")) |>
+    mutate(avg_points = points / played,
+           goals_diff = goalsfor - goalsagainst)
+
+  if (nrow(team_data) == 0) return()
+  palette <- c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf")
+
+  g1 <- team_data |>
+    group_by(continent_section) |>
+    summarise(mean_points = mean(avg_points), sem_points = sd(avg_points)/n()) |>
+    ggplot(aes(x = mean_points, y = reorder(continent_section, mean_points, FUN = median), fill = continent_section)) +
+      geom_bar(stat = "identity") +
+      geom_errorbar(aes(xmin = mean_points - sem_points, xmax = mean_points + sem_points), width = 0.3) +
+      labs(title = mainTitle,
+           x = "Avg Points",
+           y = "") +
+      theme_gray() +
+      theme(legend.position = "none",
+            axis.text = element_text(size = 12))
+
+  g2 <- ggplot(team_data, aes(x = avg_points, y = reorder(team, avg_points, FUN = median), fill = continent)) +
+    geom_bar(stat = "identity") +
+    facet_wrap(~ continent_section, scales = "free_y") +
+    labs(x = "Avg Points",
+         y = "Continent (FIFA Section)") +
+    theme_gray() +
+    theme(legend.position = "none",
+          axis.text = element_text(size = 12))
+
+  gridExtra::grid.arrange(g1, g2)
+}
+
 # -------------------------------
 
 insertRandomTips <- function(tournamentid) {
