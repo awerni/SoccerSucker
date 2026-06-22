@@ -205,6 +205,9 @@ function(input, output, session) {
               height = "calc(100vh - 140px)",
               DTOutput("teamranking", height = "100%")
             )
+          ),
+          nav_panel(
+            trans("fifasectionranking", tl), uiOutput("fifasectionranking")
           )
         )
       ),
@@ -616,4 +619,11 @@ function(input, output, session) {
     getTeamBetPoints(input$showplayers, input$tournament)
   })
 
+  output$fifasectionranking <- renderUI({
+    plotOutput("fifasection", width = "100%", height = "1000px")
+  })
+
+  output$fifasection <- renderPlot({
+    getFIFASection(input$tournament, trans_r("distributionfifasection"))
+  })
 }
