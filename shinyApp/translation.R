@@ -154,5 +154,18 @@ labeltrans <- list(
   distributionfifasection = list(en = "Avg. Points by Continent/Section (SEM)",
                                  de = "Durchschnittspunkte nach Kontinent/Sektion (SEM)",
                                  pt = "Pontos Médios por Continente/Seção (SEM)",
-                                 fr = "Points Moyens par Continent/Section (SEM)")
+                                 fr = "Points Moyens par Continent/Section (SEM)"),
+  ko_draw_no_winner = list(
+    en = "For KO games that end in a draw, you must select a winner (team 1 or team 2).",
+    de = "Bei KO-Spielen, die unentschieden enden, musst du einen Sieger (Team 1 oder Team 2) auswählen.",
+    pt = "Para jogos KO que terminam empatados, você deve selecionar um vencedor (time 1 ou time 2).",
+    fr = "Pour les matchs à élimination directe qui se terminent par un match nul, vous devez sélectionner un vainqueur (équipe 1 ou équipe 2)."
+  ),
+  save_failed = list(
+    en = "Failed to save bets to database.",
+    de = "Wetten konnten nicht in der Datenbank gespeichert werden.",
+    pt = "Falha ao salvar apostas no banco de dados.",
+    fr = "Échec de l'enregistrement des mises dans la base de données."
+  ),
+  error = list(en = "Error", de = "Fehler", pt = "Erro", fr = "Erreur")
 )
